@@ -5,9 +5,10 @@ var StringEmitter = (function () {
         this.indentation = 0;
     }
     StringEmitter.prototype.writeLine = function (line) {
-        this.writeIndentation();
-        if (line)
+        if (line) {
+            this.writeIndentation();
             this.write(line);
+        }
         this.write("\n");
     };
     StringEmitter.prototype.write = function (text) {
@@ -33,7 +34,7 @@ var StringEmitter = (function () {
     });
     StringEmitter.prototype.writeIndentation = function () {
         for (var i = 0; i < this.indentation; i++) {
-            this._output += "\t";
+            this._output += "    ";
         }
     };
     return StringEmitter;

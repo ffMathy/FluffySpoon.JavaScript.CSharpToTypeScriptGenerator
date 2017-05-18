@@ -8,10 +8,10 @@
     }
 
     writeLine(line?: string) {
-        this.writeIndentation();
-
-        if (line)
+        if (line) {
+            this.writeIndentation();
             this.write(line);
+        }
 
         this.write("\n");
     }
@@ -39,9 +39,9 @@
         return this._output;
     }
 
-    private writeIndentation() {
+    writeIndentation() {
         for (var i = 0; i < this.indentation; i++) {
-            this._output += "\t";
+            this._output += "    ";
         }
     }
 }
