@@ -1,6 +1,6 @@
 ﻿{
   "compileOnSave": true,
-  "exclude": ["./spec/"],
+  "exclude": ["./spec/cases/"],
   "compilerOptions": {
     "target": "es5"
   }
