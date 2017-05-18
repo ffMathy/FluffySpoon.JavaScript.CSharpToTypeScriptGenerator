@@ -1,0 +1,7 @@
+﻿{
+  "compileOnSave": true,
+  "exclude": ["./spec/"],
+  "compilerOptions": {
+    "target": "es5"
+  }
+}

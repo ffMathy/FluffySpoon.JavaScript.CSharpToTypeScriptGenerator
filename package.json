@@ -1,0 +1,26 @@
+{
+  "name": "fluffy-spoon.javascript.csharp-to-typescript-generator",
+  "version": "1.0.0",
+  "description": "Parses C# code as well as possible into JavaScript objects.",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "jasmine"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ffMathy/FluffySpoon.JavaScript.CSharpToTypeScriptGenerator.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ffMathy/FluffySpoon.JavaScript.CSharpToTypeScriptGenerator/issues"
+  },
+  "homepage": "https://github.com/ffMathy/FluffySpoon.JavaScript.CSharpToTypeScriptGenerator#readme",
+  "devDependencies": {
+    "@types/jasmine": "^2.5.47",
+    "jasmine": "^2.6.0"
+  },
+  "dependencies": {
+    "fluffy-spoon.javascript.csharp-parser": "https://github.com/ffMathy/FluffySpoon.JavaScript.CSharpParser.git"
+  }
+}
