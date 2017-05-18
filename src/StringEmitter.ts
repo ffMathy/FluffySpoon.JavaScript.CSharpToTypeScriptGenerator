@@ -29,9 +29,9 @@
     }
 
     removeLastCharacters(characters: string) {
-        if (this._output.substr(this._output.length - characters.length, characters.length) !== characters)
+        if (this._output.substr(this._output.length - characters.length) !== characters)
             return;
-
+        
         this._output = this._output.substr(0, this._output.length - characters.length);
     }
 

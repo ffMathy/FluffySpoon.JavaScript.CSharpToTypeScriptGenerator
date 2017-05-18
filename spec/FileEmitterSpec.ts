@@ -4,13 +4,19 @@ import { FileEmitter } from '../src/FileEmitter';
 
 function runCase(caseName: string) {
     it("should be able to handle case " + caseName, function (done) {
-        fs.readFile('./spec/cases/' + caseName + '.case.cs', 'utf8', function (err, caseInput) {
-            fs.readFile('./spec/cases/' + caseName + '.expected.ts', 'utf8', function (err, caseExpected) {
-                caseExpected = caseExpected.replace(/\r/g, '');
+        var caseName1 = caseName;
+        fs.readFile('./spec/cases/' + caseName1 + '.case.cs', 'utf8', function (err, caseInput) {
+            fs.readFile('./spec/cases/' + caseName1 + '.expected.ts', 'utf8', function (err, caseExpected) {
+                caseExpected = caseExpected
+                    .replace(/\r/g, '')
+                    .trim();
 
                 var emitter = new FileEmitter(caseInput);
                 var result = emitter.emitFile();
 
+                result = result
+                    .replace(/\r/g, '')
+                    .trim();
                 expect(result).toBe(caseExpected);
 
                 done();
@@ -22,5 +28,6 @@ function runCase(caseName: string) {
 describe("UseCases", function () {
 
     runCase("Enum");
+    runCase("Property");
 
 });

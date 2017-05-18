@@ -33,9 +33,9 @@ export class EnumEmitter {
 
         this.stringEmitter.increaseIndentation();
 
-        for (var option of enumObject.options) {
+        for (var option of enumObject.options)
             this.emitEnumOption(option);
-        }
+
         this.stringEmitter.removeLastCharacters(',\n');
 
         this.stringEmitter.decreaseIndentation();
