@@ -1,0 +1,36 @@
+/// <reference path="../typings/tsd.d.ts" />
+// Disabled multiline warning, we're fine with ES5
+// jshint -W043
+
+var sampleFile = "\
+using System;\n\
+\n\
+namespace MyNamespace.Domain\n\
+{\n\
+    public class MyPoco\n\
+    {\n\
+        public int IntField { get; set; }\n\
+        public string UntouchedString { get; set; }\n\
+        public DateTimeOffset SomeDate { get; set; }\n\
+    }\n\
+}\n";
+
+var expectedOutput = "interface MyPoco {\n\
+    IntField: number;\n\
+    UntouchedString: string;\n\
+    SomeDate: string;\n\
+}\n";
+
+var pocoGen = require('./adapters/legacyAdapter.js');
+
+describe('typescript-cs-poco', function() {
+	it('should handle custom translations correctly', function() {
+		var result = pocoGen(sampleFile, {
+            customTypeTranslations: {
+              DateTimeOffset: 'string'
+            }
+        });
+
+        expect(result).toEqual(expectedOutput);
+	});
+});

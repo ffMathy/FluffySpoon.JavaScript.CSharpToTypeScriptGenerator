@@ -3,7 +3,7 @@ import { StringEmitter } from './StringEmitter';
 import { EnumEmitter } from './EnumEmitter';
 import { PropertyEmitter } from './PropertyEmitter';
 
-declare interface ClassEmitOptions {
+export interface ClassEmitOptions {
     declare: boolean;
 }
 
@@ -36,13 +36,16 @@ export class ClassEmitter {
     }
 
     private emitClassInterface(classObject: CSharpClass, options?: ClassEmitOptions) {
-        if (classObject.properties.length === 0) {
+		if (classObject.properties.length === 0) {
+			console.log("Skipping interface " + classObject.name + " because it contains no properties");
             return;
         }
 
         this.stringEmitter.writeIndentation();
         if (options.declare)
-            this.stringEmitter.write("declare ");
+			this.stringEmitter.write("declare ");
+
+		console.log("Emitting interface " + classObject.name);
 
         this.stringEmitter.write("interface " + classObject.name + " {");
         this.stringEmitter.writeLine();

@@ -1,0 +1,26 @@
+/// <reference path="../typings/tsd.d.ts" />
+// Disabled multiline warning, we're fine with ES5
+// jshint -W043
+
+var sampleFile = "\
+using System;\n\
+\n\
+public class Profile\n\
+{\n\
+    public Entry<bool> Value { get; set; }\n\
+}\n";
+
+var expectedOutput = "\
+interface Profile {\n\
+    Value: Entry<boolean>;\n\
+}\n";
+
+var pocoGen = require('./adapters/legacyAdapter.js');
+
+describe('typescript-cs-poco', function() {
+    it('should convert a generic property correctly', function() {
+        var result = pocoGen(sampleFile);
+        
+        expect(result).toEqual(expectedOutput);
+    });
+});

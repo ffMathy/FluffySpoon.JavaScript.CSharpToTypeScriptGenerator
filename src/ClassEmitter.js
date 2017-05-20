@@ -24,11 +24,13 @@ var ClassEmitter = (function () {
     };
     ClassEmitter.prototype.emitClassInterface = function (classObject, options) {
         if (classObject.properties.length === 0) {
+            console.log("Skipping interface " + classObject.name + " because it contains no properties");
             return;
         }
         this.stringEmitter.writeIndentation();
         if (options.declare)
             this.stringEmitter.write("declare ");
+        console.log("Emitting interface " + classObject.name);
         this.stringEmitter.write("interface " + classObject.name + " {");
         this.stringEmitter.writeLine();
         this.stringEmitter.increaseIndentation();

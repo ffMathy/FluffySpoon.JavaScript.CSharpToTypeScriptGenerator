@@ -1,18 +1,22 @@
 ﻿import { FileParser, CSharpNamespace } from 'fluffy-spoon.javascript.csharp-parser';
 import { StringEmitter } from './StringEmitter';
 import { EnumEmitter } from './EnumEmitter';
+import { ClassEmitter } from './ClassEmitter';
 
-declare interface NamespaceEmitOptions {
-    declare: boolean;
+export interface NamespaceEmitOptions {
+	declare: boolean;
+	skip: boolean;
 }
 
 export class NamespaceEmitter {
-    private enumEmitter: EnumEmitter;
+	private enumEmitter: EnumEmitter;
+	private classEmitter: ClassEmitter;
 
     constructor(
         private stringEmitter: StringEmitter)
     {
-        this.enumEmitter = new EnumEmitter(stringEmitter);
+		this.enumEmitter = new EnumEmitter(stringEmitter);
+		this.classEmitter = new ClassEmitter(stringEmitter);
     }
 
     emitNamespaces(namespaces: CSharpNamespace[], options?: NamespaceEmitOptions) {
@@ -28,7 +32,8 @@ export class NamespaceEmitter {
             }
         }
 
-        if (namespace.enums.length === 0 && namespace.namespaces.length === 0) {
+		if (namespace.enums.length === 0 && namespace.namespaces.length === 0 && namespace.classes.length === 0) {
+			console.log("Skipping namespace " + namespace.name + " because it contains no enums, classes or namespaces");
             return;
         }
 
@@ -45,13 +50,16 @@ export class NamespaceEmitter {
             namespace.enums,
             {
                 declare: false
-            });
+			});
+
+		this.classEmitter.emitClasses(
+			namespace.classes);
 
         this.emitNamespaces(
             namespace.namespaces,
             {
                 declare: false
-            });
+			});
 
         this.stringEmitter.removeLastCharacters("\n\n");
 

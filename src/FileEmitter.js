@@ -12,11 +12,11 @@ var FileEmitter = (function () {
         this.classEmitter = new ClassEmitter_1.ClassEmitter(this.stringEmitter);
         this.namespaceEmitter = new NamespaceEmitter_1.NamespaceEmitter(this.stringEmitter);
     }
-    FileEmitter.prototype.emitFile = function () {
+    FileEmitter.prototype.emitFile = function (options) {
         var file = this.fileParser.parseFile();
         this.enumEmitter.emitEnums(file.enums);
-        this.namespaceEmitter.emitNamespaces(file.namespaces);
-        this.classEmitter.emitClasses(file.classes);
+        this.namespaceEmitter.emitNamespaces(file.namespaces, options.namespaceEmitOptions);
+        this.classEmitter.emitClasses(file.classes, options.classEmitOptions);
         this.stringEmitter.removeLastCharacters("\n\n");
         return this.stringEmitter.output;
     };
