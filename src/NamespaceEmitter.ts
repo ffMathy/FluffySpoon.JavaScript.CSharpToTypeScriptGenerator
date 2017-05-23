@@ -1,11 +1,13 @@
 ﻿import { FileParser, CSharpNamespace } from 'fluffy-spoon.javascript.csharp-parser';
 import { StringEmitter } from './StringEmitter';
 import { EnumEmitter } from './EnumEmitter';
-import { ClassEmitter } from './ClassEmitter';
+import { ClassEmitter, ClassEmitOptions } from './ClassEmitter';
 
 export interface NamespaceEmitOptions {
-	declare: boolean;
+	declare?: boolean;
 	skip?: boolean;
+
+	classEmitOptions?: ClassEmitOptions;
 }
 
 export class NamespaceEmitter {
@@ -55,7 +57,8 @@ export class NamespaceEmitter {
 			});
 
 		this.classEmitter.emitClasses(
-			namespace.classes);
+			namespace.classes,
+			options.classEmitOptions);
 
 		var subNamespaceOptions = Object.assign(options, <NamespaceEmitOptions>{
 			declare: false

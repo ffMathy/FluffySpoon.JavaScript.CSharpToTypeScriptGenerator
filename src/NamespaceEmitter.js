@@ -1,17 +1,19 @@
-import { EnumEmitter } from './EnumEmitter';
-import { ClassEmitter } from './ClassEmitter';
-export class NamespaceEmitter {
-    constructor(stringEmitter) {
+"use strict";
+var EnumEmitter_1 = require("./EnumEmitter");
+var ClassEmitter_1 = require("./ClassEmitter");
+var NamespaceEmitter = (function () {
+    function NamespaceEmitter(stringEmitter) {
         this.stringEmitter = stringEmitter;
-        this.enumEmitter = new EnumEmitter(stringEmitter);
-        this.classEmitter = new ClassEmitter(stringEmitter);
+        this.enumEmitter = new EnumEmitter_1.EnumEmitter(stringEmitter);
+        this.classEmitter = new ClassEmitter_1.ClassEmitter(stringEmitter);
     }
-    emitNamespaces(namespaces, options) {
-        for (var namespace of namespaces) {
+    NamespaceEmitter.prototype.emitNamespaces = function (namespaces, options) {
+        for (var _i = 0, namespaces_1 = namespaces; _i < namespaces_1.length; _i++) {
+            var namespace = namespaces_1[_i];
             this.emitNamespace(namespace, options);
         }
-    }
-    emitNamespace(namespace, options) {
+    };
+    NamespaceEmitter.prototype.emitNamespace = function (namespace, options) {
         if (!options) {
             options = {
                 declare: true
@@ -32,7 +34,7 @@ export class NamespaceEmitter {
         this.enumEmitter.emitEnums(namespace.enums, {
             declare: false
         });
-        this.classEmitter.emitClasses(namespace.classes);
+        this.classEmitter.emitClasses(namespace.classes, options.classEmitOptions);
         var subNamespaceOptions = Object.assign(options, {
             declare: false
         });
@@ -44,5 +46,7 @@ export class NamespaceEmitter {
             this.stringEmitter.writeLine("}");
             this.stringEmitter.writeLine();
         }
-    }
-}
+    };
+    return NamespaceEmitter;
+}());
+exports.NamespaceEmitter = NamespaceEmitter;

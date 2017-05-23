@@ -4,10 +4,10 @@ import { StringEmitter } from './StringEmitter';
 import { EnumEmitter } from './EnumEmitter';
 import { ClassEmitter, ClassEmitOptions } from './ClassEmitter';
 import { NamespaceEmitter, NamespaceEmitOptions } from './NamespaceEmitter';
-
+ 
 declare interface FileEmitOptions {
-	classEmitOptions: ClassEmitOptions,
-    namespaceEmitOptions: NamespaceEmitOptions
+	classEmitOptions?: ClassEmitOptions,
+    namespaceEmitOptions?: NamespaceEmitOptions
 }
 
 export class FileEmitter {
@@ -27,6 +27,14 @@ export class FileEmitter {
     }
 
 	emitFile(options: FileEmitOptions) {
+		if (!options) {
+			options = {};
+		}
+
+		if (options.classEmitOptions && options.namespaceEmitOptions) {
+			options.namespaceEmitOptions.classEmitOptions = options.classEmitOptions;
+		}
+
 		var file = this.fileParser.parseFile();
 
 		this.enumEmitter.emitEnums(file.enums);
