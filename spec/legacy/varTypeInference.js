@@ -25,7 +25,7 @@ public class MyPoco\n\
 
             var expectedOutput = "interface MyPoco {\n\
     Foo: " + destinationType + ";\n\
-}\n";
+}";
 
             var result = pocoGen(sampleFile);
             

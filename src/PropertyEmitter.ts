@@ -15,7 +15,8 @@ export class PropertyEmitter {
         }
     }
 
-    emitProperty(property: CSharpProperty) {
+	emitProperty(property: CSharpProperty) {
+		this.stringEmitter.writeIndentation();
 		this.stringEmitter.write(property.name + ": ");
 		this.typeEmitter.emitType(property.type);
 		this.stringEmitter.write(";");
