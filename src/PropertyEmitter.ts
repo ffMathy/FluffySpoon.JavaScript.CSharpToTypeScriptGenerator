@@ -1,10 +1,12 @@
 ﻿import { CSharpProperty } from 'fluffy-spoon.javascript.csharp-parser';
 import { StringEmitter } from './StringEmitter';
+import { TypeEmitter } from './TypeEmitter';
 
 export class PropertyEmitter {
+	private typeEmitter: TypeEmitter;
 
-    constructor(private stringEmitter: StringEmitter) {
-
+	constructor(private stringEmitter: StringEmitter) {
+		this.typeEmitter = new TypeEmitter(stringEmitter);
     }
 
     emitProperties(properties: CSharpProperty[]) {
@@ -14,7 +16,10 @@ export class PropertyEmitter {
     }
 
     emitProperty(property: CSharpProperty) {
-        this.stringEmitter.writeLine(property.name + ": " + property.type.name + ";");
+		this.stringEmitter.write(property.name + ": ");
+		this.typeEmitter.emitType(property.type);
+		this.stringEmitter.write(";");
+		this.stringEmitter.writeLine();
     }
 
 }
