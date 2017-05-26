@@ -14,6 +14,8 @@ var MethodEmitter = (function () {
     };
     MethodEmitter.prototype.emitMethod = function (method, options) {
         options = this.prepareOptions(options);
+        if (!options.filter(method))
+            return;
         this.stringEmitter.writeIndentation();
         this.stringEmitter.write(method.name + "(");
         this.emitMethodParameters(method.parameters, options);
@@ -25,6 +27,9 @@ var MethodEmitter = (function () {
     MethodEmitter.prototype.prepareOptions = function (options) {
         if (!options) {
             options = {};
+        }
+        if (!options.filter) {
+            options.filter = function () { return true; };
         }
         return options;
     };

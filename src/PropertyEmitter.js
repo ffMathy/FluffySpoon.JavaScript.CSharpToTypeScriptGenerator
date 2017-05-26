@@ -14,6 +14,8 @@ var PropertyEmitter = (function () {
     };
     PropertyEmitter.prototype.emitProperty = function (property, options) {
         options = this.prepareOptions(options);
+        if (!options.filter(property))
+            return;
         this.stringEmitter.writeIndentation();
         this.stringEmitter.write(property.name + ": ");
         this.typeEmitter.emitType(property.type, options.typeEmitOptions);
@@ -23,6 +25,9 @@ var PropertyEmitter = (function () {
     PropertyEmitter.prototype.prepareOptions = function (options) {
         if (!options) {
             options = {};
+        }
+        if (!options.filter) {
+            options.filter = function () { return true; };
         }
         return options;
     };

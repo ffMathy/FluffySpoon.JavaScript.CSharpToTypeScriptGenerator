@@ -26,6 +26,11 @@ function pocoGen(contents, options) {
 			emitOptions.enumEmitOptions.strategy = "string-union";
 		}
 
+		if (options.ignoreVirtual) {
+			emitOptions.classEmitOptions.methodEmitOptions.filter = (method) => !method.isVirtual;
+			emitOptions.classEmitOptions.propertyEmitOptions.filter = (property) => !property.isVirtual;
+		}
+
 		if (options.typeResolver) {
 			emitOptions.classEmitOptions
 				.propertyEmitOptions

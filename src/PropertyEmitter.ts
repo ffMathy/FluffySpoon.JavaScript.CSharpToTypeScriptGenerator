@@ -3,6 +3,8 @@ import { StringEmitter } from './StringEmitter';
 import { TypeEmitter, TypeEmitOptions } from './TypeEmitter';
 
 export interface PropertyEmitOptions {
+	filter?: (property: CSharpProperty) => boolean;
+
 	typeEmitOptions?: TypeEmitOptions
 }
 
@@ -24,6 +26,9 @@ export class PropertyEmitter {
 	emitProperty(property: CSharpProperty, options?: PropertyEmitOptions) {
 		options = this.prepareOptions(options);
 
+		if (!options.filter(property))
+			return;
+
 		this.stringEmitter.writeIndentation();
 		this.stringEmitter.write(property.name + ": ");
 		this.typeEmitter.emitType(property.type, options.typeEmitOptions);
@@ -35,6 +40,11 @@ export class PropertyEmitter {
 		if (!options) {
 			options = {};
 		}
+
+		if (!options.filter) {
+			options.filter = () => true;
+		}
+
 		return options;
 	}
 

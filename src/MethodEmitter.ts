@@ -3,6 +3,8 @@ import { StringEmitter } from './StringEmitter';
 import { TypeEmitter, TypeEmitOptions } from './TypeEmitter';
 
 export interface MethodEmitOptions {
+	filter?: (method: CSharpMethod) => boolean;
+
 	returnTypeEmitOptions?: TypeEmitOptions;
 	argumentTypeEmitOptions?: TypeEmitOptions;
 }
@@ -25,6 +27,9 @@ export class MethodEmitter {
 	emitMethod(method: CSharpMethod, options?: MethodEmitOptions) {
 		options = this.prepareOptions(options);
 
+		if (!options.filter(method))
+			return;
+
 		this.stringEmitter.writeIndentation();
 		this.stringEmitter.write(method.name + "(");
 		this.emitMethodParameters(method.parameters, options);
@@ -36,8 +41,13 @@ export class MethodEmitter {
 
 	private prepareOptions(options?: MethodEmitOptions) {
 		if (!options) {
-            options = {}
+			options = {}
 		}
+
+		if (!options.filter) {
+			options.filter = () => true;
+		}
+
 		return options;
 	}
 
