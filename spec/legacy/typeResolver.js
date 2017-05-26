@@ -1,4 +1,4 @@
-/// <reference path="../typings/tsd.d.ts" />
+﻿/// <reference path="../typings/tsd.d.ts" />
 // Disabled multiline warning, we're fine with ES5
 // jshint -W043
 
@@ -26,7 +26,7 @@ namespace MyNamespace.Domain\n\
     NameOfStuff: Observable<string>;\n\
     Foo(): string;\n\
     Foo(foo: string, bar: number): string;\n\
-}\n";
+}";
 
         var result = pocoGen(sampleFile, { typeResolver: observablePropertyResolver });
 

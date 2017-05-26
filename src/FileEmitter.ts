@@ -1,13 +1,14 @@
 ﻿import { FileParser, CSharpEnum, CSharpEnumOption } from 'fluffy-spoon.javascript.csharp-parser';
 
 import { StringEmitter } from './StringEmitter';
-import { EnumEmitter } from './EnumEmitter';
+import { EnumEmitter, EnumEmitOptions } from './EnumEmitter';
 import { ClassEmitter, ClassEmitOptions } from './ClassEmitter';
 import { NamespaceEmitter, NamespaceEmitOptions } from './NamespaceEmitter';
  
-declare interface FileEmitOptions {
+export interface FileEmitOptions {
 	classEmitOptions?: ClassEmitOptions,
-    namespaceEmitOptions?: NamespaceEmitOptions
+	namespaceEmitOptions?: NamespaceEmitOptions,
+    enumEmitOptions?: EnumEmitOptions
 }
 
 export class FileEmitter {
@@ -26,7 +27,7 @@ export class FileEmitter {
 		this.namespaceEmitter = new NamespaceEmitter(this.stringEmitter);
     }
 
-	emitFile(options: FileEmitOptions) {
+	emitFile(options?: FileEmitOptions) {
 		if (!options) {
 			options = {};
 		}
@@ -35,9 +36,18 @@ export class FileEmitter {
 			options.namespaceEmitOptions.classEmitOptions = options.classEmitOptions;
 		}
 
+		if (options.enumEmitOptions) {
+			if (options.classEmitOptions) {
+				options.classEmitOptions.enumEmitOptions = options.enumEmitOptions;
+			}
+			if (options.namespaceEmitOptions) {
+				options.namespaceEmitOptions.enumEmitOptions = options.enumEmitOptions;
+			}
+		}
+
 		var file = this.fileParser.parseFile();
 
-		this.enumEmitter.emitEnums(file.enums);
+		this.enumEmitter.emitEnums(file.enums, options.enumEmitOptions);
 		this.namespaceEmitter.emitNamespaces(file.namespaces, options.namespaceEmitOptions);
 		this.classEmitter.emitClasses(file.classes, options.classEmitOptions);
         

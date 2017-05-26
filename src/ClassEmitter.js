@@ -1,11 +1,13 @@
 "use strict";
 var EnumEmitter_1 = require("./EnumEmitter");
 var PropertyEmitter_1 = require("./PropertyEmitter");
+var MethodEmitter_1 = require("./MethodEmitter");
 var ClassEmitter = (function () {
     function ClassEmitter(stringEmitter) {
         this.stringEmitter = stringEmitter;
         this.enumEmitter = new EnumEmitter_1.EnumEmitter(stringEmitter);
         this.propertyEmitter = new PropertyEmitter_1.PropertyEmitter(stringEmitter);
+        this.methodEmitter = new MethodEmitter_1.MethodEmitter(stringEmitter);
     }
     ClassEmitter.prototype.emitClasses = function (classes, options) {
         for (var _i = 0, classes_1 = classes; _i < classes_1.length; _i++) {
@@ -19,12 +21,12 @@ var ClassEmitter = (function () {
                 declare: true
             };
         }
-        this.emitEnumsInClass(classObject, options);
+        this.emitEnumsAndSubclassesInClass(classObject, options);
         this.emitClassInterface(classObject, options);
     };
     ClassEmitter.prototype.emitClassInterface = function (classObject, options) {
-        if (classObject.properties.length === 0) {
-            console.log("Skipping interface " + classObject.name + " because it contains no properties");
+        if (classObject.properties.length === 0 && classObject.methods.length === 0) {
+            console.log("Skipping interface " + classObject.name + " because it contains no properties or methods");
             return;
         }
         this.stringEmitter.writeIndentation();
@@ -35,14 +37,15 @@ var ClassEmitter = (function () {
         this.stringEmitter.writeLine();
         this.stringEmitter.increaseIndentation();
         this.propertyEmitter.emitProperties(classObject.properties);
+        this.methodEmitter.emitMethods(classObject.methods);
         this.stringEmitter.removeLastCharacters("\n");
         this.stringEmitter.decreaseIndentation();
         this.stringEmitter.writeLine();
         this.stringEmitter.writeLine("}");
         this.stringEmitter.writeLine();
     };
-    ClassEmitter.prototype.emitEnumsInClass = function (classObject, options) {
-        if (classObject.enums.length === 0) {
+    ClassEmitter.prototype.emitEnumsAndSubclassesInClass = function (classObject, options) {
+        if (classObject.enums.length === 0 && classObject.classes.length === 0) {
             return;
         }
         this.stringEmitter.writeIndentation();
@@ -51,12 +54,14 @@ var ClassEmitter = (function () {
         this.stringEmitter.write("namespace " + classObject.name + " {");
         this.stringEmitter.writeLine();
         this.stringEmitter.increaseIndentation();
-        this.enumEmitter.emitEnums(classObject.enums, {
+        var classEnumOptions = Object.assign(options.enumEmitOptions || {}, {
             declare: false
         });
-        this.emitClasses(classObject.classes, {
+        this.enumEmitter.emitEnums(classObject.enums, classEnumOptions);
+        var subClassOptions = Object.assign(options, {
             declare: false
         });
+        this.emitClasses(classObject.classes, subClassOptions);
         this.stringEmitter.removeLastCharacters("\n\n");
         this.stringEmitter.decreaseIndentation();
         this.stringEmitter.writeLine();

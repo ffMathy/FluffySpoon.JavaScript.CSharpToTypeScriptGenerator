@@ -8,9 +8,9 @@ describe('typescript-cs-poco', function() {
 	it('should transform types correctly', function() {
 
         var typeMappings = {
-            'IEnumerable<string>': 'string[]',
-            'Task<string>': 'Task<string>',
-            'Task<IEnumerable<string>>': 'Task<string[]>'
+            //'IEnumerable<string>': 'string[]',
+            //'Task<string>': 'Promise<string>',
+			'Task<IEnumerable<string>>': 'Promise<string[]>'
         };
 
         for(var sourceType in typeMappings) {

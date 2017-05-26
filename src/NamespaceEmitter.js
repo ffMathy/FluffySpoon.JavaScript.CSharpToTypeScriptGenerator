@@ -31,12 +31,13 @@ var NamespaceEmitter = (function () {
             this.stringEmitter.writeLine();
             this.stringEmitter.increaseIndentation();
         }
-        this.enumEmitter.emitEnums(namespace.enums, {
-            declare: false
+        var namespaceEnumOptions = Object.assign(options.enumEmitOptions || {}, {
+            declare: !options.declare
         });
+        this.enumEmitter.emitEnums(namespace.enums, namespaceEnumOptions);
         this.classEmitter.emitClasses(namespace.classes, options.classEmitOptions);
         var subNamespaceOptions = Object.assign(options, {
-            declare: false
+            declare: !options.declare
         });
         this.emitNamespaces(namespace.namespaces, subNamespaceOptions);
         if (!options.skip) {

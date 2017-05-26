@@ -1,51 +1,96 @@
 ﻿import { FileParser, CSharpEnum, CSharpEnumOption } from 'fluffy-spoon.javascript.csharp-parser';
 import { StringEmitter } from './StringEmitter';
 
-declare interface EnumEmitOptions {
-    declare: boolean;
+export interface EnumEmitOptions {
+	declare: boolean;
+	strategy?: "default" | "string-union";
 }
 
 export class EnumEmitter {
     constructor(
         private stringEmitter: StringEmitter) {
 
-    }
+	}
 
-    emitEnums(enums: CSharpEnum[], options?: EnumEmitOptions) {
+	private prepareOptions(options?: EnumEmitOptions) {
+		if (!options) {
+			options = {
+				declare: true,
+				strategy: "default"
+			}
+		}
+        
+		if (!options.strategy) {
+			options.strategy = "default";
+		}
+
+		return options;
+	}
+
+	emitEnums(enums: CSharpEnum[], options?: EnumEmitOptions) {
         for (var enumObject of enums) {
             this.emitEnum(enumObject, options);
-        }
+		}
+
+		this.stringEmitter.removeLastCharacters("\n");
+
+		if (options.strategy === "default") {
+			this.stringEmitter.removeLastCharacters("}");
+		}
     }
 
-    emitEnum(enumObject: CSharpEnum, options?: EnumEmitOptions) {
-        if (!options) {
-            options = {
-                declare: true
-            }
-        }
+	emitEnum(enumObject: CSharpEnum, options?: EnumEmitOptions) {
+		options = this.prepareOptions(options);
 
         this.stringEmitter.writeIndentation();
         if (options.declare)
             this.stringEmitter.write("declare ");
 
-        this.stringEmitter.write("enum " + enumObject.name + " {");
-        this.stringEmitter.writeLine();
+		if (options.strategy === "default") {
+			this.stringEmitter.write("enum");
+		} else if (options.strategy === "string-union") {
+			this.stringEmitter.write("type");
+		}
 
+		this.stringEmitter.write(" " + enumObject.name + " ");
+
+		if (options.strategy === "default") {
+			this.stringEmitter.write("{");
+		} else if (options.strategy === "string-union") {
+			this.stringEmitter.write("=");
+		}
+
+        this.stringEmitter.writeLine();
         this.stringEmitter.increaseIndentation();
 
         for (var option of enumObject.options)
-            this.emitEnumOption(option);
+            this.emitEnumOption(option, options);
 
-        this.stringEmitter.removeLastCharacters(',\n');
+		this.stringEmitter.removeLastCharacters('\n');
+
+		if (options.strategy === "default") {
+			this.stringEmitter.removeLastCharacters(',');
+		} else if (options.strategy === "string-union") {
+			this.stringEmitter.removeLastCharacters(' |');
+		}
 
         this.stringEmitter.decreaseIndentation();
+		this.stringEmitter.writeLine();
 
-        this.stringEmitter.writeLine();
-        this.stringEmitter.writeLine("}");
-        this.stringEmitter.writeLine();
+		if (options.strategy === "default") {
+			this.stringEmitter.writeLine("}");
+			this.stringEmitter.writeLine();
+		}
     }
 
-    emitEnumOption(option: CSharpEnumOption) {
-        this.stringEmitter.writeLine(option.name + " = " + option.value + ",");
+	private emitEnumOption(
+		option: CSharpEnumOption,
+		options: EnumEmitOptions)
+	{
+		if (options.strategy === "default") {
+			this.stringEmitter.writeLine(option.name + " = " + option.value + ",");
+		} else if (options.strategy === "string-union") {
+			this.stringEmitter.writeLine("'" + option.name + "' |");
+		}
     }
 }

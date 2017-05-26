@@ -19,8 +19,16 @@ var FileEmitter = (function () {
         if (options.classEmitOptions && options.namespaceEmitOptions) {
             options.namespaceEmitOptions.classEmitOptions = options.classEmitOptions;
         }
+        if (options.enumEmitOptions) {
+            if (options.classEmitOptions) {
+                options.classEmitOptions.enumEmitOptions = options.enumEmitOptions;
+            }
+            if (options.namespaceEmitOptions) {
+                options.namespaceEmitOptions.enumEmitOptions = options.enumEmitOptions;
+            }
+        }
         var file = this.fileParser.parseFile();
-        this.enumEmitter.emitEnums(file.enums);
+        this.enumEmitter.emitEnums(file.enums, options.enumEmitOptions);
         this.namespaceEmitter.emitNamespaces(file.namespaces, options.namespaceEmitOptions);
         this.classEmitter.emitClasses(file.classes, options.classEmitOptions);
         this.stringEmitter.removeLastCharacters("\n\n");

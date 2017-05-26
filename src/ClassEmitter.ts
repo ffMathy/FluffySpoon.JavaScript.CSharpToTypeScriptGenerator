@@ -1,21 +1,26 @@
 ﻿import { FileParser, CSharpClass } from 'fluffy-spoon.javascript.csharp-parser';
 import { StringEmitter } from './StringEmitter';
-import { EnumEmitter } from './EnumEmitter';
+import { EnumEmitter, EnumEmitOptions } from './EnumEmitter';
 import { PropertyEmitter } from './PropertyEmitter';
+import { MethodEmitter } from './MethodEmitter';
 
 export interface ClassEmitOptions {
-    declare: boolean;
+	declare: boolean;
+    
+	enumEmitOptions?: EnumEmitOptions;
 }
 
 export class ClassEmitter {
     private enumEmitter: EnumEmitter;
-    private propertyEmitter: PropertyEmitter;
+	private propertyEmitter: PropertyEmitter;
+	private methodEmitter: MethodEmitter;
 
     constructor(
         private stringEmitter: StringEmitter)
     {
         this.enumEmitter = new EnumEmitter(stringEmitter);
-        this.propertyEmitter = new PropertyEmitter(stringEmitter);
+		this.propertyEmitter = new PropertyEmitter(stringEmitter);
+		this.methodEmitter = new MethodEmitter(stringEmitter);
     }
 
     emitClasses(classes: CSharpClass[], options?: ClassEmitOptions) {
@@ -31,13 +36,13 @@ export class ClassEmitter {
             }
         }
 
-        this.emitEnumsInClass(classObject, options);
+        this.emitEnumsAndSubclassesInClass(classObject, options);
         this.emitClassInterface(classObject, options);
-    }
+	}
 
     private emitClassInterface(classObject: CSharpClass, options?: ClassEmitOptions) {
-		if (classObject.properties.length === 0) {
-			console.log("Skipping interface " + classObject.name + " because it contains no properties");
+		if (classObject.properties.length === 0 && classObject.methods.length === 0) {
+			console.log("Skipping interface " + classObject.name + " because it contains no properties or methods");
             return;
         }
 
@@ -52,7 +57,8 @@ export class ClassEmitter {
 
         this.stringEmitter.increaseIndentation();
 
-        this.propertyEmitter.emitProperties(classObject.properties);
+		this.propertyEmitter.emitProperties(classObject.properties);
+		this.methodEmitter.emitMethods(classObject.methods);
 
         this.stringEmitter.removeLastCharacters("\n");
 
@@ -61,10 +67,10 @@ export class ClassEmitter {
         this.stringEmitter.writeLine();
         this.stringEmitter.writeLine("}");
         this.stringEmitter.writeLine();
-    }
+	}
 
-    private emitEnumsInClass(classObject: CSharpClass, options?: ClassEmitOptions) {
-        if (classObject.enums.length === 0) {
+	private emitEnumsAndSubclassesInClass(classObject: CSharpClass, options?: ClassEmitOptions) {
+		if (classObject.enums.length === 0 && classObject.classes.length === 0) {
             return;
         }
 
@@ -77,17 +83,19 @@ export class ClassEmitter {
 
         this.stringEmitter.increaseIndentation();
 
+		var classEnumOptions = Object.assign(options.enumEmitOptions || {}, <EnumEmitOptions>{
+			declare: false
+		});
         this.enumEmitter.emitEnums(
             classObject.enums,
-            {
-                declare: false
-            });
+			classEnumOptions);
 
+		var subClassOptions = Object.assign(options, <ClassEmitOptions>{
+			declare: false
+		});
         this.emitClasses(
             classObject.classes,
-            {
-                declare: false
-            });
+			subClassOptions);
 
         this.stringEmitter.removeLastCharacters("\n\n");
 

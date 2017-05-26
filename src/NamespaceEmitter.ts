@@ -1,6 +1,6 @@
 ﻿import { FileParser, CSharpNamespace } from 'fluffy-spoon.javascript.csharp-parser';
 import { StringEmitter } from './StringEmitter';
-import { EnumEmitter } from './EnumEmitter';
+import { EnumEmitter, EnumEmitOptions } from './EnumEmitter';
 import { ClassEmitter, ClassEmitOptions } from './ClassEmitter';
 
 export interface NamespaceEmitOptions {
@@ -8,36 +8,36 @@ export interface NamespaceEmitOptions {
 	skip?: boolean;
 
 	classEmitOptions?: ClassEmitOptions;
+	enumEmitOptions?: EnumEmitOptions;
 }
 
 export class NamespaceEmitter {
 	private enumEmitter: EnumEmitter;
 	private classEmitter: ClassEmitter;
 
-    constructor(
-        private stringEmitter: StringEmitter)
-    {
+	constructor(
+		private stringEmitter: StringEmitter) {
 		this.enumEmitter = new EnumEmitter(stringEmitter);
 		this.classEmitter = new ClassEmitter(stringEmitter);
-    }
+	}
 
-    emitNamespaces(namespaces: CSharpNamespace[], options?: NamespaceEmitOptions) {
-        for (var namespace of namespaces) {
-            this.emitNamespace(namespace, options);
-        }
-    }
+	emitNamespaces(namespaces: CSharpNamespace[], options?: NamespaceEmitOptions) {
+		for (var namespace of namespaces) {
+			this.emitNamespace(namespace, options);
+		}
+	}
 
-    emitNamespace(namespace: CSharpNamespace, options?: NamespaceEmitOptions) {
-        if (!options) {
-            options = {
-                declare: true
-            }
+	emitNamespace(namespace: CSharpNamespace, options?: NamespaceEmitOptions) {
+		if (!options) {
+			options = {
+				declare: true
+			}
 		}
 
 		if (namespace.enums.length === 0 && namespace.namespaces.length === 0 && namespace.classes.length === 0) {
 			console.log("Skipping namespace " + namespace.name + " because it contains no enums, classes or namespaces");
-            return;
-        }
+			return;
+		}
 
 		if (!options.skip) {
 			this.stringEmitter.writeIndentation();
@@ -50,21 +50,21 @@ export class NamespaceEmitter {
 			this.stringEmitter.increaseIndentation();
 		}
 
-        this.enumEmitter.emitEnums(
-            namespace.enums,
-            {
-                declare: false
-			});
+		var namespaceEnumOptions = Object.assign(options.enumEmitOptions || {}, <EnumEmitOptions>{
+			declare: !options.declare
+		});
+		this.enumEmitter.emitEnums(
+			namespace.enums,
+			namespaceEnumOptions);
 
 		this.classEmitter.emitClasses(
 			namespace.classes,
 			options.classEmitOptions);
 
 		var subNamespaceOptions = Object.assign(options, <NamespaceEmitOptions>{
-			declare: false
+			declare: !options.declare
 		});
-
-        this.emitNamespaces(
+		this.emitNamespaces(
 			namespace.namespaces,
 			subNamespaceOptions);
 
@@ -77,5 +77,5 @@ export class NamespaceEmitter {
 			this.stringEmitter.writeLine("}");
 			this.stringEmitter.writeLine();
 		}
-    }
+	}
 }

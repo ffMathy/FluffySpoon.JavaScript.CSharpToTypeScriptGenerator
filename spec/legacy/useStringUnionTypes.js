@@ -1,4 +1,4 @@
-/// <reference path="../typings/tsd.d.ts" />
+﻿/// <reference path="../typings/tsd.d.ts" />
 // Disable multiline warning, we're fine with ES5
 // jshint -W043
 
@@ -20,8 +20,7 @@ var expectedOutput = "declare type MyEnum =\n\
     'Unknown' |\n\
     'Green' |\n\
     'Red' |\n\
-    'Blue'\n\
-";
+    'Blue'";
 
 var pocoGen = require('./adapters/legacyAdapter.js');
 
