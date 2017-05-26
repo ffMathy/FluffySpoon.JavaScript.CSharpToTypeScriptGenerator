@@ -1,4 +1,4 @@
-/// <reference path="../typings/tsd.d.ts" />
+﻿/// <reference path="../typings/tsd.d.ts" />
 // Disabled multiline warning, we're fine with ES5
 // jshint -W043
 
@@ -26,7 +26,7 @@ var expectedOutput = "interface MyPoco {\n\
 \n\
 interface MyOtherPoco {\n\
     id: number;\n\
-}\n";
+}";
 
 var expectedWithoutVirtuals = "interface MyPoco {\n\
     NonVirtualPocos: MyOtherPoco[];\n\
@@ -34,7 +34,7 @@ var expectedWithoutVirtuals = "interface MyPoco {\n\
 \n\
 interface MyOtherPoco {\n\
     id: number;\n\
-}\n";
+}";
 var pocoGen = require('./adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function() {

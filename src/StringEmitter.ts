@@ -1,47 +1,53 @@
 ﻿export class StringEmitter {
-    private _output: string;
-    private indentation: number;
+	private _output: string;
+	private indentationLevel: number;
+	private indentation: string;
 
-    constructor() {
-        this._output = '';
-        this.indentation = 0;
-    }
-
-    writeLine(line?: string) {
-        if (line) {
-            this.writeIndentation();
-            this.write(line);
-        }
-
-        this.write("\n");
-    }
-
-    write(text: string) {
-        this._output += text;
-    }
-
-    increaseIndentation() {
-        this.indentation++;
-    }
-
-    decreaseIndentation() {
-        this.indentation--;
+	constructor() {
+		this._output = '';
+		this.indentationLevel = 0;
+		this.indentation = '    ';
 	}
 
-    removeLastCharacters(characters: string) {
-        if (this._output.substr(this._output.length - characters.length) !== characters)
-            return;
-        
-        this._output = this._output.substr(0, this._output.length - characters.length);
-    }
+	writeLine(line?: string) {
+		if (line) {
+			this.writeIndentation();
+			this.write(line);
+		}
 
-    get output() {
-        return this._output;
-    }
+		this.write("\n");
+	}
 
-    writeIndentation() {
-        for (var i = 0; i < this.indentation; i++) {
-            this._output += "    ";
-        }
-    }
+	write(text: string) {
+		this._output += text;
+	}
+
+	increaseIndentation() {
+		this.indentationLevel++;
+	}
+
+	decreaseIndentation() {
+		this.indentationLevel--;
+	}
+
+	removeLastCharacters(characters: string) {
+		if (this._output.substr(this._output.length - characters.length) !== characters)
+			return false;
+
+		while (this.removeLastCharacters(this.indentation)) { }
+		this._output = this._output.substr(0, this._output.length - characters.length);
+		while (this.removeLastCharacters(this.indentation)) { }
+
+		return true;
+	}
+
+	get output() {
+		return this._output.trim();
+	}
+
+	writeIndentation() {
+		for (var i = 0; i < this.indentationLevel; i++) {
+			this._output += this.indentation;
+		}
+	}
 }

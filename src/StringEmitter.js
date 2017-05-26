@@ -2,7 +2,8 @@
 var StringEmitter = (function () {
     function StringEmitter() {
         this._output = '';
-        this.indentation = 0;
+        this.indentationLevel = 0;
+        this.indentation = '    ';
     }
     StringEmitter.prototype.writeLine = function (line) {
         if (line) {
@@ -15,26 +16,29 @@ var StringEmitter = (function () {
         this._output += text;
     };
     StringEmitter.prototype.increaseIndentation = function () {
-        this.indentation++;
+        this.indentationLevel++;
     };
     StringEmitter.prototype.decreaseIndentation = function () {
-        this.indentation--;
+        this.indentationLevel--;
     };
     StringEmitter.prototype.removeLastCharacters = function (characters) {
         if (this._output.substr(this._output.length - characters.length) !== characters)
-            return;
+            return false;
+        while (this.removeLastCharacters(this.indentation)) { }
         this._output = this._output.substr(0, this._output.length - characters.length);
+        while (this.removeLastCharacters(this.indentation)) { }
+        return true;
     };
     Object.defineProperty(StringEmitter.prototype, "output", {
         get: function () {
-            return this._output;
+            return this._output.trim();
         },
         enumerable: true,
         configurable: true
     });
     StringEmitter.prototype.writeIndentation = function () {
-        for (var i = 0; i < this.indentation; i++) {
-            this._output += "    ";
+        for (var i = 0; i < this.indentationLevel; i++) {
+            this._output += this.indentation;
         }
     };
     return StringEmitter;

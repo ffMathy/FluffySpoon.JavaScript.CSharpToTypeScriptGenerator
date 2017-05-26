@@ -74,7 +74,6 @@ export class NamespaceEmitter {
 			this.emitNamespaces(
 				namespace.namespaces,
 				subNamespaceOptions);
-			this.stringEmitter.writeLine();
 		}
 
 		this.stringEmitter.removeLastCharacters("\n");
