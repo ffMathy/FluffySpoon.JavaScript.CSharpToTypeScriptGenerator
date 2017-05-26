@@ -1,13 +1,15 @@
 ﻿import { FileParser, CSharpClass } from 'fluffy-spoon.javascript.csharp-parser';
 import { StringEmitter } from './StringEmitter';
 import { EnumEmitter, EnumEmitOptions } from './EnumEmitter';
-import { PropertyEmitter } from './PropertyEmitter';
-import { MethodEmitter } from './MethodEmitter';
+import { PropertyEmitter, PropertyEmitOptions } from './PropertyEmitter';
+import { MethodEmitter, MethodEmitOptions } from './MethodEmitter';
 
 export interface ClassEmitOptions {
 	declare: boolean;
     
 	enumEmitOptions?: EnumEmitOptions;
+	propertyEmitOptions?: PropertyEmitOptions;
+	methodEmitOptions?: MethodEmitOptions;
 }
 
 export class ClassEmitter {
@@ -26,7 +28,9 @@ export class ClassEmitter {
     emitClasses(classes: CSharpClass[], options?: ClassEmitOptions) {
         for (var classObject of classes) {
             this.emitClass(classObject, options);
-        }
+		}
+
+		this.stringEmitter.removeLastCharacters("\n");
     }
 
     emitClass(classObject: CSharpClass, options?: ClassEmitOptions) {
@@ -36,8 +40,8 @@ export class ClassEmitter {
             }
         }
 
-        this.emitEnumsAndSubclassesInClass(classObject, options);
-        this.emitClassInterface(classObject, options);
+		this.emitClassInterface(classObject, options);
+		this.emitEnumsAndSubclassesInClass(classObject, options);
 	}
 
     private emitClassInterface(classObject: CSharpClass, options?: ClassEmitOptions) {
@@ -57,8 +61,13 @@ export class ClassEmitter {
 
         this.stringEmitter.increaseIndentation();
 
-		this.propertyEmitter.emitProperties(classObject.properties);
-		this.methodEmitter.emitMethods(classObject.methods);
+		if (classObject.properties.length > 0) {
+			this.propertyEmitter.emitProperties(classObject.properties, options.propertyEmitOptions);
+		}
+
+		if (classObject.methods.length > 0) {
+			this.methodEmitter.emitMethods(classObject.methods, options.methodEmitOptions);
+		}
 
         this.stringEmitter.removeLastCharacters("\n");
 
@@ -89,6 +98,8 @@ export class ClassEmitter {
         this.enumEmitter.emitEnums(
             classObject.enums,
 			classEnumOptions);
+
+		this.stringEmitter.writeLine();
 
 		var subClassOptions = Object.assign(options, <ClassEmitOptions>{
 			declare: false

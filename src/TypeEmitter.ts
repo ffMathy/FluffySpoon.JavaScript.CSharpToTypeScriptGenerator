@@ -2,6 +2,10 @@
 import { RegExHelper } from './RegExHelper';
 import { StringEmitter } from './StringEmitter';
 
+export interface TypeEmitOptions {
+	mapper?: (type: CSharpType, suggestedOutput: string) => string;
+}
+
 export class TypeEmitter {
 	private defaultTypeMap: { [sourceType: string]: string } & Object;
 	private typeParser: TypeParser;
@@ -35,9 +39,19 @@ export class TypeEmitter {
 		};
 	}
 
-	emitType(type: CSharpType) {
-		var mapping = this.getMatchingTypeMapping(type);
+	emitType(type: CSharpType, options?: TypeEmitOptions) {
+		options = this.prepareOptions(options);
+
+		var mapping = this.getMatchingTypeMapping(type, options);
 		this.stringEmitter.write(mapping);
+	}
+
+	private prepareOptions(options?: TypeEmitOptions) {
+		if (!options) {
+			options = {};
+		}
+
+		return options;
 	}
 
 	private getNonGenericTypeName(type: CSharpType) {
@@ -50,7 +64,17 @@ export class TypeEmitter {
 		return typeName;
 	}
 
-	private getMatchingTypeMapping(type: CSharpType) {
+	private getMatchingTypeMapping(
+		type: CSharpType,
+		options?: TypeEmitOptions) {
+
+		if (options && options.mapper) {
+			var mapping = options.mapper(type, this.getMatchingTypeMapping(type));
+			if (mapping) {
+				return mapping;
+			}
+		}
+        
 		for (var mappingKey in this.defaultTypeMap) {
 			if (!this.defaultTypeMap.hasOwnProperty(mappingKey))
 				continue;
@@ -64,7 +88,8 @@ export class TypeEmitter {
 				mapping = this.substituteMultipleGenericReferencesIntoMapping(
 					mappingKeyType,
 					type,
-					mapping);
+					mapping,
+					options);
 			}
 
 			return mapping;
@@ -76,8 +101,8 @@ export class TypeEmitter {
 	private substituteMultipleGenericReferencesIntoMapping(
 		mappingKeyType: CSharpType,
 		concreteType: CSharpType,
-		mapping: string) {
-		var beforeMapping = mapping;
+		mapping: string,
+		options: TypeEmitOptions) {
 
 		for (var i = 0; i < mappingKeyType.genericParameters.length; i++) {
 			var mappingGenericParameter = mappingKeyType.genericParameters[i];
@@ -87,13 +112,15 @@ export class TypeEmitter {
 				mapping = this.substituteMultipleGenericReferencesIntoMapping(
 					mappingGenericParameter,
 					mappingRealParameter,
-					mapping);
+					mapping,
+					options);
 			}
 
 			mapping = this.substituteGenericReferenceIntoMapping(
 				mappingGenericParameter,
 				mappingRealParameter,
-				mapping);
+				mapping,
+				options);
 		}
 
 		return mapping;
@@ -102,11 +129,10 @@ export class TypeEmitter {
 	private substituteGenericReferenceIntoMapping(
 		referenceType: CSharpType,
 		realType: CSharpType,
-		mapping: string) {
-
-		var beforeMapping = mapping;
+		mapping: string,
+		options: TypeEmitOptions) {
         
-		var realTypeMapping = this.getMatchingTypeMapping(realType);
+		var realTypeMapping = this.getMatchingTypeMapping(realType, options);
 		var referenceNameInput = this.regexHelper.escape(referenceType.name);
 
 		var pattern = new RegExp("((?:[^\\w]|^)+)(" + referenceNameInput + ")((?:[^\\w]|$)+)", "g");

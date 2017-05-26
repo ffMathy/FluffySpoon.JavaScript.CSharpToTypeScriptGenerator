@@ -59,7 +59,7 @@ namespace MyNamespace.Domain\n\
     NameOfStuff: string;\n\
     Foo(): Observable<string>;\n\
     Foo(foo: string, bar: number): Observable<string>;\n\
-}\n";
+}";
 
         var result = pocoGen(sampleFile, { typeResolver: observablePropertyResolver });
 
@@ -92,7 +92,7 @@ namespace MyNamespace.Domain\n\
     NameOfStuff: string;\n\
     Foo(): string;\n\
     Foo(foo: Observable<string>, bar: Observable<number>): string;\n\
-}\n";
+}";
 
         var result = pocoGen(sampleFile, { typeResolver: observablePropertyResolver });
 

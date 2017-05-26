@@ -7,7 +7,14 @@ function pocoGen(contents, options) {
 			skip: true
 		},
 		classEmitOptions: {
-			declare: false
+			declare: false,
+			propertyEmitOptions: {
+				typeEmitOptions: {}
+			},
+			methodEmitOptions: {
+				argumentTypeEmitOptions: {},
+				returnTypeEmitOptions: {}
+			}
 		},
 		enumEmitOptions: {
 			declare: true
@@ -17,6 +24,29 @@ function pocoGen(contents, options) {
 	if (options) {
 		if (options.useStringUnionTypes) {
 			emitOptions.enumEmitOptions.strategy = "string-union";
+		}
+
+		if (options.typeResolver) {
+			emitOptions.classEmitOptions
+				.propertyEmitOptions
+				.typeEmitOptions
+				.mapper = (type, suggested) => options.typeResolver(
+					suggested,
+					"property-type");
+
+			emitOptions.classEmitOptions
+				.methodEmitOptions
+				.returnTypeEmitOptions
+				.mapper = (type, suggested) => options.typeResolver(
+					suggested,
+					"method-return-type");
+
+			emitOptions.classEmitOptions
+				.methodEmitOptions
+				.argumentTypeEmitOptions
+				.mapper = (type, suggested) => options.typeResolver(
+					suggested,
+					"method-argument-type");
 		}
 	}
 

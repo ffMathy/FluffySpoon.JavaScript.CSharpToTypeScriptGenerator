@@ -5,31 +5,39 @@ var MethodEmitter = (function () {
         this.stringEmitter = stringEmitter;
         this.typeEmitter = new TypeEmitter_1.TypeEmitter(stringEmitter);
     }
-    MethodEmitter.prototype.emitMethods = function (methods) {
+    MethodEmitter.prototype.emitMethods = function (methods, options) {
+        options = this.prepareOptions(options);
         for (var _i = 0, methods_1 = methods; _i < methods_1.length; _i++) {
             var method = methods_1[_i];
-            this.emitMethod(method);
+            this.emitMethod(method, options);
         }
     };
-    MethodEmitter.prototype.emitMethod = function (method) {
+    MethodEmitter.prototype.emitMethod = function (method, options) {
+        options = this.prepareOptions(options);
         this.stringEmitter.writeIndentation();
         this.stringEmitter.write(method.name + "(");
-        this.emitMethodParameters(method.parameters);
+        this.emitMethodParameters(method.parameters, options);
         this.stringEmitter.write("): ");
-        this.typeEmitter.emitType(method.returnType);
+        this.typeEmitter.emitType(method.returnType, options.returnTypeEmitOptions);
         this.stringEmitter.write(";");
         this.stringEmitter.writeLine();
     };
-    MethodEmitter.prototype.emitMethodParameters = function (parameters) {
+    MethodEmitter.prototype.prepareOptions = function (options) {
+        if (!options) {
+            options = {};
+        }
+        return options;
+    };
+    MethodEmitter.prototype.emitMethodParameters = function (parameters, options) {
         for (var _i = 0, parameters_1 = parameters; _i < parameters_1.length; _i++) {
             var parameter = parameters_1[_i];
-            this.emitMethodParameter(parameter);
+            this.emitMethodParameter(parameter, options);
         }
         this.stringEmitter.removeLastCharacters(", ");
     };
-    MethodEmitter.prototype.emitMethodParameter = function (parameter) {
+    MethodEmitter.prototype.emitMethodParameter = function (parameter, options) {
         this.stringEmitter.write(parameter.name + ": ");
-        this.typeEmitter.emitType(parameter.type);
+        this.typeEmitter.emitType(parameter.type, options.argumentTypeEmitOptions);
         this.stringEmitter.write(", ");
     };
     return MethodEmitter;

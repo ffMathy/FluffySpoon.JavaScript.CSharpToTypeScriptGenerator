@@ -28,15 +28,13 @@ export class EnumEmitter {
 	}
 
 	emitEnums(enums: CSharpEnum[], options?: EnumEmitOptions) {
+		options = this.prepareOptions(options);
+
         for (var enumObject of enums) {
             this.emitEnum(enumObject, options);
 		}
 
 		this.stringEmitter.removeLastCharacters("\n");
-
-		if (options.strategy === "default") {
-			this.stringEmitter.removeLastCharacters("}");
-		}
     }
 
 	emitEnum(enumObject: CSharpEnum, options?: EnumEmitOptions) {
@@ -64,18 +62,15 @@ export class EnumEmitter {
         this.stringEmitter.increaseIndentation();
 
         for (var option of enumObject.options)
-            this.emitEnumOption(option, options);
-
-		this.stringEmitter.removeLastCharacters('\n');
+			this.emitEnumOption(option, options);
 
 		if (options.strategy === "default") {
 			this.stringEmitter.removeLastCharacters(',');
 		} else if (options.strategy === "string-union") {
-			this.stringEmitter.removeLastCharacters(' |');
+			this.stringEmitter.removeLastCharacters(' |\n');
 		}
 
         this.stringEmitter.decreaseIndentation();
-		this.stringEmitter.writeLine();
 
 		if (options.strategy === "default") {
 			this.stringEmitter.writeLine("}");

@@ -50,26 +50,37 @@ export class NamespaceEmitter {
 			this.stringEmitter.increaseIndentation();
 		}
 
-		var namespaceEnumOptions = Object.assign(options.enumEmitOptions || {}, <EnumEmitOptions>{
-			declare: !options.declare
-		});
-		this.enumEmitter.emitEnums(
-			namespace.enums,
-			namespaceEnumOptions);
+		if (namespace.enums.length > 0) {
+			var namespaceEnumOptions = Object.assign(options.enumEmitOptions || {}, <EnumEmitOptions>{
+				declare: options.skip
+			});
+			this.enumEmitter.emitEnums(
+				namespace.enums,
+				namespaceEnumOptions);
+			this.stringEmitter.writeLine();
+		}
 
-		this.classEmitter.emitClasses(
-			namespace.classes,
-			options.classEmitOptions);
+		if (namespace.classes.length > 0) {
+			this.classEmitter.emitClasses(
+				namespace.classes,
+				options.classEmitOptions);
+			this.stringEmitter.writeLine();
+		}
 
-		var subNamespaceOptions = Object.assign(options, <NamespaceEmitOptions>{
-			declare: !options.declare
-		});
-		this.emitNamespaces(
-			namespace.namespaces,
-			subNamespaceOptions);
+		if (namespace.namespaces.length > 0) {
+			var subNamespaceOptions = Object.assign(options, <NamespaceEmitOptions>{
+				declare: options.skip
+			});
+			this.emitNamespaces(
+				namespace.namespaces,
+				subNamespaceOptions);
+			this.stringEmitter.writeLine();
+		}
+
+		this.stringEmitter.removeLastCharacters("\n");
 
 		if (!options.skip) {
-			this.stringEmitter.removeLastCharacters("\n\n");
+			this.stringEmitter.removeLastCharacters("\n");
 
 			this.stringEmitter.decreaseIndentation();
 

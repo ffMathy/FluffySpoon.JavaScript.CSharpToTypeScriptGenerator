@@ -29,9 +29,16 @@ var TypeEmitter = (function () {
             "object": "any"
         };
     }
-    TypeEmitter.prototype.emitType = function (type) {
-        var mapping = this.getMatchingTypeMapping(type);
+    TypeEmitter.prototype.emitType = function (type, options) {
+        options = this.prepareOptions(options);
+        var mapping = this.getMatchingTypeMapping(type, options);
         this.stringEmitter.write(mapping);
+    };
+    TypeEmitter.prototype.prepareOptions = function (options) {
+        if (!options) {
+            options = {};
+        }
+        return options;
     };
     TypeEmitter.prototype.getNonGenericTypeName = function (type) {
         var typeName = type.name;
@@ -41,7 +48,13 @@ var TypeEmitter = (function () {
         }
         return typeName;
     };
-    TypeEmitter.prototype.getMatchingTypeMapping = function (type) {
+    TypeEmitter.prototype.getMatchingTypeMapping = function (type, options) {
+        if (options && options.mapper) {
+            var mapping = options.mapper(type, this.getMatchingTypeMapping(type));
+            if (mapping) {
+                return mapping;
+            }
+        }
         for (var mappingKey in this.defaultTypeMap) {
             if (!this.defaultTypeMap.hasOwnProperty(mappingKey))
                 continue;
@@ -50,27 +63,25 @@ var TypeEmitter = (function () {
                 continue;
             var mapping = this.defaultTypeMap[mappingKey];
             if (mappingKeyType.genericParameters) {
-                mapping = this.substituteMultipleGenericReferencesIntoMapping(mappingKeyType, type, mapping);
+                mapping = this.substituteMultipleGenericReferencesIntoMapping(mappingKeyType, type, mapping, options);
             }
             return mapping;
         }
         return type.name;
     };
-    TypeEmitter.prototype.substituteMultipleGenericReferencesIntoMapping = function (mappingKeyType, concreteType, mapping) {
-        var beforeMapping = mapping;
+    TypeEmitter.prototype.substituteMultipleGenericReferencesIntoMapping = function (mappingKeyType, concreteType, mapping, options) {
         for (var i = 0; i < mappingKeyType.genericParameters.length; i++) {
             var mappingGenericParameter = mappingKeyType.genericParameters[i];
             var mappingRealParameter = concreteType.genericParameters[i];
             if (mappingGenericParameter.genericParameters) {
-                mapping = this.substituteMultipleGenericReferencesIntoMapping(mappingGenericParameter, mappingRealParameter, mapping);
+                mapping = this.substituteMultipleGenericReferencesIntoMapping(mappingGenericParameter, mappingRealParameter, mapping, options);
             }
-            mapping = this.substituteGenericReferenceIntoMapping(mappingGenericParameter, mappingRealParameter, mapping);
+            mapping = this.substituteGenericReferenceIntoMapping(mappingGenericParameter, mappingRealParameter, mapping, options);
         }
         return mapping;
     };
-    TypeEmitter.prototype.substituteGenericReferenceIntoMapping = function (referenceType, realType, mapping) {
-        var beforeMapping = mapping;
-        var realTypeMapping = this.getMatchingTypeMapping(realType);
+    TypeEmitter.prototype.substituteGenericReferenceIntoMapping = function (referenceType, realType, mapping, options) {
+        var realTypeMapping = this.getMatchingTypeMapping(realType, options);
         var referenceNameInput = this.regexHelper.escape(referenceType.name);
         var pattern = new RegExp("((?:[^\\w]|^)+)(" + referenceNameInput + ")((?:[^\\w]|$)+)", "g");
         mapping = mapping.replace(pattern, "$1" + realTypeMapping + "$3");

@@ -26,7 +26,7 @@
 
     decreaseIndentation() {
         this.indentation--;
-    }
+	}
 
     removeLastCharacters(characters: string) {
         if (this._output.substr(this._output.length - characters.length) !== characters)

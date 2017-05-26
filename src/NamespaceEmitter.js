@@ -31,17 +31,27 @@ var NamespaceEmitter = (function () {
             this.stringEmitter.writeLine();
             this.stringEmitter.increaseIndentation();
         }
-        var namespaceEnumOptions = Object.assign(options.enumEmitOptions || {}, {
-            declare: !options.declare
-        });
-        this.enumEmitter.emitEnums(namespace.enums, namespaceEnumOptions);
-        this.classEmitter.emitClasses(namespace.classes, options.classEmitOptions);
-        var subNamespaceOptions = Object.assign(options, {
-            declare: !options.declare
-        });
-        this.emitNamespaces(namespace.namespaces, subNamespaceOptions);
+        if (namespace.enums.length > 0) {
+            var namespaceEnumOptions = Object.assign(options.enumEmitOptions || {}, {
+                declare: options.skip
+            });
+            this.enumEmitter.emitEnums(namespace.enums, namespaceEnumOptions);
+            this.stringEmitter.writeLine();
+        }
+        if (namespace.classes.length > 0) {
+            this.classEmitter.emitClasses(namespace.classes, options.classEmitOptions);
+            this.stringEmitter.writeLine();
+        }
+        if (namespace.namespaces.length > 0) {
+            var subNamespaceOptions = Object.assign(options, {
+                declare: options.skip
+            });
+            this.emitNamespaces(namespace.namespaces, subNamespaceOptions);
+            this.stringEmitter.writeLine();
+        }
+        this.stringEmitter.removeLastCharacters("\n");
         if (!options.skip) {
-            this.stringEmitter.removeLastCharacters("\n\n");
+            this.stringEmitter.removeLastCharacters("\n");
             this.stringEmitter.decreaseIndentation();
             this.stringEmitter.writeLine();
             this.stringEmitter.writeLine("}");

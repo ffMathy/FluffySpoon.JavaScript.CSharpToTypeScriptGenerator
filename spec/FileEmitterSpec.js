@@ -8,11 +8,15 @@ function runCase(caseName) {
             fs.readFile('./spec/cases/' + caseName1 + '.expected.ts', 'utf8', function (err, caseExpected) {
                 caseExpected = caseExpected
                     .replace(/\r/g, '')
+                    .replace(/    /g, '\t')
+                    .replace(/\t/g, '  ')
                     .trim();
                 var emitter = new FileEmitter_1.FileEmitter(caseInput);
                 var result = emitter.emitFile();
                 result = result
                     .replace(/\r/g, '')
+                    .replace(/    /g, '\t')
+                    .replace(/\t/g, '  ')
                     .trim();
                 expect(result).toBe(caseExpected);
                 done();
@@ -23,4 +27,5 @@ function runCase(caseName) {
 describe("UseCases", function () {
     runCase("Enum");
     runCase("Property");
+    runCase("Class");
 });

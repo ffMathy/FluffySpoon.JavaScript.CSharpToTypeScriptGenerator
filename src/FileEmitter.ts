@@ -1,6 +1,7 @@
 ﻿import { FileParser, CSharpEnum, CSharpEnumOption } from 'fluffy-spoon.javascript.csharp-parser';
 
 import { StringEmitter } from './StringEmitter';
+import { TypeEmitOptions } from './TypeEmitter';
 import { EnumEmitter, EnumEmitOptions } from './EnumEmitter';
 import { ClassEmitter, ClassEmitOptions } from './ClassEmitter';
 import { NamespaceEmitter, NamespaceEmitOptions } from './NamespaceEmitter';
@@ -8,7 +9,7 @@ import { NamespaceEmitter, NamespaceEmitOptions } from './NamespaceEmitter';
 export interface FileEmitOptions {
 	classEmitOptions?: ClassEmitOptions,
 	namespaceEmitOptions?: NamespaceEmitOptions,
-    enumEmitOptions?: EnumEmitOptions
+	enumEmitOptions?: EnumEmitOptions
 }
 
 export class FileEmitter {
@@ -47,9 +48,20 @@ export class FileEmitter {
 
 		var file = this.fileParser.parseFile();
 
-		this.enumEmitter.emitEnums(file.enums, options.enumEmitOptions);
-		this.namespaceEmitter.emitNamespaces(file.namespaces, options.namespaceEmitOptions);
-		this.classEmitter.emitClasses(file.classes, options.classEmitOptions);
+		if (file.enums.length > 0) {
+			this.enumEmitter.emitEnums(file.enums, options.enumEmitOptions);
+			this.stringEmitter.writeLine();
+		}
+
+		if (file.namespaces.length > 0) {
+			this.namespaceEmitter.emitNamespaces(file.namespaces, options.namespaceEmitOptions);
+			this.stringEmitter.writeLine();
+		}
+
+		if (file.classes.length > 0) {
+			this.classEmitter.emitClasses(file.classes, options.classEmitOptions);
+			this.stringEmitter.writeLine();
+		}
         
         this.stringEmitter.removeLastCharacters("\n\n");
 

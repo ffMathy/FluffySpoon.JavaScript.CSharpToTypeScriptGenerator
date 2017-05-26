@@ -16,14 +16,12 @@ var EnumEmitter = (function () {
         return options;
     };
     EnumEmitter.prototype.emitEnums = function (enums, options) {
+        options = this.prepareOptions(options);
         for (var _i = 0, enums_1 = enums; _i < enums_1.length; _i++) {
             var enumObject = enums_1[_i];
             this.emitEnum(enumObject, options);
         }
         this.stringEmitter.removeLastCharacters("\n");
-        if (options.strategy === "default") {
-            this.stringEmitter.removeLastCharacters("}");
-        }
     };
     EnumEmitter.prototype.emitEnum = function (enumObject, options) {
         options = this.prepareOptions(options);
@@ -49,15 +47,13 @@ var EnumEmitter = (function () {
             var option = _a[_i];
             this.emitEnumOption(option, options);
         }
-        this.stringEmitter.removeLastCharacters('\n');
         if (options.strategy === "default") {
             this.stringEmitter.removeLastCharacters(',');
         }
         else if (options.strategy === "string-union") {
-            this.stringEmitter.removeLastCharacters(' |');
+            this.stringEmitter.removeLastCharacters(' |\n');
         }
         this.stringEmitter.decreaseIndentation();
-        this.stringEmitter.writeLine();
         if (options.strategy === "default") {
             this.stringEmitter.writeLine("}");
             this.stringEmitter.writeLine();

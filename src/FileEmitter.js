@@ -28,9 +28,18 @@ var FileEmitter = (function () {
             }
         }
         var file = this.fileParser.parseFile();
-        this.enumEmitter.emitEnums(file.enums, options.enumEmitOptions);
-        this.namespaceEmitter.emitNamespaces(file.namespaces, options.namespaceEmitOptions);
-        this.classEmitter.emitClasses(file.classes, options.classEmitOptions);
+        if (file.enums.length > 0) {
+            this.enumEmitter.emitEnums(file.enums, options.enumEmitOptions);
+            this.stringEmitter.writeLine();
+        }
+        if (file.namespaces.length > 0) {
+            this.namespaceEmitter.emitNamespaces(file.namespaces, options.namespaceEmitOptions);
+            this.stringEmitter.writeLine();
+        }
+        if (file.classes.length > 0) {
+            this.classEmitter.emitClasses(file.classes, options.classEmitOptions);
+            this.stringEmitter.writeLine();
+        }
         this.stringEmitter.removeLastCharacters("\n\n");
         return this.stringEmitter.output;
     };
