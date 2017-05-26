@@ -69,7 +69,7 @@ export class TypeEmitter {
 		options?: TypeEmitOptions) {
 
 		if (options && options.mapper) {
-			var mapping = options.mapper(type, this.getMatchingTypeMapping(type));
+			let mapping = options.mapper(type, this.getMatchingTypeMapping(type));
 			if (mapping) {
 				return mapping;
 			}
@@ -83,7 +83,7 @@ export class TypeEmitter {
 			if (type.name !== mappingKeyType.name)
 				continue;
 
-			var mapping = this.defaultTypeMap[mappingKey];
+			let mapping = this.defaultTypeMap[mappingKey];
 			if (mappingKeyType.genericParameters) {
 				mapping = this.substituteMultipleGenericReferencesIntoMapping(
 					mappingKeyType,
