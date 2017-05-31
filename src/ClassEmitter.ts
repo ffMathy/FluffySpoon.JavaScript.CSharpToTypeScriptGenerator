@@ -2,6 +2,7 @@
 import { StringEmitter } from './StringEmitter';
 import { EnumEmitter, EnumEmitOptions } from './EnumEmitter';
 import { PropertyEmitter, PropertyEmitOptions } from './PropertyEmitter';
+import { FieldEmitter, FieldEmitOptions } from './FieldEmitter';
 import { MethodEmitter, MethodEmitOptions } from './MethodEmitter';
 
 export interface ClassEmitOptions {
@@ -10,11 +11,13 @@ export interface ClassEmitOptions {
 	enumEmitOptions?: EnumEmitOptions;
 	propertyEmitOptions?: PropertyEmitOptions;
 	methodEmitOptions?: MethodEmitOptions;
+	fieldEmitOptions?: FieldEmitOptions;
 }
 
 export class ClassEmitter {
     private enumEmitter: EnumEmitter;
 	private propertyEmitter: PropertyEmitter;
+	private fieldEmitter: FieldEmitter;
 	private methodEmitter: MethodEmitter;
 
     constructor(
@@ -22,6 +25,7 @@ export class ClassEmitter {
     {
         this.enumEmitter = new EnumEmitter(stringEmitter);
 		this.propertyEmitter = new PropertyEmitter(stringEmitter);
+		this.fieldEmitter = new FieldEmitter(stringEmitter);
 		this.methodEmitter = new MethodEmitter(stringEmitter);
     }
 
@@ -45,8 +49,8 @@ export class ClassEmitter {
 	}
 
     private emitClassInterface(classObject: CSharpClass, options?: ClassEmitOptions) {
-		if (classObject.properties.length === 0 && classObject.methods.length === 0) {
-			console.log("Skipping interface " + classObject.name + " because it contains no properties or methods");
+		if (classObject.properties.length === 0 && classObject.methods.length === 0 && classObject.fields.length === 0) {
+			console.log("Skipping interface " + classObject.name + " because it contains no properties, fields or methods");
             return;
         }
 
@@ -59,7 +63,11 @@ export class ClassEmitter {
         this.stringEmitter.write("interface " + classObject.name + " {");
         this.stringEmitter.writeLine();
 
-        this.stringEmitter.increaseIndentation();
+		this.stringEmitter.increaseIndentation();
+
+		if (classObject.fields.length > 0) {
+			this.fieldEmitter.emitFields(classObject.fields, options.fieldEmitOptions);
+		}
 
 		if (classObject.properties.length > 0) {
 			this.propertyEmitter.emitProperties(classObject.properties, options.propertyEmitOptions);

@@ -1,12 +1,14 @@
 "use strict";
 var EnumEmitter_1 = require("./EnumEmitter");
 var PropertyEmitter_1 = require("./PropertyEmitter");
+var FieldEmitter_1 = require("./FieldEmitter");
 var MethodEmitter_1 = require("./MethodEmitter");
 var ClassEmitter = (function () {
     function ClassEmitter(stringEmitter) {
         this.stringEmitter = stringEmitter;
         this.enumEmitter = new EnumEmitter_1.EnumEmitter(stringEmitter);
         this.propertyEmitter = new PropertyEmitter_1.PropertyEmitter(stringEmitter);
+        this.fieldEmitter = new FieldEmitter_1.FieldEmitter(stringEmitter);
         this.methodEmitter = new MethodEmitter_1.MethodEmitter(stringEmitter);
     }
     ClassEmitter.prototype.emitClasses = function (classes, options) {
@@ -26,8 +28,8 @@ var ClassEmitter = (function () {
         this.emitEnumsAndSubclassesInClass(classObject, options);
     };
     ClassEmitter.prototype.emitClassInterface = function (classObject, options) {
-        if (classObject.properties.length === 0 && classObject.methods.length === 0) {
-            console.log("Skipping interface " + classObject.name + " because it contains no properties or methods");
+        if (classObject.properties.length === 0 && classObject.methods.length === 0 && classObject.fields.length === 0) {
+            console.log("Skipping interface " + classObject.name + " because it contains no properties, fields or methods");
             return;
         }
         this.stringEmitter.writeIndentation();
@@ -37,6 +39,9 @@ var ClassEmitter = (function () {
         this.stringEmitter.write("interface " + classObject.name + " {");
         this.stringEmitter.writeLine();
         this.stringEmitter.increaseIndentation();
+        if (classObject.fields.length > 0) {
+            this.fieldEmitter.emitFields(classObject.fields, options.fieldEmitOptions);
+        }
         if (classObject.properties.length > 0) {
             this.propertyEmitter.emitProperties(classObject.properties, options.propertyEmitOptions);
         }

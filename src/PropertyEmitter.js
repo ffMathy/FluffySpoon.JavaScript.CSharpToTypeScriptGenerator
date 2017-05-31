@@ -13,11 +13,13 @@ var PropertyEmitter = (function () {
         }
     };
     PropertyEmitter.prototype.emitProperty = function (property, options) {
-        options = this.prepareOptions(options);
+        options = Object.assign(this.prepareOptions(options), options.perPropertyEmitOptions(property));
         if (!options.filter(property))
             return;
         this.stringEmitter.writeIndentation();
-        this.stringEmitter.write(property.name + ": ");
+        if (options.readOnly)
+            this.stringEmitter.write("readonly ");
+        this.stringEmitter.write((options.name || property.name) + ": ");
         this.typeEmitter.emitType(property.type, options.typeEmitOptions);
         this.stringEmitter.write(";");
         this.stringEmitter.writeLine();
@@ -27,7 +29,10 @@ var PropertyEmitter = (function () {
             options = {};
         }
         if (!options.filter) {
-            options.filter = function () { return true; };
+            options.filter = function (property) { return property.isPublic; };
+        }
+        if (!options.perPropertyEmitOptions) {
+            options.perPropertyEmitOptions = function () { return options; };
         }
         return options;
     };

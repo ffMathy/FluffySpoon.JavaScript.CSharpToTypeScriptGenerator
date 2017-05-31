@@ -2,10 +2,19 @@
 import { StringEmitter } from './StringEmitter';
 import { TypeEmitter, TypeEmitOptions } from './TypeEmitter';
 
-export interface PropertyEmitOptions {
+export interface PropertyEmitOptionsBase {
+	readOnly?: boolean;
+}
+
+export interface PropertyEmitOptions extends PropertyEmitOptionsBase {
 	filter?: (property: CSharpProperty) => boolean;
+	perPropertyEmitOptions?: (property: CSharpProperty) => PerPropertyEmitOptions;
 
 	typeEmitOptions?: TypeEmitOptions
+}
+
+export interface PerPropertyEmitOptions extends PropertyEmitOptionsBase {
+	name?: string;
 }
 
 export class PropertyEmitter {
@@ -15,7 +24,7 @@ export class PropertyEmitter {
 		this.typeEmitter = new TypeEmitter(stringEmitter);
     }
 
-	emitProperties(properties: CSharpProperty[], options?: PropertyEmitOptions) {
+	emitProperties(properties: CSharpProperty[], options?: PropertyEmitOptions & PerPropertyEmitOptions) {
 		options = this.prepareOptions(options);
 
         for (var property of properties) {
@@ -23,14 +32,20 @@ export class PropertyEmitter {
         }
     }
 
-	emitProperty(property: CSharpProperty, options?: PropertyEmitOptions) {
-		options = this.prepareOptions(options);
-
+	emitProperty(property: CSharpProperty, options?: PropertyEmitOptions & PerPropertyEmitOptions) {
+		options = Object.assign(
+			this.prepareOptions(options),
+			options.perPropertyEmitOptions(property));
+        
 		if (!options.filter(property))
 			return;
 
 		this.stringEmitter.writeIndentation();
-		this.stringEmitter.write(property.name + ": ");
+
+		if (options.readOnly)
+			this.stringEmitter.write("readonly ");
+
+		this.stringEmitter.write((options.name || property.name) + ": ");
 		this.typeEmitter.emitType(property.type, options.typeEmitOptions);
 		this.stringEmitter.write(";");
 		this.stringEmitter.writeLine();
@@ -42,7 +57,11 @@ export class PropertyEmitter {
 		}
 
 		if (!options.filter) {
-			options.filter = () => true;
+			options.filter = (property) => property.isPublic;
+		}
+
+		if (!options.perPropertyEmitOptions) {
+			options.perPropertyEmitOptions = () => options;
 		}
 
 		return options;

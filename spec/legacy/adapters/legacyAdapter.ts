@@ -1,4 +1,5 @@
 ﻿import { FileEmitter, FileEmitOptions } from '../../../src/FileEmitter';
+import { PerFieldEmitOptions } from '../../../src/FieldEmitter';
 
 function pocoGen(contents, options) {
 	var emitter = new FileEmitter(contents);
@@ -14,6 +15,11 @@ function pocoGen(contents, options) {
 			methodEmitOptions: {
 				argumentTypeEmitOptions: {},
 				returnTypeEmitOptions: {}
+			},
+			fieldEmitOptions: {
+				perFieldEmitOptions: (field) => <PerFieldEmitOptions>{
+					readOnly: field.isReadOnly
+				}
 			}
 		},
 		enumEmitOptions: {
@@ -26,9 +32,21 @@ function pocoGen(contents, options) {
 			emitOptions.enumEmitOptions.strategy = "string-union";
 		}
 
+		if (options.propertyNameResolver) {
+			emitOptions.classEmitOptions.propertyEmitOptions.perPropertyEmitOptions = (property) => <PerFieldEmitOptions>{
+				name: options.propertyNameResolver(property.name)
+			};
+		}
+
 		if (options.ignoreVirtual) {
 			emitOptions.classEmitOptions.methodEmitOptions.filter = (method) => !method.isVirtual;
 			emitOptions.classEmitOptions.propertyEmitOptions.filter = (property) => !property.isVirtual;
+		}
+
+		if (options.stripReadOnly) {
+			emitOptions.classEmitOptions.fieldEmitOptions.perFieldEmitOptions = () => <PerFieldEmitOptions>{
+				readOnly: false
+			};
 		}
 
 		if (options.typeResolver) {

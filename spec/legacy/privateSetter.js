@@ -1,4 +1,4 @@
-/// <reference path="../typings/tsd.d.ts" />
+﻿/// <reference path="../typings/tsd.d.ts" />
 // Disables multiline warning, we're fine with ES5
 // jshint -W043
 
@@ -22,7 +22,7 @@ namespace MyNamespace.Domain\n\
 var expectedOutput = "interface MyPoco {\n\
     PrivateSetter: string;\n\
     InterestingWhitespace: string;\n\
-}\n";
+}";
 
 var pocoGen = require('./adapters/legacyAdapter.js');
 

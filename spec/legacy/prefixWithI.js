@@ -1,4 +1,4 @@
-/// <reference path="../typings/tsd.d.ts" />
+﻿/// <reference path="../typings/tsd.d.ts" />
 // Disabled multiline warning, we're fine with ES5
 // jshint -W043
 var pocoGen = require('./adapters/legacyAdapter.js');
@@ -13,6 +13,7 @@ namespace PocoTest\n\
 {\n\
     public class FirstClass\n\
     {\n\
+        string foo;\n\
     }\n\
 }\n\
 ";
@@ -24,10 +25,12 @@ namespace PocoTest\n\
 {\n\
     public class SecondClass\n\
     {\n\
+        string foo;\n\
     }\n\
 	\n\
     public class ThirdClass\n\
     {\n\
+        string foo;\n\
     }\n\
 }";
 
@@ -58,6 +61,7 @@ namespace PocoTest\n\
 {\n\
     public class FirstClass : BaseClass\n\
     {\n\
+        string foo;\n\
     }\n\
 }\n\
 ";
@@ -69,10 +73,12 @@ namespace PocoTest\n\
 {\n\
     public class SecondClass\n\
     {\n\
+        string foo;\n\
     }\n\
 	\n\
     public class ThirdClass : BaseClass\n\
     {\n\
+        string foo;\n\
     }\n\
 }";
 

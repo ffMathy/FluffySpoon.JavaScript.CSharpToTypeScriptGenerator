@@ -14,6 +14,11 @@ function pocoGen(contents, options) {
             methodEmitOptions: {
                 argumentTypeEmitOptions: {},
                 returnTypeEmitOptions: {}
+            },
+            fieldEmitOptions: {
+                perFieldEmitOptions: function (field) { return ({
+                    readOnly: field.isReadOnly
+                }); }
             }
         },
         enumEmitOptions: {
@@ -24,9 +29,19 @@ function pocoGen(contents, options) {
         if (options.useStringUnionTypes) {
             emitOptions.enumEmitOptions.strategy = "string-union";
         }
+        if (options.propertyNameResolver) {
+            emitOptions.classEmitOptions.propertyEmitOptions.perPropertyEmitOptions = function (property) { return ({
+                name: options.propertyNameResolver(property.name)
+            }); };
+        }
         if (options.ignoreVirtual) {
             emitOptions.classEmitOptions.methodEmitOptions.filter = function (method) { return !method.isVirtual; };
             emitOptions.classEmitOptions.propertyEmitOptions.filter = function (property) { return !property.isVirtual; };
+        }
+        if (options.stripReadOnly) {
+            emitOptions.classEmitOptions.fieldEmitOptions.perFieldEmitOptions = function () { return ({
+                readOnly: false
+            }); };
         }
         if (options.typeResolver) {
             emitOptions.classEmitOptions
