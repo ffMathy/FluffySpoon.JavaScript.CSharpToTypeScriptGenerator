@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var EnumEmitter = (function () {
     function EnumEmitter(stringEmitter) {
         this.stringEmitter = stringEmitter;
@@ -21,7 +22,7 @@ var EnumEmitter = (function () {
             var enumObject = enums_1[_i];
             this.emitEnum(enumObject, options);
         }
-        this.stringEmitter.removeLastCharacters("\n");
+        this.stringEmitter.removeLastNewLines();
     };
     EnumEmitter.prototype.emitEnum = function (enumObject, options) {
         options = this.prepareOptions(options);
@@ -56,8 +57,8 @@ var EnumEmitter = (function () {
         this.stringEmitter.decreaseIndentation();
         if (options.strategy === "default") {
             this.stringEmitter.writeLine("}");
-            this.stringEmitter.writeLine();
         }
+        this.stringEmitter.ensureLineSplit();
     };
     EnumEmitter.prototype.emitEnumOption = function (option, options) {
         if (options.strategy === "default") {

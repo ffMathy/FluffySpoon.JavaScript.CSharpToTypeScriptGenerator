@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var StringEmitter = (function () {
     function StringEmitter() {
         this._output = '';
@@ -21,12 +22,26 @@ var StringEmitter = (function () {
     StringEmitter.prototype.decreaseIndentation = function () {
         this.indentationLevel--;
     };
+    StringEmitter.prototype.removeLastNewLines = function () {
+        while (this.removeLastCharacters("\n"))
+            ;
+    };
+    StringEmitter.prototype.ensureNewLine = function () {
+        this.removeLastNewLines();
+        this.writeLine();
+    };
+    StringEmitter.prototype.ensureLineSplit = function () {
+        this.ensureNewLine();
+        this.writeLine();
+    };
     StringEmitter.prototype.removeLastCharacters = function (characters) {
         if (this._output.substr(this._output.length - characters.length) !== characters)
             return false;
-        while (this.removeLastCharacters(this.indentation)) { }
+        while (this.removeLastCharacters(this.indentation))
+            ;
         this._output = this._output.substr(0, this._output.length - characters.length);
-        while (this.removeLastCharacters(this.indentation)) { }
+        while (this.removeLastCharacters(this.indentation))
+            ;
         return true;
     };
     Object.defineProperty(StringEmitter.prototype, "output", {

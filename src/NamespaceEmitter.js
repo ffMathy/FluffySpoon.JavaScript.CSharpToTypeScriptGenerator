@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var EnumEmitter_1 = require("./EnumEmitter");
 var ClassEmitter_1 = require("./ClassEmitter");
 var NamespaceEmitter = (function () {
@@ -12,6 +13,7 @@ var NamespaceEmitter = (function () {
             var namespace = namespaces_1[_i];
             this.emitNamespace(namespace, options);
         }
+        this.stringEmitter.removeLastNewLines();
     };
     NamespaceEmitter.prototype.emitNamespace = function (namespace, options) {
         if (!options) {
@@ -36,26 +38,26 @@ var NamespaceEmitter = (function () {
                 declare: options.skip
             });
             this.enumEmitter.emitEnums(namespace.enums, namespaceEnumOptions);
-            this.stringEmitter.writeLine();
+            this.stringEmitter.ensureLineSplit();
         }
         if (namespace.classes.length > 0) {
             this.classEmitter.emitClasses(namespace.classes, options.classEmitOptions);
-            this.stringEmitter.writeLine();
+            this.stringEmitter.ensureLineSplit();
         }
         if (namespace.namespaces.length > 0) {
             var subNamespaceOptions = Object.assign(options, {
                 declare: options.skip
             });
             this.emitNamespaces(namespace.namespaces, subNamespaceOptions);
+            this.stringEmitter.ensureLineSplit();
         }
-        this.stringEmitter.removeLastCharacters("\n");
         if (!options.skip) {
-            this.stringEmitter.removeLastCharacters("\n");
+            this.stringEmitter.removeLastNewLines();
             this.stringEmitter.decreaseIndentation();
             this.stringEmitter.writeLine();
             this.stringEmitter.writeLine("}");
-            this.stringEmitter.writeLine();
         }
+        this.stringEmitter.ensureLineSplit();
     };
     return NamespaceEmitter;
 }());

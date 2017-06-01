@@ -25,6 +25,8 @@ export class NamespaceEmitter {
 		for (var namespace of namespaces) {
 			this.emitNamespace(namespace, options);
 		}
+
+		this.stringEmitter.removeLastNewLines();
 	}
 
 	emitNamespace(namespace: CSharpNamespace, options?: NamespaceEmitOptions) {
@@ -57,14 +59,14 @@ export class NamespaceEmitter {
 			this.enumEmitter.emitEnums(
 				namespace.enums,
 				namespaceEnumOptions);
-			this.stringEmitter.writeLine();
+			this.stringEmitter.ensureLineSplit();
 		}
 
 		if (namespace.classes.length > 0) {
 			this.classEmitter.emitClasses(
 				namespace.classes,
 				options.classEmitOptions);
-			this.stringEmitter.writeLine();
+			this.stringEmitter.ensureLineSplit();
 		}
 
 		if (namespace.namespaces.length > 0) {
@@ -74,18 +76,18 @@ export class NamespaceEmitter {
 			this.emitNamespaces(
 				namespace.namespaces,
 				subNamespaceOptions);
+			this.stringEmitter.ensureLineSplit();
 		}
 
-		this.stringEmitter.removeLastCharacters("\n");
-
 		if (!options.skip) {
-			this.stringEmitter.removeLastCharacters("\n");
+			this.stringEmitter.removeLastNewLines();
 
 			this.stringEmitter.decreaseIndentation();
 
 			this.stringEmitter.writeLine();
 			this.stringEmitter.writeLine("}");
-			this.stringEmitter.writeLine();
 		}
+
+		this.stringEmitter.ensureLineSplit();
 	}
 }

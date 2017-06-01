@@ -30,13 +30,27 @@
 		this.indentationLevel--;
 	}
 
+	removeLastNewLines() {
+		while (this.removeLastCharacters("\n"));
+	}
+
+	ensureNewLine() {
+		this.removeLastNewLines();
+		this.writeLine();
+	}
+
+	ensureLineSplit() {
+		this.ensureNewLine();
+		this.writeLine();
+	}
+
 	removeLastCharacters(characters: string) {
 		if (this._output.substr(this._output.length - characters.length) !== characters)
 			return false;
 
-		while (this.removeLastCharacters(this.indentation)) { }
+		while (this.removeLastCharacters(this.indentation));
 		this._output = this._output.substr(0, this._output.length - characters.length);
-		while (this.removeLastCharacters(this.indentation)) { }
+		while (this.removeLastCharacters(this.indentation));
 
 		return true;
 	}

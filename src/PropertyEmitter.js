@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var TypeEmitter_1 = require("./TypeEmitter");
 var PropertyEmitter = (function () {
     function PropertyEmitter(stringEmitter) {

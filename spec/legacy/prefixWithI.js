@@ -90,8 +90,7 @@ interface ISecondClass {\n\
 }\n\
 \n\
 interface IThirdClass extends IBaseClass {\n\
-}\n\
-";
+}";
         var options = {
                 prefixWithI: true
           };

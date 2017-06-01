@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var TypeEmitter_1 = require("./TypeEmitter");
 var FieldEmitter = (function () {
     function FieldEmitter(stringEmitter) {
@@ -11,9 +12,9 @@ var FieldEmitter = (function () {
             var property = fields_1[_i];
             this.emitField(property, options);
         }
+        this.stringEmitter.removeLastNewLines();
     };
     FieldEmitter.prototype.emitField = function (field, options) {
-        console.log(options);
         options = Object.assign(this.prepareOptions(options), options.perFieldEmitOptions(field));
         if (!options.filter(field))
             return;
@@ -23,7 +24,7 @@ var FieldEmitter = (function () {
         this.stringEmitter.write((options.name || field.name) + ": ");
         this.typeEmitter.emitType(field.type, options.typeEmitOptions);
         this.stringEmitter.write(";");
-        this.stringEmitter.writeLine();
+        this.stringEmitter.ensureNewLine();
     };
     FieldEmitter.prototype.prepareOptions = function (options) {
         if (!options) {

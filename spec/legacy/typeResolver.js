@@ -24,6 +24,7 @@ namespace MyNamespace.Domain\n\
         var expectedOutput = "interface MyPoco {\n\
     Id: Observable<number>;\n\
     NameOfStuff: Observable<string>;\n\
+\n\
     Foo(): string;\n\
     Foo(foo: string, bar: number): string;\n\
 }";
@@ -57,6 +58,7 @@ namespace MyNamespace.Domain\n\
         var expectedOutput = "interface MyPoco {\n\
     Id: number;\n\
     NameOfStuff: string;\n\
+\n\
     Foo(): Observable<string>;\n\
     Foo(foo: string, bar: number): Observable<string>;\n\
 }";
@@ -90,6 +92,7 @@ namespace MyNamespace.Domain\n\
         var expectedOutput = "interface MyPoco {\n\
     Id: number;\n\
     NameOfStuff: string;\n\
+\n\
     Foo(): string;\n\
     Foo(foo: Observable<string>, bar: Observable<number>): string;\n\
 }";

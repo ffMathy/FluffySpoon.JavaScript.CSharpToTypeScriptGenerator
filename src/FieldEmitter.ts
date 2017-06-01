@@ -4,13 +4,12 @@ import { TypeEmitter, TypeEmitOptions } from './TypeEmitter';
 
 export interface FieldEmitOptionsBase {
 	readOnly?: boolean;
+	typeEmitOptions?: TypeEmitOptions;
+	filter?: (field: CSharpField) => boolean;
 }
 
 export interface FieldEmitOptions extends FieldEmitOptionsBase {
-	filter?: (field: CSharpField) => boolean;
-	perFieldEmitOptions?: (field: CSharpField) => FieldEmitOptions;
-
-	typeEmitOptions?: TypeEmitOptions
+	perFieldEmitOptions?: (field: CSharpField) => PerFieldEmitOptions;
 }
 
 export interface PerFieldEmitOptions extends FieldEmitOptionsBase {
@@ -30,10 +29,11 @@ export class FieldEmitter {
 		for (var property of fields) {
 			this.emitField(property, options);
 		}
+
+		this.stringEmitter.removeLastNewLines();
 	}
 
 	emitField(field: CSharpField, options?: FieldEmitOptions & PerFieldEmitOptions) {
-		console.log(options);
 		options = Object.assign(
 			this.prepareOptions(options),
 			options.perFieldEmitOptions(field));
@@ -49,7 +49,8 @@ export class FieldEmitter {
 		this.stringEmitter.write((options.name || field.name) + ": ");
 		this.typeEmitter.emitType(field.type, options.typeEmitOptions);
 		this.stringEmitter.write(";");
-		this.stringEmitter.writeLine();
+
+		this.stringEmitter.ensureNewLine();
 	}
 
 	private prepareOptions(options?: FieldEmitOptions) {

@@ -50,20 +50,20 @@ export class FileEmitter {
 
 		if (file.enums.length > 0) {
 			this.enumEmitter.emitEnums(file.enums, options.enumEmitOptions);
-			this.stringEmitter.writeLine();
+			this.stringEmitter.ensureLineSplit();
 		}
 
 		if (file.namespaces.length > 0) {
 			this.namespaceEmitter.emitNamespaces(file.namespaces, options.namespaceEmitOptions);
-			this.stringEmitter.writeLine();
+			this.stringEmitter.ensureLineSplit();
 		}
 
 		if (file.classes.length > 0) {
 			this.classEmitter.emitClasses(file.classes, options.classEmitOptions);
-			this.stringEmitter.writeLine();
+			this.stringEmitter.ensureLineSplit();
 		}
-        
-        this.stringEmitter.removeLastCharacters("\n\n");
+
+		this.stringEmitter.removeLastNewLines();
 
         return this.stringEmitter.output;
     }

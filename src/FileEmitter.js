@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var fluffy_spoon_javascript_csharp_parser_1 = require("fluffy-spoon.javascript.csharp-parser");
 var StringEmitter_1 = require("./StringEmitter");
 var EnumEmitter_1 = require("./EnumEmitter");
@@ -30,17 +31,17 @@ var FileEmitter = (function () {
         var file = this.fileParser.parseFile();
         if (file.enums.length > 0) {
             this.enumEmitter.emitEnums(file.enums, options.enumEmitOptions);
-            this.stringEmitter.writeLine();
+            this.stringEmitter.ensureLineSplit();
         }
         if (file.namespaces.length > 0) {
             this.namespaceEmitter.emitNamespaces(file.namespaces, options.namespaceEmitOptions);
-            this.stringEmitter.writeLine();
+            this.stringEmitter.ensureLineSplit();
         }
         if (file.classes.length > 0) {
             this.classEmitter.emitClasses(file.classes, options.classEmitOptions);
-            this.stringEmitter.writeLine();
+            this.stringEmitter.ensureLineSplit();
         }
-        this.stringEmitter.removeLastCharacters("\n\n");
+        this.stringEmitter.removeLastNewLines();
         return this.stringEmitter.output;
     };
     return FileEmitter;

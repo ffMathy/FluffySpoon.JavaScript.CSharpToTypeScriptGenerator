@@ -4,13 +4,12 @@ import { TypeEmitter, TypeEmitOptions } from './TypeEmitter';
 
 export interface PropertyEmitOptionsBase {
 	readOnly?: boolean;
+	filter?: (property: CSharpProperty) => boolean;
+	typeEmitOptions?: TypeEmitOptions;
 }
 
 export interface PropertyEmitOptions extends PropertyEmitOptionsBase {
-	filter?: (property: CSharpProperty) => boolean;
 	perPropertyEmitOptions?: (property: CSharpProperty) => PerPropertyEmitOptions;
-
-	typeEmitOptions?: TypeEmitOptions
 }
 
 export interface PerPropertyEmitOptions extends PropertyEmitOptionsBase {

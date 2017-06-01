@@ -1,5 +1,6 @@
 ﻿import { FileEmitter, FileEmitOptions } from '../../../src/FileEmitter';
 import { PerFieldEmitOptions } from '../../../src/FieldEmitter';
+import { PerClassEmitOptions } from '../../../src/ClassEmitter';
 
 function pocoGen(contents, options) {
 	var emitter = new FileEmitter(contents);
@@ -35,6 +36,15 @@ function pocoGen(contents, options) {
 		if (options.propertyNameResolver) {
 			emitOptions.classEmitOptions.propertyEmitOptions.perPropertyEmitOptions = (property) => <PerFieldEmitOptions>{
 				name: options.propertyNameResolver(property.name)
+			};
+		}
+
+		if (options.prefixWithI) {
+			emitOptions.classEmitOptions.perClassEmitOptions = (classObject) => <PerClassEmitOptions>{
+				name: "I" + classObject.name,
+				inheritedTypeEmitOptions: {
+					mapper: (type, suggested) => "I" + suggested
+				}
 			};
 		}
 

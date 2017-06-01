@@ -34,6 +34,14 @@ function pocoGen(contents, options) {
                 name: options.propertyNameResolver(property.name)
             }); };
         }
+        if (options.prefixWithI) {
+            emitOptions.classEmitOptions.perClassEmitOptions = function (classObject) { return ({
+                name: "I" + classObject.name,
+                inheritedTypeEmitOptions: {
+                    mapper: function (type, suggested) { return "I" + suggested; }
+                }
+            }); };
+        }
         if (options.ignoreVirtual) {
             emitOptions.classEmitOptions.methodEmitOptions.filter = function (method) { return !method.isVirtual; };
             emitOptions.classEmitOptions.propertyEmitOptions.filter = function (property) { return !property.isVirtual; };
