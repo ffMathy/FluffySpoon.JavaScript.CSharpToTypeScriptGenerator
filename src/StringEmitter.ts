@@ -18,19 +18,34 @@
 		this.write("\n");
 	}
 
+	private getLogText(text: string) {
+		var logText = text
+			.replace("\n", "\\n")
+			.replace("\t", "\\t")
+			.replace("\r", "\\r")
+			.trim();
+		return logText;
+	}
+
 	write(text: string) {
 		this._output += text;
+
+		var logged = this.getLogText(text);
+		console.log("Emitted: " + logged);
 	}
 
 	increaseIndentation() {
 		this.indentationLevel++;
+		console.log("Increased indentation to " + this.indentationLevel);
 	}
 
 	decreaseIndentation() {
 		this.indentationLevel--;
+		console.log("Decreased indentation to " + this.indentationLevel);
 	}
 
 	removeLastNewLines() {
+		console.log("Removing last lines.");
 		while (this.removeLastCharacters("\n"));
 	}
 
@@ -48,9 +63,11 @@
 		if (this._output.substr(this._output.length - characters.length) !== characters)
 			return false;
 
-		while (this.removeLastCharacters(this.indentation));
-		this._output = this._output.substr(0, this._output.length - characters.length);
-		while (this.removeLastCharacters(this.indentation));
+		for (var character of characters) {
+			while (this.removeLastCharacters(this.indentation));
+			this._output = this._output.substr(0, this._output.length - character.length);
+			while (this.removeLastCharacters(this.indentation));
+		}
 
 		return true;
 	}

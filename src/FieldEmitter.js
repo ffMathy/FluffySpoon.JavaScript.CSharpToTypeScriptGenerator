@@ -18,6 +18,7 @@ var FieldEmitter = (function () {
         options = Object.assign(this.prepareOptions(options), options.perFieldEmitOptions(field));
         if (!options.filter(field))
             return;
+        console.log("Emitting field " + field.name);
         this.stringEmitter.writeIndentation();
         if (options.readOnly)
             this.stringEmitter.write("readonly ");

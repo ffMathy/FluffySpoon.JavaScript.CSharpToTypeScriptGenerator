@@ -25,6 +25,7 @@ var NamespaceEmitter = (function () {
             console.log("Skipping namespace " + namespace.name + " because it contains no enums, classes or namespaces");
             return;
         }
+        console.log("Emitting namespace " + namespace.name);
         if (!options.skip) {
             this.stringEmitter.writeIndentation();
             if (options.declare)

@@ -41,6 +41,8 @@ export class FieldEmitter {
 		if (!options.filter(field))
 			return;
 
+		console.log("Emitting field " + field.name);
+
 		this.stringEmitter.writeIndentation();
 
 		if (options.readOnly)

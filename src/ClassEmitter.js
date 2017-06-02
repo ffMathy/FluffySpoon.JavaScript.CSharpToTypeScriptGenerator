@@ -72,6 +72,7 @@ var ClassEmitter = (function () {
         this.stringEmitter.decreaseIndentation();
         this.stringEmitter.writeLine();
         this.stringEmitter.writeLine("}");
+        this.stringEmitter.ensureLineSplit();
     };
     ClassEmitter.prototype.emitEnumsAndSubclassesInClass = function (classObject, options) {
         if (classObject.enums.length === 0 && classObject.classes.length === 0) {
@@ -92,12 +93,11 @@ var ClassEmitter = (function () {
             declare: false
         });
         this.emitClasses(classObject.classes, subClassOptions);
-        this.stringEmitter.removeLastCharacters("\n");
-        this.stringEmitter.removeLastCharacters("\n");
+        this.stringEmitter.ensureLineSplit();
         this.stringEmitter.decreaseIndentation();
         this.stringEmitter.writeLine();
         this.stringEmitter.writeLine("}");
-        this.stringEmitter.writeLine();
+        this.stringEmitter.ensureLineSplit();
     };
     return ClassEmitter;
 }());

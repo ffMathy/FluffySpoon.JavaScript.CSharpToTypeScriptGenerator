@@ -42,6 +42,8 @@ export class TypeEmitter {
 	emitType(type: CSharpType, options?: TypeEmitOptions) {
 		options = this.prepareOptions(options);
 
+		console.log("Emitting type " + type.fullName);
+
 		var mapping = this.getMatchingTypeMapping(type, options);
 		this.stringEmitter.write(mapping);
 	}

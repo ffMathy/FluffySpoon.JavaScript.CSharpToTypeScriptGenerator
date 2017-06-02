@@ -41,6 +41,8 @@ export class NamespaceEmitter {
 			return;
 		}
 
+		console.log("Emitting namespace " + namespace.name);
+
 		if (!options.skip) {
 			this.stringEmitter.writeIndentation();
 			if (options.declare)

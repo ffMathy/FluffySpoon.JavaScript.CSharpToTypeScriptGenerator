@@ -53,7 +53,7 @@ export class ClassEmitter {
 		options = Object.assign(
 			this.prepareOptions(options),
 			options.perClassEmitOptions(classObject));
-
+        
 		this.emitClassInterface(classObject, options);
 		this.emitEnumsAndSubclassesInClass(classObject, options);
 
@@ -80,7 +80,8 @@ export class ClassEmitter {
             return;
 		}
         
-        this.stringEmitter.writeIndentation();
+		this.stringEmitter.writeIndentation();
+
         if (options.declare)
 			this.stringEmitter.write("declare ");
 
@@ -122,6 +123,8 @@ export class ClassEmitter {
 
         this.stringEmitter.writeLine();
 		this.stringEmitter.writeLine("}");
+
+		this.stringEmitter.ensureLineSplit();
 	}
 
 	private emitEnumsAndSubclassesInClass(classObject: CSharpClass, options?: ClassEmitOptions) {
@@ -156,13 +159,13 @@ export class ClassEmitter {
             classObject.classes,
 			subClassOptions);
 
-        this.stringEmitter.removeLastCharacters("\n");
-		this.stringEmitter.removeLastCharacters("\n");
+		this.stringEmitter.ensureLineSplit();
 
         this.stringEmitter.decreaseIndentation();
 
         this.stringEmitter.writeLine();
-        this.stringEmitter.writeLine("}");
-        this.stringEmitter.writeLine();
+		this.stringEmitter.writeLine("}");
+
+		this.stringEmitter.ensureLineSplit();
     }
 }
