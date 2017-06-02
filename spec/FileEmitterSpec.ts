@@ -13,7 +13,13 @@ function runCase(caseName: string) {
 					.replace(/\t/g, '  ')
                     .trim();
 
-                var emitter = new FileEmitter(caseInput);
+				var emitter = new FileEmitter(caseInput);
+
+				var oldConsoleLog = console.log;
+				console.log = (message, ...parameters) => {
+					oldConsoleLog(emitter.stringEmitter.currentIndentation + message, parameters);
+				}
+
                 var result = emitter.emitFile();
 
                 result = result
@@ -21,7 +27,9 @@ function runCase(caseName: string) {
 					.replace(/    /g, '\t')
 					.replace(/\t/g, '  ')
                     .trim();
-                expect(result).toBe(caseExpected);
+				expect(result).toBe(caseExpected);
+
+				console.log = oldConsoleLog;
 
                 done();
             });

@@ -60,6 +60,17 @@ var StringEmitter = (function () {
         }
         return true;
     };
+    Object.defineProperty(StringEmitter.prototype, "currentIndentation", {
+        get: function () {
+            var indentation = "";
+            for (var i = 0; i < this.indentationLevel; i++) {
+                indentation += this.indentation;
+            }
+            return indentation;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(StringEmitter.prototype, "output", {
         get: function () {
             return this._output.trim();
@@ -68,9 +79,7 @@ var StringEmitter = (function () {
         configurable: true
     });
     StringEmitter.prototype.writeIndentation = function () {
-        for (var i = 0; i < this.indentationLevel; i++) {
-            this._output += this.indentation;
-        }
+        this._output += this.currentIndentation;
     };
     return StringEmitter;
 }());

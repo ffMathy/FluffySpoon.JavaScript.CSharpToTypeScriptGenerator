@@ -13,8 +13,9 @@ export interface FileEmitOptions {
 }
 
 export class FileEmitter {
+	public readonly stringEmitter: StringEmitter;
+
     private fileParser: FileParser;
-    private stringEmitter: StringEmitter;
     private enumEmitter: EnumEmitter;
     private classEmitter: ClassEmitter;
     private namespaceEmitter: NamespaceEmitter;

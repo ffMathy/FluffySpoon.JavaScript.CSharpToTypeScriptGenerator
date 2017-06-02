@@ -72,13 +72,20 @@
 		return true;
 	}
 
+	get currentIndentation() {
+		var indentation = "";
+		for (var i = 0; i < this.indentationLevel; i++) {
+			indentation += this.indentation;
+		}
+
+		return indentation;
+	}
+
 	get output() {
 		return this._output.trim();
 	}
 
 	writeIndentation() {
-		for (var i = 0; i < this.indentationLevel; i++) {
-			this._output += this.indentation;
-		}
+		this._output += this.currentIndentation;
 	}
 }
