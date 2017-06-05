@@ -2,12 +2,14 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var EnumEmitter_1 = require("./EnumEmitter");
 var ClassEmitter_1 = require("./ClassEmitter");
+var StructEmitter_1 = require("./StructEmitter");
 var NamespaceEmitter = (function () {
     function NamespaceEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
         this.logger = logger;
         this.enumEmitter = new EnumEmitter_1.EnumEmitter(stringEmitter, logger);
         this.classEmitter = new ClassEmitter_1.ClassEmitter(stringEmitter, logger);
+        this.structEmitter = new StructEmitter_1.StructEmitter(stringEmitter, logger);
     }
     NamespaceEmitter.prototype.emitNamespaces = function (namespaces, options) {
         this.logger.log("Emitting namespaces", namespaces);
@@ -46,6 +48,13 @@ var NamespaceEmitter = (function () {
         }
         if (namespace.classes.length > 0) {
             this.classEmitter.emitClasses(namespace.classes, options.classEmitOptions);
+            this.stringEmitter.ensureLineSplit();
+        }
+        if (namespace.structs.length > 0) {
+            var subStructOptions = Object.assign(options, {
+                declare: options.skip
+            });
+            this.structEmitter.emitStructs(namespace.structs, subStructOptions);
             this.stringEmitter.ensureLineSplit();
         }
         if (namespace.namespaces.length > 0) {

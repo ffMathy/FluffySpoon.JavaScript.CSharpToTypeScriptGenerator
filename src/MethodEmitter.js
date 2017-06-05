@@ -18,6 +18,8 @@ var MethodEmitter = (function () {
         options = this.prepareOptions(options);
         if (!options.filter(method))
             return;
+        if (method.isConstructor)
+            return;
         this.stringEmitter.writeIndentation();
         this.stringEmitter.write(method.name + "(");
         this.emitMethodParameters(method.parameters, options);

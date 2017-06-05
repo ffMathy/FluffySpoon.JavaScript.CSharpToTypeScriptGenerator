@@ -1,4 +1,4 @@
-/// <reference path="../typings/tsd.d.ts" />
+﻿/// <reference path="../typings/tsd.d.ts" />
 
 /* jshint -W043 */
 
@@ -72,7 +72,7 @@ interface MyOtherPoco {\n\
 \n\
 interface MyStruct {\n\
     SomeIntField: number;\n\
-}\n";
+}";
 
 var pocoGen = require('./adapters/legacyAdapter.js');
 

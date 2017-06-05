@@ -2,6 +2,7 @@
 import { StringEmitter } from './StringEmitter';
 import { EnumEmitter, EnumEmitOptions } from './EnumEmitter';
 import { ClassEmitter, ClassEmitOptions } from './ClassEmitter';
+import { StructEmitter, StructEmitOptions } from './StructEmitter';
 import { Logger } from './Logger';
 
 export interface NamespaceEmitOptions {
@@ -9,12 +10,14 @@ export interface NamespaceEmitOptions {
 	skip?: boolean;
 
 	classEmitOptions?: ClassEmitOptions;
+	structEmitOptions?: StructEmitOptions;
 	enumEmitOptions?: EnumEmitOptions;
 }
 
 export class NamespaceEmitter {
 	private enumEmitter: EnumEmitter;
 	private classEmitter: ClassEmitter;
+	private structEmitter: StructEmitter;
 
 	constructor(
 		private stringEmitter: StringEmitter,
@@ -22,6 +25,7 @@ export class NamespaceEmitter {
 	) {
 		this.enumEmitter = new EnumEmitter(stringEmitter, logger);
 		this.classEmitter = new ClassEmitter(stringEmitter, logger);
+		this.structEmitter = new StructEmitter(stringEmitter, logger);
 	}
 
 	emitNamespaces(namespaces: CSharpNamespace[], options?: NamespaceEmitOptions) {
@@ -75,6 +79,16 @@ export class NamespaceEmitter {
 			this.classEmitter.emitClasses(
 				namespace.classes,
 				options.classEmitOptions);
+			this.stringEmitter.ensureLineSplit();
+		}
+
+		if (namespace.structs.length > 0) {
+			var subStructOptions = Object.assign(options, <StructEmitOptions>{
+				declare: options.skip
+			});
+			this.structEmitter.emitStructs(
+				namespace.structs,
+				subStructOptions);
 			this.stringEmitter.ensureLineSplit();
 		}
 
