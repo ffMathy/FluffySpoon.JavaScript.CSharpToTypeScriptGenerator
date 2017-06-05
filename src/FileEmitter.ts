@@ -5,6 +5,7 @@ import { TypeEmitOptions } from './TypeEmitter';
 import { EnumEmitter, EnumEmitOptions } from './EnumEmitter';
 import { ClassEmitter, ClassEmitOptions } from './ClassEmitter';
 import { NamespaceEmitter, NamespaceEmitOptions } from './NamespaceEmitter';
+import { Logger } from './Logger';
  
 export interface FileEmitOptions {
 	classEmitOptions?: ClassEmitOptions,
@@ -14,6 +15,7 @@ export interface FileEmitOptions {
 
 export class FileEmitter {
 	public readonly stringEmitter: StringEmitter;
+	public readonly logger: Logger;
 
     private fileParser: FileParser;
     private enumEmitter: EnumEmitter;
@@ -21,15 +23,21 @@ export class FileEmitter {
     private namespaceEmitter: NamespaceEmitter;
 
     constructor(content: string) {
-        this.fileParser = new FileParser(content);
-        this.stringEmitter = new StringEmitter();
+		this.fileParser = new FileParser(content);
 
-        this.enumEmitter = new EnumEmitter(this.stringEmitter);
-        this.classEmitter = new ClassEmitter(this.stringEmitter);
-		this.namespaceEmitter = new NamespaceEmitter(this.stringEmitter);
+		this.logger = new Logger();
+
+		this.stringEmitter = new StringEmitter(this.logger);
+
+        this.enumEmitter = new EnumEmitter(this.stringEmitter, this.logger);
+        this.classEmitter = new ClassEmitter(this.stringEmitter, this.logger);
+		this.namespaceEmitter = new NamespaceEmitter(this.stringEmitter, this.logger);
     }
 
 	emitFile(options?: FileEmitOptions) {
+
+		this.logger.log("Emitting file.");
+
 		if (!options) {
 			options = {};
 		}

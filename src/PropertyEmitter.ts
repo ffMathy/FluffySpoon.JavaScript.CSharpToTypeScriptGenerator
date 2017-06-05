@@ -1,6 +1,7 @@
 ﻿import { CSharpProperty } from 'fluffy-spoon.javascript.csharp-parser';
 import { StringEmitter } from './StringEmitter';
 import { TypeEmitter, TypeEmitOptions } from './TypeEmitter';
+import { Logger } from './Logger';
 
 export interface PropertyEmitOptionsBase {
 	readOnly?: boolean;
@@ -19,23 +20,26 @@ export interface PerPropertyEmitOptions extends PropertyEmitOptionsBase {
 export class PropertyEmitter {
 	private typeEmitter: TypeEmitter;
 
-	constructor(private stringEmitter: StringEmitter) {
-		this.typeEmitter = new TypeEmitter(stringEmitter);
-    }
+	constructor(
+		private stringEmitter: StringEmitter,
+		private logger: Logger
+	) {
+		this.typeEmitter = new TypeEmitter(stringEmitter, logger);
+	}
 
 	emitProperties(properties: CSharpProperty[], options?: PropertyEmitOptions & PerPropertyEmitOptions) {
 		options = this.prepareOptions(options);
 
-        for (var property of properties) {
-            this.emitProperty(property, options);
-        }
-    }
+		for (var property of properties) {
+			this.emitProperty(property, options);
+		}
+	}
 
 	emitProperty(property: CSharpProperty, options?: PropertyEmitOptions & PerPropertyEmitOptions) {
 		options = Object.assign(
 			this.prepareOptions(options),
 			options.perPropertyEmitOptions(property));
-        
+
 		if (!options.filter(property))
 			return;
 

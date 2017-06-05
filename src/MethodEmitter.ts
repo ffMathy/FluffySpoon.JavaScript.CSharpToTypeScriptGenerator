@@ -1,6 +1,7 @@
 ﻿import { CSharpMethod, CSharpMethodParameter } from 'fluffy-spoon.javascript.csharp-parser';
 import { StringEmitter } from './StringEmitter';
 import { TypeEmitter, TypeEmitOptions } from './TypeEmitter';
+import { Logger } from './Logger';
 
 export interface MethodEmitOptions {
 	filter?: (method: CSharpMethod) => boolean;
@@ -12,8 +13,11 @@ export interface MethodEmitOptions {
 export class MethodEmitter {
 	private typeEmitter: TypeEmitter;
 
-	constructor(private stringEmitter: StringEmitter) {
-		this.typeEmitter = new TypeEmitter(stringEmitter);
+	constructor(
+		private stringEmitter: StringEmitter,
+		private logger: Logger
+	) {
+		this.typeEmitter = new TypeEmitter(stringEmitter, logger);
 	}
 
 	emitMethods(methods: CSharpMethod[], options?: MethodEmitOptions) {

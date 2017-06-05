@@ -2,9 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var TypeEmitter_1 = require("./TypeEmitter");
 var FieldEmitter = (function () {
-    function FieldEmitter(stringEmitter) {
+    function FieldEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
-        this.typeEmitter = new TypeEmitter_1.TypeEmitter(stringEmitter);
+        this.logger = logger;
+        this.typeEmitter = new TypeEmitter_1.TypeEmitter(stringEmitter, logger);
     }
     FieldEmitter.prototype.emitFields = function (fields, options) {
         options = this.prepareOptions(options);
@@ -18,7 +19,7 @@ var FieldEmitter = (function () {
         options = Object.assign(this.prepareOptions(options), options.perFieldEmitOptions(field));
         if (!options.filter(field))
             return;
-        console.log("Emitting field " + field.name);
+        this.logger.log("Emitting field " + field.name);
         this.stringEmitter.writeIndentation();
         if (options.readOnly)
             this.stringEmitter.write("readonly ");

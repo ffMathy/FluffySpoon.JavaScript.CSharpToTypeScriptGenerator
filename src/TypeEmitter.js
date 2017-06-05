@@ -3,8 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var fluffy_spoon_javascript_csharp_parser_1 = require("fluffy-spoon.javascript.csharp-parser");
 var RegExHelper_1 = require("./RegExHelper");
 var TypeEmitter = (function () {
-    function TypeEmitter(stringEmitter) {
+    function TypeEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
+        this.logger = logger;
         this.typeParser = new fluffy_spoon_javascript_csharp_parser_1.TypeParser();
         this.regexHelper = new RegExHelper_1.RegExHelper();
         this.defaultTypeMap = {
@@ -32,7 +33,7 @@ var TypeEmitter = (function () {
     }
     TypeEmitter.prototype.emitType = function (type, options) {
         options = this.prepareOptions(options);
-        console.log("Emitting type " + type.fullName);
+        this.logger.log("Emitting type " + type.fullName);
         var mapping = this.getMatchingTypeMapping(type, options);
         this.stringEmitter.write(mapping);
     };

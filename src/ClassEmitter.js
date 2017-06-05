@@ -6,26 +6,32 @@ var PropertyEmitter_1 = require("./PropertyEmitter");
 var FieldEmitter_1 = require("./FieldEmitter");
 var MethodEmitter_1 = require("./MethodEmitter");
 var ClassEmitter = (function () {
-    function ClassEmitter(stringEmitter) {
+    function ClassEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
-        this.enumEmitter = new EnumEmitter_1.EnumEmitter(stringEmitter);
-        this.propertyEmitter = new PropertyEmitter_1.PropertyEmitter(stringEmitter);
-        this.fieldEmitter = new FieldEmitter_1.FieldEmitter(stringEmitter);
-        this.methodEmitter = new MethodEmitter_1.MethodEmitter(stringEmitter);
-        this.typeEmitter = new TypeEmitter_1.TypeEmitter(stringEmitter);
+        this.logger = logger;
+        this.enumEmitter = new EnumEmitter_1.EnumEmitter(stringEmitter, logger);
+        this.propertyEmitter = new PropertyEmitter_1.PropertyEmitter(stringEmitter, logger);
+        this.fieldEmitter = new FieldEmitter_1.FieldEmitter(stringEmitter, logger);
+        this.methodEmitter = new MethodEmitter_1.MethodEmitter(stringEmitter, logger);
+        this.typeEmitter = new TypeEmitter_1.TypeEmitter(stringEmitter, logger);
     }
     ClassEmitter.prototype.emitClasses = function (classes, options) {
+        this.logger.log("Emitting classes", classes);
         for (var _i = 0, classes_1 = classes; _i < classes_1.length; _i++) {
             var classObject = classes_1[_i];
             this.emitClass(classObject, options);
         }
         this.stringEmitter.removeLastNewLines();
+        this.logger.log("Done emitting classes", classes);
     };
     ClassEmitter.prototype.emitClass = function (classObject, options) {
-        options = Object.assign(this.prepareOptions(options), options.perClassEmitOptions(classObject));
+        this.logger.log("Emitting class", classObject);
+        options = this.prepareOptions(options);
+        options = Object.assign(options, options.perClassEmitOptions(classObject));
         this.emitClassInterface(classObject, options);
         this.emitEnumsAndSubclassesInClass(classObject, options);
         this.stringEmitter.ensureLineSplit();
+        this.logger.log("Done emitting class", classObject);
     };
     ClassEmitter.prototype.prepareOptions = function (options) {
         if (!options) {
@@ -40,14 +46,14 @@ var ClassEmitter = (function () {
     };
     ClassEmitter.prototype.emitClassInterface = function (classObject, options) {
         if (classObject.properties.length === 0 && classObject.methods.length === 0 && classObject.fields.length === 0) {
-            console.log("Skipping interface " + classObject.name + " because it contains no properties, fields or methods");
+            this.logger.log("Skipping interface " + classObject.name + " because it contains no properties, fields or methods");
             return;
         }
         this.stringEmitter.writeIndentation();
         if (options.declare)
             this.stringEmitter.write("declare ");
         var className = options.name || classObject.name;
-        console.log("Emitting interface " + className);
+        this.logger.log("Emitting interface " + className);
         this.stringEmitter.write("interface " + className);
         if (classObject.inheritsFrom) {
             this.stringEmitter.write(" extends ");

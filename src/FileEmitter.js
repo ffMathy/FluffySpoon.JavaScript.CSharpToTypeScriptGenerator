@@ -5,15 +5,18 @@ var StringEmitter_1 = require("./StringEmitter");
 var EnumEmitter_1 = require("./EnumEmitter");
 var ClassEmitter_1 = require("./ClassEmitter");
 var NamespaceEmitter_1 = require("./NamespaceEmitter");
+var Logger_1 = require("./Logger");
 var FileEmitter = (function () {
     function FileEmitter(content) {
         this.fileParser = new fluffy_spoon_javascript_csharp_parser_1.FileParser(content);
-        this.stringEmitter = new StringEmitter_1.StringEmitter();
-        this.enumEmitter = new EnumEmitter_1.EnumEmitter(this.stringEmitter);
-        this.classEmitter = new ClassEmitter_1.ClassEmitter(this.stringEmitter);
-        this.namespaceEmitter = new NamespaceEmitter_1.NamespaceEmitter(this.stringEmitter);
+        this.logger = new Logger_1.Logger();
+        this.stringEmitter = new StringEmitter_1.StringEmitter(this.logger);
+        this.enumEmitter = new EnumEmitter_1.EnumEmitter(this.stringEmitter, this.logger);
+        this.classEmitter = new ClassEmitter_1.ClassEmitter(this.stringEmitter, this.logger);
+        this.namespaceEmitter = new NamespaceEmitter_1.NamespaceEmitter(this.stringEmitter, this.logger);
     }
     FileEmitter.prototype.emitFile = function (options) {
+        this.logger.log("Emitting file.");
         if (!options) {
             options = {};
         }

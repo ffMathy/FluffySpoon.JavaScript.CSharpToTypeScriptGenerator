@@ -1,5 +1,6 @@
 ﻿import { FileParser, CSharpEnum, CSharpEnumOption } from 'fluffy-spoon.javascript.csharp-parser';
 import { StringEmitter } from './StringEmitter';
+import { Logger } from './Logger';
 
 export interface EnumEmitOptions {
 	declare: boolean;
@@ -7,8 +8,9 @@ export interface EnumEmitOptions {
 }
 
 export class EnumEmitter {
-    constructor(
-        private stringEmitter: StringEmitter) {
+	constructor(
+		private stringEmitter: StringEmitter,
+		private logger: Logger) {
 
 	}
 
@@ -19,7 +21,7 @@ export class EnumEmitter {
 				strategy: "default"
 			}
 		}
-        
+
 		if (!options.strategy) {
 			options.strategy = "default";
 		}
@@ -28,21 +30,25 @@ export class EnumEmitter {
 	}
 
 	emitEnums(enums: CSharpEnum[], options?: EnumEmitOptions) {
+		this.logger.log("Emitting enums", enums);
+
 		options = this.prepareOptions(options);
 
-        for (var enumObject of enums) {
-            this.emitEnum(enumObject, options);
+		for (var enumObject of enums) {
+			this.emitEnum(enumObject, options);
 		}
 
 		this.stringEmitter.removeLastNewLines();
-    }
+	}
 
 	emitEnum(enumObject: CSharpEnum, options?: EnumEmitOptions) {
+		this.logger.log("Emitting enum", enumObject);
+
 		options = this.prepareOptions(options);
 
-        this.stringEmitter.writeIndentation();
-        if (options.declare)
-            this.stringEmitter.write("declare ");
+		this.stringEmitter.writeIndentation();
+		if (options.declare)
+			this.stringEmitter.write("declare ");
 
 		if (options.strategy === "default") {
 			this.stringEmitter.write("enum");
@@ -58,10 +64,10 @@ export class EnumEmitter {
 			this.stringEmitter.write("=");
 		}
 
-        this.stringEmitter.writeLine();
-        this.stringEmitter.increaseIndentation();
+		this.stringEmitter.writeLine();
+		this.stringEmitter.increaseIndentation();
 
-        for (var option of enumObject.options)
+		for (var option of enumObject.options)
 			this.emitEnumOption(option, options);
 
 		if (options.strategy === "default") {
@@ -70,23 +76,24 @@ export class EnumEmitter {
 			this.stringEmitter.removeLastCharacters(' |\n');
 		}
 
-        this.stringEmitter.decreaseIndentation();
+		this.stringEmitter.decreaseIndentation();
 
 		if (options.strategy === "default") {
 			this.stringEmitter.writeLine("}");
 		}
 
 		this.stringEmitter.ensureLineSplit();
-    }
+	}
 
 	private emitEnumOption(
 		option: CSharpEnumOption,
 		options: EnumEmitOptions)
 	{
+		this.logger.log("Emitting enum option", option);
 		if (options.strategy === "default") {
 			this.stringEmitter.writeLine(option.name + " = " + option.value + ",");
 		} else if (options.strategy === "string-union") {
 			this.stringEmitter.writeLine("'" + option.name + "' |");
 		}
-    }
+	}
 }

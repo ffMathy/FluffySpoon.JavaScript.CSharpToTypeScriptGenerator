@@ -1,9 +1,11 @@
-﻿export class StringEmitter {
+﻿import { Logger } from './Logger';
+
+export class StringEmitter {
 	private _output: string;
 	private indentationLevel: number;
 	private indentation: string;
 
-	constructor() {
+	constructor(private logger: Logger) {
 		this._output = '';
 		this.indentationLevel = 0;
 		this.indentation = '    ';
@@ -31,21 +33,21 @@
 		this._output += text;
 
 		var logged = this.getLogText(text);
-		console.log("Emitted: " + logged);
+		this.logger.log("Emitted: " + logged);
 	}
 
 	increaseIndentation() {
+		this.logger.log("Increasing indentation to " + (this.indentationLevel+1));
 		this.indentationLevel++;
-		console.log("Increased indentation to " + this.indentationLevel);
 	}
 
 	decreaseIndentation() {
 		this.indentationLevel--;
-		console.log("Decreased indentation to " + this.indentationLevel);
+		this.logger.log("Decreased indentation to " + this.indentationLevel);
 	}
 
 	removeLastNewLines() {
-		console.log("Removing last lines.");
+		this.logger.log("Removing last lines.");
 		while (this.removeLastCharacters("\n"));
 	}
 

@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var StringEmitter = (function () {
-    function StringEmitter() {
+    function StringEmitter(logger) {
+        this.logger = logger;
         this._output = '';
         this.indentationLevel = 0;
         this.indentation = '    ';
@@ -24,18 +25,18 @@ var StringEmitter = (function () {
     StringEmitter.prototype.write = function (text) {
         this._output += text;
         var logged = this.getLogText(text);
-        console.log("Emitted: " + logged);
+        this.logger.log("Emitted: " + logged);
     };
     StringEmitter.prototype.increaseIndentation = function () {
+        this.logger.log("Increasing indentation to " + (this.indentationLevel + 1));
         this.indentationLevel++;
-        console.log("Increased indentation to " + this.indentationLevel);
     };
     StringEmitter.prototype.decreaseIndentation = function () {
         this.indentationLevel--;
-        console.log("Decreased indentation to " + this.indentationLevel);
+        this.logger.log("Decreased indentation to " + this.indentationLevel);
     };
     StringEmitter.prototype.removeLastNewLines = function () {
-        console.log("Removing last lines.");
+        this.logger.log("Removing last lines.");
         while (this.removeLastCharacters("\n"))
             ;
     };

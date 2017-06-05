@@ -25,6 +25,18 @@ function pocoGen(contents, options) {
             declare: true
         }
     };
+    emitter.logger.setLogMethod(function (message) {
+        var parameters = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            parameters[_i - 1] = arguments[_i];
+        }
+        if (parameters.length > 0) {
+            console.log(emitter.stringEmitter.currentIndentation + message, parameters);
+        }
+        else {
+            console.log(emitter.stringEmitter.currentIndentation + message);
+        }
+    });
     if (options) {
         if (options.useStringUnionTypes) {
             emitOptions.enumEmitOptions.strategy = "string-union";

@@ -2,9 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var TypeEmitter_1 = require("./TypeEmitter");
 var PropertyEmitter = (function () {
-    function PropertyEmitter(stringEmitter) {
+    function PropertyEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
-        this.typeEmitter = new TypeEmitter_1.TypeEmitter(stringEmitter);
+        this.logger = logger;
+        this.typeEmitter = new TypeEmitter_1.TypeEmitter(stringEmitter, logger);
     }
     PropertyEmitter.prototype.emitProperties = function (properties, options) {
         options = this.prepareOptions(options);

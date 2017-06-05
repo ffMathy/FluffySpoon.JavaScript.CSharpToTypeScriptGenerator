@@ -1,6 +1,7 @@
 ﻿import { CSharpField, FieldParser } from 'fluffy-spoon.javascript.csharp-parser';
 import { StringEmitter } from './StringEmitter';
 import { TypeEmitter, TypeEmitOptions } from './TypeEmitter';
+import { Logger } from './Logger';
 
 export interface FieldEmitOptionsBase {
 	readOnly?: boolean;
@@ -19,8 +20,11 @@ export interface PerFieldEmitOptions extends FieldEmitOptionsBase {
 export class FieldEmitter {
 	private typeEmitter: TypeEmitter;
 
-	constructor(private stringEmitter: StringEmitter) {
-		this.typeEmitter = new TypeEmitter(stringEmitter);
+	constructor(
+		private stringEmitter: StringEmitter,
+		private logger: Logger
+	) {
+		this.typeEmitter = new TypeEmitter(stringEmitter, logger);
 	}
 
 	emitFields(fields: CSharpField[], options?: FieldEmitOptions & PerFieldEmitOptions) {
@@ -41,7 +45,7 @@ export class FieldEmitter {
 		if (!options.filter(field))
 			return;
 
-		console.log("Emitting field " + field.name);
+		this.logger.log("Emitting field " + field.name);
 
 		this.stringEmitter.writeIndentation();
 

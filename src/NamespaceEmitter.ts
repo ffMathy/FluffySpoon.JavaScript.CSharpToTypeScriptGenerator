@@ -2,6 +2,7 @@
 import { StringEmitter } from './StringEmitter';
 import { EnumEmitter, EnumEmitOptions } from './EnumEmitter';
 import { ClassEmitter, ClassEmitOptions } from './ClassEmitter';
+import { Logger } from './Logger';
 
 export interface NamespaceEmitOptions {
 	declare?: boolean;
@@ -16,17 +17,23 @@ export class NamespaceEmitter {
 	private classEmitter: ClassEmitter;
 
 	constructor(
-		private stringEmitter: StringEmitter) {
-		this.enumEmitter = new EnumEmitter(stringEmitter);
-		this.classEmitter = new ClassEmitter(stringEmitter);
+		private stringEmitter: StringEmitter,
+        private logger: Logger
+	) {
+		this.enumEmitter = new EnumEmitter(stringEmitter, logger);
+		this.classEmitter = new ClassEmitter(stringEmitter, logger);
 	}
 
 	emitNamespaces(namespaces: CSharpNamespace[], options?: NamespaceEmitOptions) {
+		this.logger.log("Emitting namespaces", namespaces);
+
 		for (var namespace of namespaces) {
 			this.emitNamespace(namespace, options);
 		}
 
 		this.stringEmitter.removeLastNewLines();
+
+		this.logger.log("Done emitting namespaces", namespaces);
 	}
 
 	emitNamespace(namespace: CSharpNamespace, options?: NamespaceEmitOptions) {
@@ -41,7 +48,7 @@ export class NamespaceEmitter {
 			return;
 		}
 
-		console.log("Emitting namespace " + namespace.name);
+		this.logger.log("Emitting namespace", namespace);
 
 		if (!options.skip) {
 			this.stringEmitter.writeIndentation();
@@ -91,5 +98,7 @@ export class NamespaceEmitter {
 		}
 
 		this.stringEmitter.ensureLineSplit();
+
+		this.logger.log("Done emitting namespace", namespace);
 	}
 }

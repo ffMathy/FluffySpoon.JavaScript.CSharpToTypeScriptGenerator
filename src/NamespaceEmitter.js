@@ -3,17 +3,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var EnumEmitter_1 = require("./EnumEmitter");
 var ClassEmitter_1 = require("./ClassEmitter");
 var NamespaceEmitter = (function () {
-    function NamespaceEmitter(stringEmitter) {
+    function NamespaceEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
-        this.enumEmitter = new EnumEmitter_1.EnumEmitter(stringEmitter);
-        this.classEmitter = new ClassEmitter_1.ClassEmitter(stringEmitter);
+        this.logger = logger;
+        this.enumEmitter = new EnumEmitter_1.EnumEmitter(stringEmitter, logger);
+        this.classEmitter = new ClassEmitter_1.ClassEmitter(stringEmitter, logger);
     }
     NamespaceEmitter.prototype.emitNamespaces = function (namespaces, options) {
+        this.logger.log("Emitting namespaces", namespaces);
         for (var _i = 0, namespaces_1 = namespaces; _i < namespaces_1.length; _i++) {
             var namespace = namespaces_1[_i];
             this.emitNamespace(namespace, options);
         }
         this.stringEmitter.removeLastNewLines();
+        this.logger.log("Done emitting namespaces", namespaces);
     };
     NamespaceEmitter.prototype.emitNamespace = function (namespace, options) {
         if (!options) {
@@ -25,7 +28,7 @@ var NamespaceEmitter = (function () {
             console.log("Skipping namespace " + namespace.name + " because it contains no enums, classes or namespaces");
             return;
         }
-        console.log("Emitting namespace " + namespace.name);
+        this.logger.log("Emitting namespace", namespace);
         if (!options.skip) {
             this.stringEmitter.writeIndentation();
             if (options.declare)
@@ -59,6 +62,7 @@ var NamespaceEmitter = (function () {
             this.stringEmitter.writeLine("}");
         }
         this.stringEmitter.ensureLineSplit();
+        this.logger.log("Done emitting namespace", namespace);
     };
     return NamespaceEmitter;
 }());

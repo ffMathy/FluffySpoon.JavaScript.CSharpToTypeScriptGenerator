@@ -6,7 +6,7 @@ var pocoGen = require('./adapters/legacyAdapter.js');
 describe('typescript-cs-poco', function () {
     it('should use the prefixWithI option correctly for multiple files', function () {
         
-        var firstFile = "\
+        var sampleFile = "\
 using System;\n\
 \n\
 namespace PocoTest\n\
@@ -16,11 +16,6 @@ namespace PocoTest\n\
         string foo;\n\
     }\n\
 }\n\
-";
-
-        var secondFile = "\
-using System;\n\
-\n\
 namespace PocoTest\n\
 {\n\
     public class SecondClass\n\
@@ -42,19 +37,18 @@ interface ISecondClass {\n\
 }\n\
 \n\
 interface IThirdClass {\n\
-}\n\
-";
+}";
         var options = {
                 prefixWithI: true
           };
-        var result = [firstFile, secondFile].map(sampleFile => pocoGen(sampleFile, options)).join("\n");
+        var result = pocoGen(sampleFile, options);
 
         expect(result).toEqual(expectedOutput);
     });
 
     it('should use the prefixWithI option correctly for multiple files and inheritance', function () {
         
-        var firstFile = "\
+        var sampleFile = "\
 using System;\n\
 \n\
 namespace PocoTest\n\
@@ -64,11 +58,6 @@ namespace PocoTest\n\
         string foo;\n\
     }\n\
 }\n\
-";
-
-        var secondFile = "\
-using System;\n\
-\n\
 namespace PocoTest\n\
 {\n\
     public class SecondClass\n\
@@ -94,7 +83,7 @@ interface IThirdClass extends IBaseClass {\n\
         var options = {
                 prefixWithI: true
           };
-        var result = [firstFile, secondFile].map(sampleFile => pocoGen(sampleFile, options)).join("\n");
+        var result = pocoGen(sampleFile, options);
 
         expect(result).toEqual(expectedOutput);
     });

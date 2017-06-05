@@ -1,6 +1,7 @@
 ﻿import { CSharpType, TypeParser } from 'fluffy-spoon.javascript.csharp-parser';
 import { RegExHelper } from './RegExHelper';
 import { StringEmitter } from './StringEmitter';
+import { Logger } from './Logger';
 
 export interface TypeEmitOptions {
 	mapper?: (type: CSharpType, suggestedOutput: string) => string;
@@ -11,7 +12,10 @@ export class TypeEmitter {
 	private typeParser: TypeParser;
 	private regexHelper: RegExHelper;
 
-	constructor(private stringEmitter: StringEmitter) {
+	constructor(
+		private stringEmitter: StringEmitter,
+        private logger: Logger
+	) {
 		this.typeParser = new TypeParser();
 		this.regexHelper = new RegExHelper();
 
@@ -42,7 +46,7 @@ export class TypeEmitter {
 	emitType(type: CSharpType, options?: TypeEmitOptions) {
 		options = this.prepareOptions(options);
 
-		console.log("Emitting type " + type.fullName);
+		this.logger.log("Emitting type " + type.fullName);
 
 		var mapping = this.getMatchingTypeMapping(type, options);
 		this.stringEmitter.write(mapping);

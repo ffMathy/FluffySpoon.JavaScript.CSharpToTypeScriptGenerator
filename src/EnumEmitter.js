@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var EnumEmitter = (function () {
-    function EnumEmitter(stringEmitter) {
+    function EnumEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
+        this.logger = logger;
     }
     EnumEmitter.prototype.prepareOptions = function (options) {
         if (!options) {
@@ -17,6 +18,7 @@ var EnumEmitter = (function () {
         return options;
     };
     EnumEmitter.prototype.emitEnums = function (enums, options) {
+        this.logger.log("Emitting enums", enums);
         options = this.prepareOptions(options);
         for (var _i = 0, enums_1 = enums; _i < enums_1.length; _i++) {
             var enumObject = enums_1[_i];
@@ -25,6 +27,7 @@ var EnumEmitter = (function () {
         this.stringEmitter.removeLastNewLines();
     };
     EnumEmitter.prototype.emitEnum = function (enumObject, options) {
+        this.logger.log("Emitting enum", enumObject);
         options = this.prepareOptions(options);
         this.stringEmitter.writeIndentation();
         if (options.declare)
@@ -61,6 +64,7 @@ var EnumEmitter = (function () {
         this.stringEmitter.ensureLineSplit();
     };
     EnumEmitter.prototype.emitEnumOption = function (option, options) {
+        this.logger.log("Emitting enum option", option);
         if (options.strategy === "default") {
             this.stringEmitter.writeLine(option.name + " = " + option.value + ",");
         }
