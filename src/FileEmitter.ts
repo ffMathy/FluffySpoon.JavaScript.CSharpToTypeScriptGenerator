@@ -2,6 +2,7 @@
 
 import { StringEmitter } from './StringEmitter';
 import { TypeEmitOptions } from './TypeEmitter';
+import { StructEmitter, StructEmitOptions } from './StructEmitter';
 import { EnumEmitter, EnumEmitOptions } from './EnumEmitter';
 import { ClassEmitter, ClassEmitOptions } from './ClassEmitter';
 import { NamespaceEmitter, NamespaceEmitOptions } from './NamespaceEmitter';
@@ -10,7 +11,8 @@ import { Logger } from './Logger';
 export interface FileEmitOptions {
 	classEmitOptions?: ClassEmitOptions,
 	namespaceEmitOptions?: NamespaceEmitOptions,
-	enumEmitOptions?: EnumEmitOptions
+    enumEmitOptions?: EnumEmitOptions,
+    structEmitOptions?: StructEmitOptions
 }
 
 export class FileEmitter {
@@ -21,6 +23,7 @@ export class FileEmitter {
     private enumEmitter: EnumEmitter;
     private classEmitter: ClassEmitter;
     private namespaceEmitter: NamespaceEmitter;
+    private structEmitter: StructEmitter;
 
     constructor(content: string) {
 		this.fileParser = new FileParser(content);
@@ -31,7 +34,8 @@ export class FileEmitter {
 
         this.enumEmitter = new EnumEmitter(this.stringEmitter, this.logger);
         this.classEmitter = new ClassEmitter(this.stringEmitter, this.logger);
-		this.namespaceEmitter = new NamespaceEmitter(this.stringEmitter, this.logger);
+        this.namespaceEmitter = new NamespaceEmitter(this.stringEmitter, this.logger);
+        this.structEmitter = new StructEmitter(this.stringEmitter, this.logger);
     }
 
 	emitFile(options?: FileEmitOptions) {
@@ -70,7 +74,12 @@ export class FileEmitter {
 		if (file.classes.length > 0) {
 			this.classEmitter.emitClasses(file.classes, options.classEmitOptions);
 			this.stringEmitter.ensureLineSplit();
-		}
+        }
+
+        if (file.structs.length > 0) {
+            this.structEmitter.emitStructs(file.structs, options.structEmitOptions);
+            this.stringEmitter.ensureLineSplit();
+        }
 
 		this.stringEmitter.removeLastNewLines();
 

@@ -21,11 +21,14 @@ function pocoGen(contents, options) {
 				perFieldEmitOptions: (field) => <PerFieldEmitOptions>{
 					readOnly: field.isReadOnly
 				}
-			}
+            }
 		},
 		enumEmitOptions: {
 			declare: true
-		}
+        },
+        structEmitOptions: {
+            declare: false
+        }
 	};
 
 	emitter.logger.setLogMethod((message, ...parameters) => {

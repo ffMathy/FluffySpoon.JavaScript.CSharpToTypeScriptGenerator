@@ -18,6 +18,7 @@
   "homepage": "https://github.com/ffMathy/FluffySpoon.JavaScript.CSharpToTypeScriptGenerator#readme",
   "devDependencies": {
     "@types/jasmine": "^2.5.47",
+    "@types/node": "^8.0.24",
     "jasmine": "^2.6.0"
   },
   "dependencies": {

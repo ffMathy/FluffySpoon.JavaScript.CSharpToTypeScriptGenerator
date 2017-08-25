@@ -23,6 +23,9 @@ function pocoGen(contents, options) {
         },
         enumEmitOptions: {
             declare: true
+        },
+        structEmitOptions: {
+            declare: false
         }
     };
     emitter.logger.setLogMethod(function (message) {

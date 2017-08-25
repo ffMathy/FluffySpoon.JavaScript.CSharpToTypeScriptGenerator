@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var fluffy_spoon_javascript_csharp_parser_1 = require("fluffy-spoon.javascript.csharp-parser");
 var StringEmitter_1 = require("./StringEmitter");
+var StructEmitter_1 = require("./StructEmitter");
 var EnumEmitter_1 = require("./EnumEmitter");
 var ClassEmitter_1 = require("./ClassEmitter");
 var NamespaceEmitter_1 = require("./NamespaceEmitter");
@@ -14,6 +15,7 @@ var FileEmitter = (function () {
         this.enumEmitter = new EnumEmitter_1.EnumEmitter(this.stringEmitter, this.logger);
         this.classEmitter = new ClassEmitter_1.ClassEmitter(this.stringEmitter, this.logger);
         this.namespaceEmitter = new NamespaceEmitter_1.NamespaceEmitter(this.stringEmitter, this.logger);
+        this.structEmitter = new StructEmitter_1.StructEmitter(this.stringEmitter, this.logger);
     }
     FileEmitter.prototype.emitFile = function (options) {
         this.logger.log("Emitting file.");
@@ -42,6 +44,10 @@ var FileEmitter = (function () {
         }
         if (file.classes.length > 0) {
             this.classEmitter.emitClasses(file.classes, options.classEmitOptions);
+            this.stringEmitter.ensureLineSplit();
+        }
+        if (file.structs.length > 0) {
+            this.structEmitter.emitStructs(file.structs, options.structEmitOptions);
             this.stringEmitter.ensureLineSplit();
         }
         this.stringEmitter.removeLastNewLines();
