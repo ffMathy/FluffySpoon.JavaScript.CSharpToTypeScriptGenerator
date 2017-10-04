@@ -1,6 +1,8 @@
 ﻿import { FileEmitter, FileEmitOptions } from '../../../src/FileEmitter';
 import { PerFieldEmitOptions } from '../../../src/FieldEmitter';
+import { PerPropertyEmitOptions } from '../../../src/PropertyEmitter';
 import { PerClassEmitOptions } from '../../../src/ClassEmitter';
+import { PerMethodEmitOptions } from '../../../src/MethodEmitter';
 
 function pocoGen(contents, options) {
 	var emitter = new FileEmitter(contents);
@@ -51,17 +53,37 @@ function pocoGen(contents, options) {
 		}
 
 		if (options.propertyNameResolver) {
-			emitOptions.classEmitOptions.propertyEmitOptions.perPropertyEmitOptions = (property) => <PerFieldEmitOptions>{
+			emitOptions.classEmitOptions.propertyEmitOptions.perPropertyEmitOptions = (property) => <PerPropertyEmitOptions>{
 				name: options.propertyNameResolver(property.name)
 			};
 		}
 
+		if (options.methodNameResolver) {
+			emitOptions.classEmitOptions.methodEmitOptions.perMethodEmitOptions = (method) => <PerMethodEmitOptions>{
+				name: options.methodNameResolver(method.name)
+			};
+		}
+
+		if (options.interfaceNameResolver) {
+			var existing = emitOptions.classEmitOptions.perClassEmitOptions;
+			emitOptions.classEmitOptions.perClassEmitOptions = (classObject) => {
+				if(existing) existing(classObject);
+				return <PerClassEmitOptions>{
+					name: options.interfaceNameResolver(classObject.name)
+				};
+			};
+		}
+
 		if (options.prefixWithI) {
-			emitOptions.classEmitOptions.perClassEmitOptions = (classObject) => <PerClassEmitOptions>{
-				name: "I" + classObject.name,
-				inheritedTypeEmitOptions: {
-					mapper: (type, suggested) => "I" + suggested
-				}
+			var existing = emitOptions.classEmitOptions.perClassEmitOptions;
+			emitOptions.classEmitOptions.perClassEmitOptions = (classObject) => {
+				if(existing) existing(classObject);
+				return <PerClassEmitOptions>{
+					name: "I" + classObject.name,
+					inheritedTypeEmitOptions: {
+						mapper: (type, suggested) => "I" + suggested
+					}
+				};
 			};
 		}
 

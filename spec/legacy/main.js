@@ -43,7 +43,6 @@ namespace MyNamespace.Domain\n\
         public DateTime SomeDate {get;set;}\n\
         public decimal SomeDecimal {get;set;}\n\
         public Guid SomeGuid {get;set;}\n\
-        public JObject DynamicContents { get; set; }\n\
         public dynamic DynamicToAny { get; set; }\n\
         public object ObjectToAny { get; set; }\n\
     }\n\
@@ -62,10 +61,9 @@ var expectedOutput = "interface MyPoco {\n\
     SomeDate: string;\n\
     SomeDecimal: number;\n\
     SomeGuid: string;\n\
-    DynamicContents: any;\n\
     DynamicToAny: any;\n\
     ObjectToAny: any;\n\
-}\n";
+}";
 
 var pocoGen = require('./adapters/legacyAdapter.js');
 

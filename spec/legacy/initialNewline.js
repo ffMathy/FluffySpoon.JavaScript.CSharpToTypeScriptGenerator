@@ -17,7 +17,7 @@ namespace MyNamespace.Domain\n\
 var expectedOutput = "declare enum JustAnEnum {\n\
     One = 0,\n\
     Two = 1\n\
-}\n";
+}";
 
 var pocoGen = require('./adapters/legacyAdapter.js');
 

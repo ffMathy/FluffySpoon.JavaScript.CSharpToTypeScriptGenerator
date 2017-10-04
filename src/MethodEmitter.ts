@@ -3,11 +3,22 @@ import { StringEmitter } from './StringEmitter';
 import { TypeEmitter, TypeEmitOptions } from './TypeEmitter';
 import { Logger } from './Logger';
 
-export interface MethodEmitOptions {
+export interface MethodEmitOptionsBase {
 	filter?: (method: CSharpMethod) => boolean;
 
 	returnTypeEmitOptions?: TypeEmitOptions;
 	argumentTypeEmitOptions?: TypeEmitOptions;
+}
+
+export interface MethodEmitOptions extends MethodEmitOptionsBase {
+	perMethodEmitOptions?: (method: CSharpMethod) => PerMethodEmitOptions;
+}
+
+export interface PerMethodEmitOptions extends MethodEmitOptionsBase {
+	name?: string;
+}
+
+export interface MethodEmitOptions {
 }
 
 export class MethodEmitter {
@@ -20,7 +31,7 @@ export class MethodEmitter {
 		this.typeEmitter = new TypeEmitter(stringEmitter, logger);
 	}
 
-	emitMethods(methods: CSharpMethod[], options?: MethodEmitOptions) {
+	emitMethods(methods: CSharpMethod[], options?: MethodEmitOptions & PerMethodEmitOptions) {
 		options = this.prepareOptions(options);
 
 		for (var method of methods) {
@@ -28,8 +39,10 @@ export class MethodEmitter {
 		}
 	}
 
-	emitMethod(method: CSharpMethod, options?: MethodEmitOptions) {
-		options = this.prepareOptions(options);
+	emitMethod(method: CSharpMethod, options?: MethodEmitOptions & PerMethodEmitOptions) {
+		options = Object.assign(
+			this.prepareOptions(options),
+			options.perMethodEmitOptions(method));
 
 		if (!options.filter(method))
 			return;
@@ -38,7 +51,7 @@ export class MethodEmitter {
 			return;
 
 		this.stringEmitter.writeIndentation();
-		this.stringEmitter.write(method.name + "(");
+		this.stringEmitter.write((options.name || method.name) + "(");
 		this.emitMethodParameters(method.parameters, options);
 		this.stringEmitter.write("): ");
 		this.typeEmitter.emitType(method.returnType, options.returnTypeEmitOptions);
@@ -53,6 +66,10 @@ export class MethodEmitter {
 
 		if (!options.filter) {
 			options.filter = () => true;
+		}
+
+		if (!options.perMethodEmitOptions) {
+			options.perMethodEmitOptions = () => options;
 		}
 
 		return options;

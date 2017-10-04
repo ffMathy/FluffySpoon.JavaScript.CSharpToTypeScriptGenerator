@@ -63,7 +63,7 @@ var expectedOutput = "interface MyPoco {\n\
     MethodWithSingleParameter(baz: string): string;\n\
     EmptyMethodWithNewLineParameters(baz: string, buz: number): string;\n\
     EmptyVoid(): void;\n\
-}\n";
+}";
 
 var pocoGen = require('./adapters/legacyAdapter.js');
 

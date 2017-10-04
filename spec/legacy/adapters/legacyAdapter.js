@@ -52,13 +52,33 @@ function pocoGen(contents, options) {
                 name: options.propertyNameResolver(property.name)
             }); };
         }
-        if (options.prefixWithI) {
-            emitOptions.classEmitOptions.perClassEmitOptions = function (classObject) { return ({
-                name: "I" + classObject.name,
-                inheritedTypeEmitOptions: {
-                    mapper: function (type, suggested) { return "I" + suggested; }
-                }
+        if (options.methodNameResolver) {
+            emitOptions.classEmitOptions.methodEmitOptions.perMethodEmitOptions = function (method) { return ({
+                name: options.methodNameResolver(method.name)
             }); };
+        }
+        if (options.interfaceNameResolver) {
+            var existing = emitOptions.classEmitOptions.perClassEmitOptions;
+            emitOptions.classEmitOptions.perClassEmitOptions = function (classObject) {
+                if (existing)
+                    existing(classObject);
+                return {
+                    name: options.interfaceNameResolver(classObject.name)
+                };
+            };
+        }
+        if (options.prefixWithI) {
+            var existing = emitOptions.classEmitOptions.perClassEmitOptions;
+            emitOptions.classEmitOptions.perClassEmitOptions = function (classObject) {
+                if (existing)
+                    existing(classObject);
+                return {
+                    name: "I" + classObject.name,
+                    inheritedTypeEmitOptions: {
+                        mapper: function (type, suggested) { return "I" + suggested; }
+                    }
+                };
+            };
         }
         if (options.ignoreVirtual) {
             emitOptions.classEmitOptions.methodEmitOptions.filter = function (method) { return !method.isVirtual; };

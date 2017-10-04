@@ -17,9 +17,9 @@ namespace MyNamespace.Domain\n\
 
 var expectedOutput = "interface MyPoco {\n\
     Id: number;\n\
-    NameOfStuff: string;\n\
+    NameOfStuff: string;\n\n\
     foo(): string;\n\
-}\n";
+}";
 
 var pocoGen = require('./adapters/legacyAdapter.js');
 

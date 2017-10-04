@@ -14,13 +14,13 @@ var MethodEmitter = (function () {
         }
     };
     MethodEmitter.prototype.emitMethod = function (method, options) {
-        options = this.prepareOptions(options);
+        options = Object.assign(this.prepareOptions(options), options.perMethodEmitOptions(method));
         if (!options.filter(method))
             return;
         if (method.isConstructor)
             return;
         this.stringEmitter.writeIndentation();
-        this.stringEmitter.write(method.name + "(");
+        this.stringEmitter.write((options.name || method.name) + "(");
         this.emitMethodParameters(method.parameters, options);
         this.stringEmitter.write("): ");
         this.typeEmitter.emitType(method.returnType, options.returnTypeEmitOptions);
@@ -33,6 +33,9 @@ var MethodEmitter = (function () {
         }
         if (!options.filter) {
             options.filter = function () { return true; };
+        }
+        if (!options.perMethodEmitOptions) {
+            options.perMethodEmitOptions = function () { return options; };
         }
         return options;
     };
