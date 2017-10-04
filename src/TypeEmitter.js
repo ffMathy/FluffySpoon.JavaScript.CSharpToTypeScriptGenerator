@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 var fluffy_spoon_javascript_csharp_parser_1 = require("fluffy-spoon.javascript.csharp-parser");
 var RegExHelper_1 = require("./RegExHelper");
 var TypeEmitter = (function () {
@@ -13,9 +12,11 @@ var TypeEmitter = (function () {
             "List<T>": "T[]",
             "IEnumerable<T>": "T[]",
             "ICollection<T>": "T[]",
+            "Array<T>": "T[]",
             "HashSet<T>": "T[]",
             "IDictionary<T,K>": "{ [key: T]: K }",
             "Task<T>": "Promise<T>",
+            "Task": "Promise<void>",
             "int": "number",
             "double": "number",
             "float": "number",

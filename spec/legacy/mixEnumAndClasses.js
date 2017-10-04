@@ -49,7 +49,11 @@ namespace MyNamespace.Domain\n\
     }\n\
 }\n";
 
-var expectedOutput = "interface MyPoco {\n\
+var expectedOutput = "declare enum MyEnum {\n\
+    Green = 0,\n\
+    Blue = 1\n\
+}\n\n\
+interface MyPoco {\n\
     Id: number;\n\
     Name: string;\n\
     Title: string;\n\
@@ -60,12 +64,7 @@ var expectedOutput = "interface MyPoco {\n\
     SomeDate: string;\n\
     SomeDecimal: number;\n\
     SomeGuid: string;\n\
-}\n\
-\n\
-declare enum MyEnum {\n\
-    Green = 0,\n\
-    Blue = 1\n\
-}\n";
+}";
 var pocoGen = require('./adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function() {

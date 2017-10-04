@@ -83,9 +83,7 @@ export class NamespaceEmitter {
 		}
 
 		if (namespace.structs.length > 0) {
-			var subStructOptions = Object.assign(options, <StructEmitOptions>{
-				declare: options.skip
-			});
+			var subStructOptions = Object.assign(options, <StructEmitOptions>{});
 			this.structEmitter.emitStructs(
 				namespace.structs,
 				subStructOptions);

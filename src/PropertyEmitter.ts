@@ -48,7 +48,7 @@ export class PropertyEmitter {
 		if (options.readOnly)
 			this.stringEmitter.write("readonly ");
 
-		this.stringEmitter.write((options.name || property.name) + ": ");
+		this.stringEmitter.write((options.name || property.name) + (property.type.isNullable ? "?" : "") + ": ");
 		this.typeEmitter.emitType(property.type, options.typeEmitOptions);
 		this.stringEmitter.write(";");
 		this.stringEmitter.writeLine();

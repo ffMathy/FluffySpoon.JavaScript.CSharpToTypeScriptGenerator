@@ -46,8 +46,10 @@ export class FileEmitter {
 			options = {};
 		}
 
-		if (options.classEmitOptions && options.namespaceEmitOptions) {
-			options.namespaceEmitOptions.classEmitOptions = options.classEmitOptions;
+		if (options.classEmitOptions) {
+			if(options.namespaceEmitOptions) {
+				options.namespaceEmitOptions.classEmitOptions = options.classEmitOptions;
+			}
 		}
 
 		if (options.enumEmitOptions) {
@@ -56,6 +58,12 @@ export class FileEmitter {
 			}
 			if (options.namespaceEmitOptions) {
 				options.namespaceEmitOptions.enumEmitOptions = options.enumEmitOptions;
+			}
+		}
+
+		if(options.structEmitOptions) {
+			if(options.namespaceEmitOptions) {
+				options.namespaceEmitOptions.structEmitOptions = options.structEmitOptions;
 			}
 		}
 

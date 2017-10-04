@@ -6,7 +6,10 @@ function pocoGen(contents, options) {
 	var emitter = new FileEmitter(contents);
 	var emitOptions = <FileEmitOptions>{
 		namespaceEmitOptions: {
-			skip: true
+			skip: true,
+			structEmitOptions: {
+				declare: false
+			}
 		},
 		classEmitOptions: {
 			declare: false,

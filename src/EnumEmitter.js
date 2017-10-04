@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 var EnumEmitter = (function () {
     function EnumEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
@@ -49,7 +48,8 @@ var EnumEmitter = (function () {
         this.stringEmitter.increaseIndentation();
         for (var _i = 0, _a = enumObject.options; _i < _a.length; _i++) {
             var option = _a[_i];
-            this.emitEnumOption(option, options);
+            var isLastOption = option === enumObject.options[enumObject.options.length - 1];
+            this.emitEnumOption(option, isLastOption, options);
         }
         if (options.strategy === "default") {
             this.stringEmitter.removeLastCharacters(',');
@@ -63,10 +63,13 @@ var EnumEmitter = (function () {
         }
         this.stringEmitter.ensureLineSplit();
     };
-    EnumEmitter.prototype.emitEnumOption = function (option, options) {
+    EnumEmitter.prototype.emitEnumOption = function (option, isLast, options) {
         this.logger.log("Emitting enum option", option);
         if (options.strategy === "default") {
-            this.stringEmitter.writeLine(option.name + " = " + option.value + ",");
+            this.stringEmitter.write(this.stringEmitter.currentIndentation + option.name + " = " + option.value);
+            if (!isLast)
+                this.stringEmitter.write(",");
+            this.stringEmitter.writeLine();
         }
         else if (options.strategy === "string-union") {
             this.stringEmitter.writeLine("'" + option.name + "' |");

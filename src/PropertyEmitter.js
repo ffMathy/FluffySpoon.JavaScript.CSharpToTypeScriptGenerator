@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 var TypeEmitter_1 = require("./TypeEmitter");
 var PropertyEmitter = (function () {
     function PropertyEmitter(stringEmitter, logger) {
@@ -21,7 +20,7 @@ var PropertyEmitter = (function () {
         this.stringEmitter.writeIndentation();
         if (options.readOnly)
             this.stringEmitter.write("readonly ");
-        this.stringEmitter.write((options.name || property.name) + ": ");
+        this.stringEmitter.write((options.name || property.name) + (property.type.isNullable ? "?" : "") + ": ");
         this.typeEmitter.emitType(property.type, options.typeEmitOptions);
         this.stringEmitter.write(";");
         this.stringEmitter.writeLine();

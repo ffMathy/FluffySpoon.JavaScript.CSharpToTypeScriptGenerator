@@ -67,8 +67,10 @@ export class EnumEmitter {
 		this.stringEmitter.writeLine();
 		this.stringEmitter.increaseIndentation();
 
-		for (var option of enumObject.options)
-			this.emitEnumOption(option, options);
+		for (var option of enumObject.options) {
+			var isLastOption = option === enumObject.options[enumObject.options.length-1];
+			this.emitEnumOption(option, isLastOption, options);
+		}
 
 		if (options.strategy === "default") {
 			this.stringEmitter.removeLastCharacters(',');
@@ -87,11 +89,16 @@ export class EnumEmitter {
 
 	private emitEnumOption(
 		option: CSharpEnumOption,
+		isLast: boolean,
 		options: EnumEmitOptions)
 	{
 		this.logger.log("Emitting enum option", option);
 		if (options.strategy === "default") {
-			this.stringEmitter.writeLine(option.name + " = " + option.value + ",");
+			this.stringEmitter.write(this.stringEmitter.currentIndentation + option.name + " = " + option.value);
+			if(!isLast) 
+				this.stringEmitter.write(",");
+
+			this.stringEmitter.writeLine();
 		} else if (options.strategy === "string-union") {
 			this.stringEmitter.writeLine("'" + option.name + "' |");
 		}
