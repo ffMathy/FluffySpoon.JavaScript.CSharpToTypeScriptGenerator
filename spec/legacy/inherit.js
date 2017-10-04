@@ -55,7 +55,7 @@ var expectedOutput = "interface MyPoco extends BasePoco {\n\
     SomeDate: string;\n\
     SomeDecimal: number;\n\
     SomeGuid: string;\n\
-}\n";
+}";
 
 var pocoGen = require('./adapters/legacyAdapter.js');
 

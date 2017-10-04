@@ -24,11 +24,12 @@ var ClassEmitter = (function () {
         this.logger.log("Done emitting classes", classes);
     };
     ClassEmitter.prototype.emitClass = function (classObject, options) {
+        options = Object.assign(this.prepareOptions(options), options.perClassEmitOptions(classObject));
+        if (!options.filter(classObject))
+            return;
         this.logger.log("Emitting class", classObject);
-        options = this.prepareOptions(options);
-        options = Object.assign(options, options.perClassEmitOptions(classObject));
         this.emitClassInterface(classObject, options);
-        this.emitEnumsAndSubclassesInClass(classObject, options);
+        this.emitSubElementsInClass(classObject, options);
         this.stringEmitter.ensureLineSplit();
         this.logger.log("Done emitting class", classObject);
     };
@@ -38,6 +39,9 @@ var ClassEmitter = (function () {
                 declare: true
             };
         }
+        if (!options.filter) {
+            options.filter = function () { return true; };
+        }
         if (!options.perClassEmitOptions) {
             options.perClassEmitOptions = function () { return options; };
         }
@@ -45,16 +49,16 @@ var ClassEmitter = (function () {
     };
     ClassEmitter.prototype.emitClassInterface = function (classObject, options) {
         if (classObject.properties.length === 0 && classObject.methods.length === 0 && classObject.fields.length === 0) {
-            this.logger.log("Skipping interface " + classObject.name + " because it contains no properties, fields or methods");
+            this.logger.log("Skipping class " + classObject.name + " because it contains no properties, fields or methods");
             return;
         }
         this.stringEmitter.writeIndentation();
         if (options.declare)
             this.stringEmitter.write("declare ");
         var className = options.name || classObject.name;
-        this.logger.log("Emitting interface " + className);
+        this.logger.log("Emitting class " + className);
         this.stringEmitter.write("interface " + className);
-        if (classObject.inheritsFrom) {
+        if (classObject.inheritsFrom && this.typeEmitter.canEmitType(classObject.inheritsFrom, options.inheritedTypeEmitOptions)) {
             this.stringEmitter.write(" extends ");
             this.typeEmitter.emitType(classObject.inheritsFrom, options.inheritedTypeEmitOptions);
         }
@@ -79,8 +83,8 @@ var ClassEmitter = (function () {
         this.stringEmitter.writeLine("}");
         this.stringEmitter.ensureLineSplit();
     };
-    ClassEmitter.prototype.emitEnumsAndSubclassesInClass = function (classObject, options) {
-        if (classObject.enums.length === 0 && classObject.classes.length === 0) {
+    ClassEmitter.prototype.emitSubElementsInClass = function (classObject, options) {
+        if (classObject.enums.length === 0 && classObject.classes.length === 0 && classObject.interfaces.length === 0) {
             return;
         }
         this.stringEmitter.writeIndentation();
@@ -98,6 +102,10 @@ var ClassEmitter = (function () {
             declare: false
         });
         this.emitClasses(classObject.classes, subClassOptions);
+        var classInterfaceOptions = Object.assign(options, {
+            declare: false
+        });
+        this.interfaceEmitter.emitInterfaces(classObject.interfaces, classInterfaceOptions);
         this.stringEmitter.ensureLineSplit();
         this.stringEmitter.decreaseIndentation();
         this.stringEmitter.writeLine();

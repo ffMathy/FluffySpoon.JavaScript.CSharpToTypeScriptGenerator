@@ -1,6 +1,7 @@
 "use strict";
 var EnumEmitter_1 = require("./EnumEmitter");
 var ClassEmitter_1 = require("./ClassEmitter");
+var InterfaceEmitter_1 = require("./InterfaceEmitter");
 var StructEmitter_1 = require("./StructEmitter");
 var NamespaceEmitter = (function () {
     function NamespaceEmitter(stringEmitter, logger) {
@@ -8,6 +9,7 @@ var NamespaceEmitter = (function () {
         this.logger = logger;
         this.enumEmitter = new EnumEmitter_1.EnumEmitter(stringEmitter, logger);
         this.classEmitter = new ClassEmitter_1.ClassEmitter(stringEmitter, logger);
+        this.interfaceEmitter = new InterfaceEmitter_1.InterfaceEmitter(stringEmitter, logger);
         this.structEmitter = new StructEmitter_1.StructEmitter(stringEmitter, logger);
     }
     NamespaceEmitter.prototype.emitNamespaces = function (namespaces, options) {
@@ -25,8 +27,8 @@ var NamespaceEmitter = (function () {
                 declare: true
             };
         }
-        if (namespace.enums.length === 0 && namespace.namespaces.length === 0 && namespace.classes.length === 0) {
-            console.log("Skipping namespace " + namespace.name + " because it contains no enums, classes or namespaces");
+        if (namespace.enums.length === 0 && namespace.namespaces.length === 0 && namespace.classes.length === 0 && namespace.interfaces.length === 0) {
+            console.log("Skipping namespace " + namespace.name + " because it contains no enums, classes, interfaces or namespaces");
             return;
         }
         this.logger.log("Emitting namespace", namespace);
@@ -45,16 +47,29 @@ var NamespaceEmitter = (function () {
             this.enumEmitter.emitEnums(namespace.enums, namespaceEnumOptions);
             this.stringEmitter.ensureLineSplit();
         }
+        if (namespace.interfaces.length > 0) {
+            var declare = typeof options.interfaceEmitOptions.declare !== "undefined" ?
+                options.interfaceEmitOptions.declare :
+                options.skip;
+            var interfaceOptions = Object.assign(options.interfaceEmitOptions, {
+                declare: declare
+            });
+            this.interfaceEmitter.emitInterfaces(namespace.interfaces, interfaceOptions);
+            this.stringEmitter.ensureLineSplit();
+        }
         if (namespace.classes.length > 0) {
             this.classEmitter.emitClasses(namespace.classes, options.classEmitOptions);
             this.stringEmitter.ensureLineSplit();
         }
         if (namespace.structs.length > 0) {
-            var subStructOptions = Object.assign(options, {});
+            var subStructOptions = Object.assign(options.structEmitOptions, {});
             this.structEmitter.emitStructs(namespace.structs, subStructOptions);
             this.stringEmitter.ensureLineSplit();
         }
         if (namespace.namespaces.length > 0) {
+            var declare = typeof options.declare !== "undefined" ?
+                options.declare :
+                options.skip;
             var subNamespaceOptions = Object.assign(options, {
                 declare: options.skip
             });

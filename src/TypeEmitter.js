@@ -32,15 +32,24 @@ var TypeEmitter = (function () {
             "object": "any"
         };
     }
+    TypeEmitter.prototype.canEmitType = function (type, options) {
+        return this.prepareOptions(options).filter(type);
+    };
     TypeEmitter.prototype.emitType = function (type, options) {
         options = this.prepareOptions(options);
-        this.logger.log("Emitting type " + type.fullName);
+        if (!options.filter(type))
+            return;
         var mapping = this.getMatchingTypeMapping(type, options);
+        this.logger.log("Emitting type " + type.fullName);
         this.stringEmitter.write(mapping);
+        return type;
     };
     TypeEmitter.prototype.prepareOptions = function (options) {
         if (!options) {
             options = {};
+        }
+        if (!options.filter) {
+            options.filter = function (property) { return true; };
         }
         return options;
     };
@@ -55,9 +64,8 @@ var TypeEmitter = (function () {
     TypeEmitter.prototype.getMatchingTypeMapping = function (type, options) {
         if (options && options.mapper) {
             var mapping = options.mapper(type, this.getMatchingTypeMapping(type));
-            if (mapping) {
+            if (mapping)
                 return mapping;
-            }
         }
         for (var mappingKey in this.defaultTypeMap) {
             if (!this.defaultTypeMap.hasOwnProperty(mappingKey))
@@ -65,11 +73,11 @@ var TypeEmitter = (function () {
             var mappingKeyType = this.typeParser.parseType(mappingKey);
             if (type.name !== mappingKeyType.name)
                 continue;
-            var mapping = this.defaultTypeMap[mappingKey];
+            var mapping_1 = this.defaultTypeMap[mappingKey];
             if (mappingKeyType.genericParameters) {
-                mapping = this.substituteMultipleGenericReferencesIntoMapping(mappingKeyType, type, mapping, options);
+                mapping_1 = this.substituteMultipleGenericReferencesIntoMapping(mappingKeyType, type, mapping_1, options);
             }
-            return mapping;
+            return mapping_1;
         }
         return type.name;
     };

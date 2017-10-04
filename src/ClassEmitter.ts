@@ -3,15 +3,18 @@ import { StringEmitter } from './StringEmitter';
 import { EnumEmitter, EnumEmitOptions } from './EnumEmitter';
 import { TypeEmitter, TypeEmitOptions } from './TypeEmitter';
 import { PropertyEmitter, PropertyEmitOptions } from './PropertyEmitter';
+import { InterfaceEmitter, InterfaceEmitOptions } from './InterfaceEmitter';
 import { FieldEmitter, FieldEmitOptions } from './FieldEmitter';
 import { MethodEmitter, MethodEmitOptions } from './MethodEmitter';
 import { Logger } from './Logger';
 
 export interface ClassEmitOptionsBase {
-	declare: boolean;
+	declare?: boolean;
+	filter?: (method: CSharpClass) => boolean;
 
 	enumEmitOptions?: EnumEmitOptions;
 	propertyEmitOptions?: PropertyEmitOptions;
+	interfaceEmitOptions?: InterfaceEmitOptions;
 	methodEmitOptions?: MethodEmitOptions;
 	fieldEmitOptions?: FieldEmitOptions;
 	inheritedTypeEmitOptions?: TypeEmitOptions;
@@ -30,6 +33,7 @@ export class ClassEmitter {
 	private propertyEmitter: PropertyEmitter;
 	private fieldEmitter: FieldEmitter;
 	private methodEmitter: MethodEmitter;
+	private interfaceEmitter: InterfaceEmitter;
 	private typeEmitter: TypeEmitter;
 
 	constructor(
@@ -56,15 +60,17 @@ export class ClassEmitter {
 	}
 
 	emitClass(classObject: CSharpClass, options?: ClassEmitOptions) {
-		this.logger.log("Emitting class", classObject);
-
-		options = this.prepareOptions(options);
 		options = Object.assign(
-			options,
+			this.prepareOptions(options),
 			options.perClassEmitOptions(classObject));
 
+		if (!options.filter(classObject))
+			return;
+			
+		this.logger.log("Emitting class", classObject);
+
 		this.emitClassInterface(classObject, options);
-		this.emitEnumsAndSubclassesInClass(classObject, options);
+		this.emitSubElementsInClass(classObject, options);
 
 		this.stringEmitter.ensureLineSplit();
 
@@ -78,6 +84,10 @@ export class ClassEmitter {
 			}
 		}
 
+		if (!options.filter) {
+			options.filter = () => true;
+		}
+
 		if (!options.perClassEmitOptions) {
 			options.perClassEmitOptions = () => options;
 		}
@@ -87,7 +97,7 @@ export class ClassEmitter {
 
 	private emitClassInterface(classObject: CSharpClass, options?: ClassEmitOptions & PerClassEmitOptions) {
 		if (classObject.properties.length === 0 && classObject.methods.length === 0 && classObject.fields.length === 0) {
-			this.logger.log("Skipping interface " + classObject.name + " because it contains no properties, fields or methods");
+			this.logger.log("Skipping class " + classObject.name + " because it contains no properties, fields or methods");
 			return;
 		}
 
@@ -97,11 +107,11 @@ export class ClassEmitter {
 			this.stringEmitter.write("declare ");
 
 		var className = options.name || classObject.name;
-		this.logger.log("Emitting interface " + className);
+		this.logger.log("Emitting class " + className);
 
 		this.stringEmitter.write("interface " + className);
 
-		if (classObject.inheritsFrom) {
+		if (classObject.inheritsFrom && this.typeEmitter.canEmitType(classObject.inheritsFrom, options.inheritedTypeEmitOptions)) {
 			this.stringEmitter.write(" extends ");
 			this.typeEmitter.emitType(
 				classObject.inheritsFrom,
@@ -138,8 +148,8 @@ export class ClassEmitter {
 		this.stringEmitter.ensureLineSplit();
 	}
 
-	private emitEnumsAndSubclassesInClass(classObject: CSharpClass, options?: ClassEmitOptions) {
-		if (classObject.enums.length === 0 && classObject.classes.length === 0) {
+	private emitSubElementsInClass(classObject: CSharpClass, options?: ClassEmitOptions) {
+		if (classObject.enums.length === 0 && classObject.classes.length === 0 && classObject.interfaces.length === 0) {
 			return;
 		}
 
@@ -169,6 +179,13 @@ export class ClassEmitter {
 		this.emitClasses(
 			classObject.classes,
 			subClassOptions);
+
+		var classInterfaceOptions = Object.assign(options, <InterfaceEmitOptions>{
+			declare: false
+		});
+		this.interfaceEmitter.emitInterfaces(
+			classObject.interfaces,
+			classInterfaceOptions);
 
 		this.stringEmitter.ensureLineSplit();
 

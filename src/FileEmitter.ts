@@ -5,6 +5,7 @@ import { TypeEmitOptions } from './TypeEmitter';
 import { StructEmitter, StructEmitOptions } from './StructEmitter';
 import { EnumEmitter, EnumEmitOptions } from './EnumEmitter';
 import { ClassEmitter, ClassEmitOptions } from './ClassEmitter';
+import { InterfaceEmitter, InterfaceEmitOptions } from './InterfaceEmitter';
 import { NamespaceEmitter, NamespaceEmitOptions } from './NamespaceEmitter';
 import { Logger } from './Logger';
  
@@ -12,7 +13,8 @@ export interface FileEmitOptions {
 	classEmitOptions?: ClassEmitOptions,
 	namespaceEmitOptions?: NamespaceEmitOptions,
     enumEmitOptions?: EnumEmitOptions,
-    structEmitOptions?: StructEmitOptions
+    structEmitOptions?: StructEmitOptions,
+	interfaceEmitOptions?: InterfaceEmitOptions
 }
 
 export class FileEmitter {
@@ -22,6 +24,7 @@ export class FileEmitter {
     private fileParser: FileParser;
     private enumEmitter: EnumEmitter;
     private classEmitter: ClassEmitter;
+    private interfaceEmitter: InterfaceEmitter;
     private namespaceEmitter: NamespaceEmitter;
     private structEmitter: StructEmitter;
 
@@ -34,6 +37,7 @@ export class FileEmitter {
 
         this.enumEmitter = new EnumEmitter(this.stringEmitter, this.logger);
         this.classEmitter = new ClassEmitter(this.stringEmitter, this.logger);
+        this.interfaceEmitter = new InterfaceEmitter(this.stringEmitter, this.logger);
         this.namespaceEmitter = new NamespaceEmitter(this.stringEmitter, this.logger);
         this.structEmitter = new StructEmitter(this.stringEmitter, this.logger);
     }
@@ -49,6 +53,15 @@ export class FileEmitter {
 		if (options.classEmitOptions) {
 			if(options.namespaceEmitOptions) {
 				options.namespaceEmitOptions.classEmitOptions = options.classEmitOptions;
+			}
+		}
+
+		if (options.interfaceEmitOptions) {
+			if(options.namespaceEmitOptions) {
+				options.namespaceEmitOptions.interfaceEmitOptions = options.interfaceEmitOptions;
+			}
+			if (options.classEmitOptions) {
+				options.classEmitOptions.interfaceEmitOptions = options.interfaceEmitOptions;
 			}
 		}
 
@@ -78,6 +91,11 @@ export class FileEmitter {
 			this.namespaceEmitter.emitNamespaces(file.namespaces, options.namespaceEmitOptions);
 			this.stringEmitter.ensureLineSplit();
 		}
+
+		if (file.interfaces.length > 0) {
+			this.interfaceEmitter.emitInterfaces(file.interfaces, options.interfaceEmitOptions);
+			this.stringEmitter.ensureLineSplit();
+        }
 
 		if (file.classes.length > 0) {
 			this.classEmitter.emitClasses(file.classes, options.classEmitOptions);

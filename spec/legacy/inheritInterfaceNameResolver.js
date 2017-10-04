@@ -43,7 +43,6 @@ namespace MyNamespace.Domain\n\
         public bool? OptionalBool {get; set;}\n\
         public DateTime SomeDate {get;set;}\n\
         public decimal SomeDecimal {get;set;}\n\
-        public Guid SomeGuid {get;set;}\n\
     }\n\
 }\n";
 
@@ -58,8 +57,7 @@ namespace MyNamespace.Domain\n\
     OptionalBool?: boolean;\n\
     SomeDate: string;\n\
     SomeDecimal: number;\n\
-    SomeGuid: string;\n\
-}\n";
+}";
 
         var result = pocoGen(sampleFile, { interfaceNameResolver: camelCaseResolver, debug: true });
 
@@ -125,7 +123,7 @@ namespace MyNamespace.Domain\n\
     SomeDate: string;\n\
     SomeDecimal: number;\n\
     SomeGuid: string;\n\
-}\n";
+}";
 
         var result = pocoGen(sampleFile, { interfaceNameResolver: camelCaseResolver, prefixWithI: true, debug: true });
 

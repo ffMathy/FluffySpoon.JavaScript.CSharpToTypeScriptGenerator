@@ -2,6 +2,7 @@
 import { StringEmitter } from './StringEmitter';
 import { EnumEmitter, EnumEmitOptions } from './EnumEmitter';
 import { ClassEmitter, ClassEmitOptions } from './ClassEmitter';
+import { InterfaceEmitter, InterfaceEmitOptions } from './InterfaceEmitter';
 import { StructEmitter, StructEmitOptions } from './StructEmitter';
 import { Logger } from './Logger';
 
@@ -10,6 +11,7 @@ export interface NamespaceEmitOptions {
 	skip?: boolean;
 
 	classEmitOptions?: ClassEmitOptions;
+	interfaceEmitOptions?: InterfaceEmitOptions;
 	structEmitOptions?: StructEmitOptions;
 	enumEmitOptions?: EnumEmitOptions;
 }
@@ -17,6 +19,7 @@ export interface NamespaceEmitOptions {
 export class NamespaceEmitter {
 	private enumEmitter: EnumEmitter;
 	private classEmitter: ClassEmitter;
+	private interfaceEmitter: InterfaceEmitter;
 	private structEmitter: StructEmitter;
 
 	constructor(
@@ -25,6 +28,7 @@ export class NamespaceEmitter {
 	) {
 		this.enumEmitter = new EnumEmitter(stringEmitter, logger);
 		this.classEmitter = new ClassEmitter(stringEmitter, logger);
+		this.interfaceEmitter = new InterfaceEmitter(stringEmitter, logger);
 		this.structEmitter = new StructEmitter(stringEmitter, logger);
 	}
 
@@ -47,8 +51,8 @@ export class NamespaceEmitter {
 			}
 		}
 
-		if (namespace.enums.length === 0 && namespace.namespaces.length === 0 && namespace.classes.length === 0) {
-			console.log("Skipping namespace " + namespace.name + " because it contains no enums, classes or namespaces");
+		if (namespace.enums.length === 0 && namespace.namespaces.length === 0 && namespace.classes.length === 0 && namespace.interfaces.length === 0) {
+			console.log("Skipping namespace " + namespace.name + " because it contains no enums, classes, interfaces or namespaces");
 			return;
 		}
 
@@ -75,6 +79,19 @@ export class NamespaceEmitter {
 			this.stringEmitter.ensureLineSplit();
 		}
 
+		if (namespace.interfaces.length > 0) {
+			var declare = typeof options.interfaceEmitOptions.declare !== "undefined" ? 
+				options.interfaceEmitOptions.declare : 
+				options.skip;
+			var interfaceOptions = Object.assign(options.interfaceEmitOptions, <InterfaceEmitOptions>{
+				declare
+			});
+			this.interfaceEmitter.emitInterfaces(
+				namespace.interfaces,
+				interfaceOptions);
+			this.stringEmitter.ensureLineSplit();
+		}
+
 		if (namespace.classes.length > 0) {
 			this.classEmitter.emitClasses(
 				namespace.classes,
@@ -83,7 +100,7 @@ export class NamespaceEmitter {
 		}
 
 		if (namespace.structs.length > 0) {
-			var subStructOptions = Object.assign(options, <StructEmitOptions>{});
+			var subStructOptions = Object.assign(options.structEmitOptions, <StructEmitOptions>{});
 			this.structEmitter.emitStructs(
 				namespace.structs,
 				subStructOptions);
@@ -91,6 +108,9 @@ export class NamespaceEmitter {
 		}
 
 		if (namespace.namespaces.length > 0) {
+			var declare = typeof options.declare !== "undefined" ? 
+				options.declare : 
+				options.skip;
 			var subNamespaceOptions = Object.assign(options, <NamespaceEmitOptions>{
 				declare: options.skip
 			});

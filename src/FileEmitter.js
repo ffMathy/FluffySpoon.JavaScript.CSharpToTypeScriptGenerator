@@ -4,6 +4,7 @@ var StringEmitter_1 = require("./StringEmitter");
 var StructEmitter_1 = require("./StructEmitter");
 var EnumEmitter_1 = require("./EnumEmitter");
 var ClassEmitter_1 = require("./ClassEmitter");
+var InterfaceEmitter_1 = require("./InterfaceEmitter");
 var NamespaceEmitter_1 = require("./NamespaceEmitter");
 var Logger_1 = require("./Logger");
 var FileEmitter = (function () {
@@ -13,6 +14,7 @@ var FileEmitter = (function () {
         this.stringEmitter = new StringEmitter_1.StringEmitter(this.logger);
         this.enumEmitter = new EnumEmitter_1.EnumEmitter(this.stringEmitter, this.logger);
         this.classEmitter = new ClassEmitter_1.ClassEmitter(this.stringEmitter, this.logger);
+        this.interfaceEmitter = new InterfaceEmitter_1.InterfaceEmitter(this.stringEmitter, this.logger);
         this.namespaceEmitter = new NamespaceEmitter_1.NamespaceEmitter(this.stringEmitter, this.logger);
         this.structEmitter = new StructEmitter_1.StructEmitter(this.stringEmitter, this.logger);
     }
@@ -24,6 +26,14 @@ var FileEmitter = (function () {
         if (options.classEmitOptions) {
             if (options.namespaceEmitOptions) {
                 options.namespaceEmitOptions.classEmitOptions = options.classEmitOptions;
+            }
+        }
+        if (options.interfaceEmitOptions) {
+            if (options.namespaceEmitOptions) {
+                options.namespaceEmitOptions.interfaceEmitOptions = options.interfaceEmitOptions;
+            }
+            if (options.classEmitOptions) {
+                options.classEmitOptions.interfaceEmitOptions = options.interfaceEmitOptions;
             }
         }
         if (options.enumEmitOptions) {
@@ -46,6 +56,10 @@ var FileEmitter = (function () {
         }
         if (file.namespaces.length > 0) {
             this.namespaceEmitter.emitNamespaces(file.namespaces, options.namespaceEmitOptions);
+            this.stringEmitter.ensureLineSplit();
+        }
+        if (file.interfaces.length > 0) {
+            this.interfaceEmitter.emitInterfaces(file.interfaces, options.interfaceEmitOptions);
             this.stringEmitter.ensureLineSplit();
         }
         if (file.classes.length > 0) {

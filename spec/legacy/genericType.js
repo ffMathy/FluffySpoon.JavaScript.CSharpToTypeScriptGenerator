@@ -13,7 +13,7 @@ public class Profile\n\
 var expectedOutput = "\
 interface Profile {\n\
     Value: Entry<boolean>;\n\
-}\n";
+}";
 
 var pocoGen = require('./adapters/legacyAdapter.js');
 

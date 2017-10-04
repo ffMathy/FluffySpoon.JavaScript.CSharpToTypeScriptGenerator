@@ -23,7 +23,7 @@ var expectedOutput = "interface IPoco {\n\
 interface MyPoco extends IPoco {\n\
     Id: number;\n\
     Name: string;\n\
-}\n";
+}";
 
 var pocoGen = require('./adapters/legacyAdapter.js');
 

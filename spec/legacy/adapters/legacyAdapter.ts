@@ -2,7 +2,15 @@
 import { PerFieldEmitOptions } from '../../../src/FieldEmitter';
 import { PerPropertyEmitOptions } from '../../../src/PropertyEmitter';
 import { PerClassEmitOptions } from '../../../src/ClassEmitter';
+import { PerInterfaceEmitOptions } from '../../../src/InterfaceEmitter';
 import { PerMethodEmitOptions } from '../../../src/MethodEmitter';
+
+import {
+	CSharpClass,
+	CSharpInterface
+} from 'fluffy-spoon.javascript.csharp-parser';
+
+declare type InterfaceNameDecorationFunction = (input: CSharpClass|CSharpInterface) => PerClassEmitOptions|PerInterfaceEmitOptions;
 
 function pocoGen(contents, options) {
 	var emitter = new FileEmitter(contents);
@@ -10,6 +18,9 @@ function pocoGen(contents, options) {
 		namespaceEmitOptions: {
 			skip: true,
 			structEmitOptions: {
+				declare: false
+			},
+			interfaceEmitOptions: {
 				declare: false
 			}
 		},
@@ -31,6 +42,16 @@ function pocoGen(contents, options) {
 		enumEmitOptions: {
 			declare: true
         },
+		interfaceEmitOptions: {
+			declare: false,
+			methodEmitOptions: {
+				argumentTypeEmitOptions: {},
+				returnTypeEmitOptions: {}
+			},
+			propertyEmitOptions: {
+				typeEmitOptions: {}
+			}
+		},
         structEmitOptions: {
             declare: false
         }
@@ -53,38 +74,49 @@ function pocoGen(contents, options) {
 		}
 
 		if (options.propertyNameResolver) {
-			emitOptions.classEmitOptions.propertyEmitOptions.perPropertyEmitOptions = (property) => <PerPropertyEmitOptions>{
+			emitOptions.classEmitOptions.propertyEmitOptions.perPropertyEmitOptions = 
+			emitOptions.interfaceEmitOptions.propertyEmitOptions.perPropertyEmitOptions = (property) => <PerPropertyEmitOptions>{
 				name: options.propertyNameResolver(property.name)
 			};
 		}
 
 		if (options.methodNameResolver) {
+			emitOptions.interfaceEmitOptions.methodEmitOptions.perMethodEmitOptions = 
 			emitOptions.classEmitOptions.methodEmitOptions.perMethodEmitOptions = (method) => <PerMethodEmitOptions>{
 				name: options.methodNameResolver(method.name)
 			};
 		}
 
-		if (options.interfaceNameResolver) {
-			var existing = emitOptions.classEmitOptions.perClassEmitOptions;
-			emitOptions.classEmitOptions.perClassEmitOptions = (classObject) => {
-				if(existing) existing(classObject);
-				return <PerClassEmitOptions>{
-					name: options.interfaceNameResolver(classObject.name)
-				};
+		let perInterfaceOrClassOptions = (input: CSharpClass|CSharpInterface) => <PerInterfaceEmitOptions|PerClassEmitOptions>{
+				name: input.name,
+				inheritedTypeEmitOptions: {
+					mapper: (type, suggestedOutput) => suggestedOutput
+				}
 			};
+		if (options.interfaceNameResolver) {
+			perInterfaceOrClassOptions = (interfaceObject) => <PerInterfaceEmitOptions|PerClassEmitOptions>{
+				name: options.interfaceNameResolver(interfaceObject.name),
+				inheritedTypeEmitOptions: {
+					mapper: (type, suggestedOutput) => options.interfaceNameResolver(suggestedOutput)
+				}
+			};
+
+			emitOptions.interfaceEmitOptions.perInterfaceEmitOptions = 
+			emitOptions.classEmitOptions.perClassEmitOptions = perInterfaceOrClassOptions;
 		}
 
 		if (options.prefixWithI) {
-			var existing = emitOptions.classEmitOptions.perClassEmitOptions;
-			emitOptions.classEmitOptions.perClassEmitOptions = (classObject) => {
-				if(existing) existing(classObject);
-				return <PerClassEmitOptions>{
-					name: "I" + classObject.name,
-					inheritedTypeEmitOptions: {
-						mapper: (type, suggested) => "I" + suggested
-					}
-				};
+			var prefixWithIPerInterfaceOrClassOptions = perInterfaceOrClassOptions;
+			perInterfaceOrClassOptions = (classObject) => <PerClassEmitOptions>{
+				name: "I" + prefixWithIPerInterfaceOrClassOptions(classObject).name,
+				inheritedTypeEmitOptions: {
+					mapper: (type, suggested) => 
+						"I" + prefixWithIPerInterfaceOrClassOptions(classObject).inheritedTypeEmitOptions.mapper(type, suggested)
+				}
 			};
+
+			emitOptions.classEmitOptions.perClassEmitOptions = 
+			emitOptions.interfaceEmitOptions.perInterfaceEmitOptions = perInterfaceOrClassOptions;
 		}
 
 		if (options.ignoreVirtual) {
@@ -92,9 +124,23 @@ function pocoGen(contents, options) {
 			emitOptions.classEmitOptions.propertyEmitOptions.filter = (property) => !property.isVirtual;
 		}
 
+		if(options.ignoreMethods) {
+			emitOptions.classEmitOptions.methodEmitOptions.filter = (method) => false;
+		}
+
 		if (options.stripReadOnly) {
 			emitOptions.classEmitOptions.fieldEmitOptions.perFieldEmitOptions = () => <PerFieldEmitOptions>{
 				readOnly: false
+			};
+		}
+
+		if(options.ignoreInheritance) {
+			emitOptions.interfaceEmitOptions.filter = (classObject) => options.ignoreInheritance.indexOf(classObject.name) === -1;
+			emitOptions.classEmitOptions.filter = (classObject) => options.ignoreInheritance.indexOf(classObject.name) === -1;
+			emitOptions.classEmitOptions.perClassEmitOptions = (classObject) => <PerClassEmitOptions>{
+				inheritedTypeEmitOptions: {
+					filter: (type) => options.ignoreInheritance.indexOf(type.name) === -1
+				}
 			};
 		}
 

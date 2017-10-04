@@ -7,6 +7,9 @@ function pocoGen(contents, options) {
             skip: true,
             structEmitOptions: {
                 declare: false
+            },
+            interfaceEmitOptions: {
+                declare: false
             }
         },
         classEmitOptions: {
@@ -26,6 +29,16 @@ function pocoGen(contents, options) {
         },
         enumEmitOptions: {
             declare: true
+        },
+        interfaceEmitOptions: {
+            declare: false,
+            methodEmitOptions: {
+                argumentTypeEmitOptions: {},
+                returnTypeEmitOptions: {}
+            },
+            propertyEmitOptions: {
+                typeEmitOptions: {}
+            }
         },
         structEmitOptions: {
             declare: false
@@ -48,45 +61,65 @@ function pocoGen(contents, options) {
             emitOptions.enumEmitOptions.strategy = "string-union";
         }
         if (options.propertyNameResolver) {
-            emitOptions.classEmitOptions.propertyEmitOptions.perPropertyEmitOptions = function (property) { return ({
-                name: options.propertyNameResolver(property.name)
-            }); };
+            emitOptions.classEmitOptions.propertyEmitOptions.perPropertyEmitOptions =
+                emitOptions.interfaceEmitOptions.propertyEmitOptions.perPropertyEmitOptions = function (property) { return ({
+                    name: options.propertyNameResolver(property.name)
+                }); };
         }
         if (options.methodNameResolver) {
-            emitOptions.classEmitOptions.methodEmitOptions.perMethodEmitOptions = function (method) { return ({
-                name: options.methodNameResolver(method.name)
-            }); };
+            emitOptions.interfaceEmitOptions.methodEmitOptions.perMethodEmitOptions =
+                emitOptions.classEmitOptions.methodEmitOptions.perMethodEmitOptions = function (method) { return ({
+                    name: options.methodNameResolver(method.name)
+                }); };
         }
+        var perInterfaceOrClassOptions = function (input) { return ({
+            name: input.name,
+            inheritedTypeEmitOptions: {
+                mapper: function (type, suggestedOutput) { return suggestedOutput; }
+            }
+        }); };
         if (options.interfaceNameResolver) {
-            var existing = emitOptions.classEmitOptions.perClassEmitOptions;
-            emitOptions.classEmitOptions.perClassEmitOptions = function (classObject) {
-                if (existing)
-                    existing(classObject);
-                return {
-                    name: options.interfaceNameResolver(classObject.name)
-                };
-            };
+            perInterfaceOrClassOptions = function (interfaceObject) { return ({
+                name: options.interfaceNameResolver(interfaceObject.name),
+                inheritedTypeEmitOptions: {
+                    mapper: function (type, suggestedOutput) { return options.interfaceNameResolver(suggestedOutput); }
+                }
+            }); };
+            emitOptions.interfaceEmitOptions.perInterfaceEmitOptions =
+                emitOptions.classEmitOptions.perClassEmitOptions = perInterfaceOrClassOptions;
         }
         if (options.prefixWithI) {
-            var existing = emitOptions.classEmitOptions.perClassEmitOptions;
-            emitOptions.classEmitOptions.perClassEmitOptions = function (classObject) {
-                if (existing)
-                    existing(classObject);
-                return {
-                    name: "I" + classObject.name,
-                    inheritedTypeEmitOptions: {
-                        mapper: function (type, suggested) { return "I" + suggested; }
+            var prefixWithIPerInterfaceOrClassOptions = perInterfaceOrClassOptions;
+            perInterfaceOrClassOptions = function (classObject) { return ({
+                name: "I" + prefixWithIPerInterfaceOrClassOptions(classObject).name,
+                inheritedTypeEmitOptions: {
+                    mapper: function (type, suggested) {
+                        return "I" + prefixWithIPerInterfaceOrClassOptions(classObject).inheritedTypeEmitOptions.mapper(type, suggested);
                     }
-                };
-            };
+                }
+            }); };
+            emitOptions.classEmitOptions.perClassEmitOptions =
+                emitOptions.interfaceEmitOptions.perInterfaceEmitOptions = perInterfaceOrClassOptions;
         }
         if (options.ignoreVirtual) {
             emitOptions.classEmitOptions.methodEmitOptions.filter = function (method) { return !method.isVirtual; };
             emitOptions.classEmitOptions.propertyEmitOptions.filter = function (property) { return !property.isVirtual; };
         }
+        if (options.ignoreMethods) {
+            emitOptions.classEmitOptions.methodEmitOptions.filter = function (method) { return false; };
+        }
         if (options.stripReadOnly) {
             emitOptions.classEmitOptions.fieldEmitOptions.perFieldEmitOptions = function () { return ({
                 readOnly: false
+            }); };
+        }
+        if (options.ignoreInheritance) {
+            emitOptions.interfaceEmitOptions.filter = function (classObject) { return options.ignoreInheritance.indexOf(classObject.name) === -1; };
+            emitOptions.classEmitOptions.filter = function (classObject) { return options.ignoreInheritance.indexOf(classObject.name) === -1; };
+            emitOptions.classEmitOptions.perClassEmitOptions = function (classObject) { return ({
+                inheritedTypeEmitOptions: {
+                    filter: function (type) { return options.ignoreInheritance.indexOf(type.name) === -1; }
+                }
             }); };
         }
         if (options.typeResolver) {

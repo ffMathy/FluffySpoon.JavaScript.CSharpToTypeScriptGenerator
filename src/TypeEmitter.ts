@@ -5,6 +5,7 @@ import { Logger } from './Logger';
 
 export interface TypeEmitOptions {
 	mapper?: (type: CSharpType, suggestedOutput: string) => string;
+	filter?: (type: CSharpType) => boolean;
 }
 
 export class TypeEmitter {
@@ -45,18 +46,31 @@ export class TypeEmitter {
 		};
 	}
 
+	canEmitType(type: CSharpType, options?: TypeEmitOptions) {
+		return this.prepareOptions(options).filter(type);
+	}
+
 	emitType(type: CSharpType, options?: TypeEmitOptions) {
 		options = this.prepareOptions(options);
 
-		this.logger.log("Emitting type " + type.fullName);
+		if (!options.filter(type))
+			return;
 
 		var mapping = this.getMatchingTypeMapping(type, options);
+
+		this.logger.log("Emitting type " + type.fullName);
 		this.stringEmitter.write(mapping);
+
+		return type;
 	}
 
 	private prepareOptions(options?: TypeEmitOptions) {
 		if (!options) {
 			options = {};
+		}
+
+		if (!options.filter) {
+			options.filter = (property) => true;
 		}
 
 		return options;
@@ -77,10 +91,9 @@ export class TypeEmitter {
 		options?: TypeEmitOptions) {
 
 		if (options && options.mapper) {
-			let mapping = options.mapper(type, this.getMatchingTypeMapping(type));
-			if (mapping) {
+			var mapping = options.mapper(type, this.getMatchingTypeMapping(type));
+			if(mapping)
 				return mapping;
-			}
 		}
         
 		for (var mappingKey in this.defaultTypeMap) {
