@@ -93,7 +93,7 @@ declare interface MyClass {
 var typescriptCode = emitter.emitFile({
   methodEmitOptions: {
     afterParsing: (file: CSharpFile) => {
-      //we create a namespace, move all items of the file into that namespace, and remove it from the file. 
+      //we create a namespace, move all items of the file into that namespace, and remove the same items from the file. 
       //we then add the newly created namespace to the file.
     
       var namespace = new CSharpNamespace("MyNamespace");
