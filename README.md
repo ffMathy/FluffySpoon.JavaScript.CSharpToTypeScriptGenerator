@@ -295,5 +295,3 @@ declare type MyEnum =
   'FirstOption' |
   'SecondOption'
 ```
-
-**Note: This can also be done for interfaces by using the `InterfaceEmitOptions` instead.**
