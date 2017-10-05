@@ -273,7 +273,7 @@ declare interface SomeInheritedClass {
 ### Convert enums to string union types
 ```typescript
 var typescriptCode = emitter.emitFile(<FileEmitOptions>{
-	enumEmitOptions: <EnumEmitOptions>{
+  enumEmitOptions: <EnumEmitOptions>{
     strategy: "string-union"
   }
 });
