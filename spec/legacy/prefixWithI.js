@@ -30,13 +30,13 @@ namespace PocoTest\n\
 }";
 
         var expectedOutput = "\
-interface IFirstClass {\n\
+declare interface IFirstClass {\n\
 }\n\
 \n\
-interface ISecondClass {\n\
+declare interface ISecondClass {\n\
 }\n\
 \n\
-interface IThirdClass {\n\
+declare interface IThirdClass {\n\
 }";
         var options = {
                 prefixWithI: true
@@ -72,13 +72,13 @@ namespace PocoTest\n\
 }";
 
         var expectedOutput = "\
-interface IFirstClass extends IBaseClass {\n\
+declare interface IFirstClass extends IBaseClass {\n\
 }\n\
 \n\
-interface ISecondClass {\n\
+declare interface ISecondClass {\n\
 }\n\
 \n\
-interface IThirdClass extends IBaseClass {\n\
+declare interface IThirdClass extends IBaseClass {\n\
 }";
         var options = {
                 prefixWithI: true

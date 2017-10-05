@@ -28,7 +28,7 @@ var StructEmitter = (function () {
         options = this.prepareOptions(options);
         options = Object.assign(options, options.perStructEmitOptions(struct));
         this.emitStructInterface(struct, options);
-        this.stringEmitter.ensureLineSplit();
+        this.stringEmitter.ensureNewParagraph();
         this.logger.log("Done emitting struct", struct);
     };
     StructEmitter.prototype.prepareOptions = function (options) {
@@ -58,21 +58,21 @@ var StructEmitter = (function () {
         this.stringEmitter.increaseIndentation();
         if (struct.fields.length > 0) {
             this.fieldEmitter.emitFields(struct.fields, options.fieldEmitOptions);
-            this.stringEmitter.ensureLineSplit();
+            this.stringEmitter.ensureNewParagraph();
         }
         if (struct.properties.length > 0) {
             this.propertyEmitter.emitProperties(struct.properties, options.propertyEmitOptions);
-            this.stringEmitter.ensureLineSplit();
+            this.stringEmitter.ensureNewParagraph();
         }
         if (struct.methods.length > 0) {
             this.methodEmitter.emitMethods(struct.methods, options.methodEmitOptions);
-            this.stringEmitter.ensureLineSplit();
+            this.stringEmitter.ensureNewParagraph();
         }
         this.stringEmitter.removeLastNewLines();
         this.stringEmitter.decreaseIndentation();
         this.stringEmitter.writeLine();
         this.stringEmitter.writeLine("}");
-        this.stringEmitter.ensureLineSplit();
+        this.stringEmitter.ensureNewParagraph();
     };
     return StructEmitter;
 }());

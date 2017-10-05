@@ -70,13 +70,16 @@ export class NamespaceEmitter {
 		}
 
 		if (namespace.enums.length > 0) {
+			var declare = typeof options.interfaceEmitOptions.declare !== "undefined" ? 
+				options.interfaceEmitOptions.declare : 
+				options.skip;
 			var namespaceEnumOptions = Object.assign(options.enumEmitOptions || {}, <EnumEmitOptions>{
-				declare: options.skip
+				declare
 			});
 			this.enumEmitter.emitEnums(
 				namespace.enums,
 				namespaceEnumOptions);
-			this.stringEmitter.ensureLineSplit();
+			this.stringEmitter.ensureNewParagraph();
 		}
 
 		if (namespace.interfaces.length > 0) {
@@ -89,14 +92,20 @@ export class NamespaceEmitter {
 			this.interfaceEmitter.emitInterfaces(
 				namespace.interfaces,
 				interfaceOptions);
-			this.stringEmitter.ensureLineSplit();
+			this.stringEmitter.ensureNewParagraph();
 		}
 
 		if (namespace.classes.length > 0) {
+			var declare = typeof options.classEmitOptions.declare !== "undefined" ? 
+				options.classEmitOptions.declare : 
+				options.skip;
+			var classOptions = Object.assign(options.classEmitOptions, <ClassEmitOptions>{
+				declare
+			});
 			this.classEmitter.emitClasses(
 				namespace.classes,
-				options.classEmitOptions);
-			this.stringEmitter.ensureLineSplit();
+				classOptions);
+			this.stringEmitter.ensureNewParagraph();
 		}
 
 		if (namespace.structs.length > 0) {
@@ -109,7 +118,7 @@ export class NamespaceEmitter {
 			this.structEmitter.emitStructs(
 				namespace.structs,
 				structEmitOptions);
-			this.stringEmitter.ensureLineSplit();
+			this.stringEmitter.ensureNewParagraph();
 		}
 
 		if (namespace.namespaces.length > 0) {
@@ -122,7 +131,7 @@ export class NamespaceEmitter {
 			this.emitNamespaces(
 				namespace.namespaces,
 				subNamespaceOptions);
-			this.stringEmitter.ensureLineSplit();
+			this.stringEmitter.ensureNewParagraph();
 		}
 
 		if (!options.skip) {
@@ -134,7 +143,7 @@ export class NamespaceEmitter {
 			this.stringEmitter.writeLine("}");
 		}
 
-		this.stringEmitter.ensureLineSplit();
+		this.stringEmitter.ensureNewParagraph();
 
 		this.logger.log("Done emitting namespace", namespace);
 	}

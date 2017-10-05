@@ -13,6 +13,7 @@ function runCase(caseName: string, options?: FileEmitOptions) {
 					.replace(/\r/g, '')
 					.replace(/    /g, '\t')
 					.replace(/\t/g, '  ')
+					.replace(/\n/g, '\\n\n')
 					.trim();
 
 				var emitter = new FileEmitter(caseInput);
@@ -32,6 +33,7 @@ function runCase(caseName: string, options?: FileEmitOptions) {
 					.replace(/\r/g, '')
 					.replace(/    /g, '\t')
 					.replace(/\t/g, '  ')
+					.replace(/\n/g, '\\n\n')
 					.trim();
 				expect(result).toBe(caseExpected);
 

@@ -14,7 +14,7 @@ public class LatLng : IEquatable<LatLng>\n\
 var expectedOutput = "interface LatLng extends IEquatable<LatLng> {\n\
     lat: number;\n\
     lng: number;\n\
-}\n";
+}";
 
 var pocoGen = require('./adapters/legacyAdapter.js');
 

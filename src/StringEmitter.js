@@ -38,25 +38,32 @@ var StringEmitter = (function () {
         this.logger.log("Removing last lines.");
         while (this.removeLastCharacters("\n"))
             ;
+        while (this.removeLastCharacters("\r"))
+            ;
     };
     StringEmitter.prototype.ensureNewLine = function () {
         this.removeLastNewLines();
         this.writeLine();
     };
-    StringEmitter.prototype.ensureLineSplit = function () {
+    StringEmitter.prototype.ensureNewParagraph = function () {
         this.ensureNewLine();
         this.writeLine();
     };
     StringEmitter.prototype.removeLastCharacters = function (characters) {
+        if (characters !== this.indentation)
+            while (this.removeLastCharacters(this.indentation))
+                ;
         if (this._output.substr(this._output.length - characters.length) !== characters)
             return false;
         for (var _i = 0, characters_1 = characters; _i < characters_1.length; _i++) {
             var character = characters_1[_i];
-            while (this.removeLastCharacters(this.indentation))
-                ;
+            if (characters !== this.indentation)
+                while (this.removeLastCharacters(this.indentation))
+                    ;
             this._output = this._output.substr(0, this._output.length - character.length);
-            while (this.removeLastCharacters(this.indentation))
-                ;
+            if (characters !== this.indentation)
+                while (this.removeLastCharacters(this.indentation))
+                    ;
         }
         return true;
     };

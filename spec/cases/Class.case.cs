@@ -2,9 +2,9 @@
 {
 	public string MyProperty { get; set; }
 
-	public SomeStuff<OtherStuff> BlahProperty { get; set; }
+	public SomeStuff<OtherStuff, RegularStuff> BlahProperty { get; set; }
 
-	public List<OtherStuff, RegularStuff> OtherBlahProperty { get; set; }
+	public List<OtherStuff> OtherBlahProperty { get; set; }
 
 	class SubClass
 	{

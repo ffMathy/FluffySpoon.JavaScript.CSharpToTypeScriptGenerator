@@ -15,12 +15,12 @@ namespace MyNamespace.Domain\n\
   }\n\
 }\n";
 
-var expectedOutput = "interface MyPoco {\n\
+var expectedOutput = "declare interface MyPoco {\n\
     readonly Field: string;\n\
     readonly InterestingWhitespace: string;\n\
 }";
 
-var expectedOutputWithoutReadOnly = "interface MyPoco {\n\
+var expectedOutputWithoutReadOnly = "declare interface MyPoco {\n\
     Field: string;\n\
     InterestingWhitespace: string;\n\
 }";

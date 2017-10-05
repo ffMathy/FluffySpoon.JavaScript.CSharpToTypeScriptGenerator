@@ -24,6 +24,7 @@ var EnumEmitter = (function () {
             this.emitEnum(enumObject, options);
         }
         this.stringEmitter.removeLastNewLines();
+        this.logger.log("Done emitting enums", enums);
     };
     EnumEmitter.prototype.emitEnum = function (enumObject, options) {
         this.logger.log("Emitting enum", enumObject);
@@ -61,7 +62,8 @@ var EnumEmitter = (function () {
         if (options.strategy === "default") {
             this.stringEmitter.writeLine("}");
         }
-        this.stringEmitter.ensureLineSplit();
+        this.stringEmitter.ensureNewParagraph();
+        this.logger.log("Done emitting enum", enumObject);
     };
     EnumEmitter.prototype.emitEnumOption = function (option, isLast, options) {
         this.logger.log("Emitting enum option", option);

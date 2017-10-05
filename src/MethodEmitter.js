@@ -14,7 +14,8 @@ var MethodEmitter = (function () {
         }
     };
     MethodEmitter.prototype.emitMethod = function (method, options) {
-        options = Object.assign(this.prepareOptions(options), options.perMethodEmitOptions(method));
+        options = this.prepareOptions(options);
+        options = Object.assign(options, options.perMethodEmitOptions(method));
         if (!options.filter(method))
             return;
         if (method.isConstructor)

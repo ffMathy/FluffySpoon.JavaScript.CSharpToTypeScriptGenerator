@@ -5,7 +5,7 @@
 var sampleFile = "\
 using System;\n\
 \n\
-namespace MyNamespace.Domain\n\
+namespace MyNamespace\n\
 {\n\
     public class MyPoco\n\
     {\n\
@@ -18,14 +18,13 @@ namespace MyNamespace.Domain\n\
     }\n\
 }\n";
 
-var expectedOutput = "declare module MyNamespace {\n\
-    export interface MyPoco {\n\
-        SomeInt: number;\n\
-    }\n\
-    \n\
-    export enum MyEnum {\n\
+var expectedOutput = "declare namespace MyNamespace {\n\
+    enum MyEnum {\n\
         One = 0,\n\
         Two = 1\n\
+    }\n\n\
+    interface MyPoco {\n\
+        SomeInt: number;\n\
     }\n\
 }";
 

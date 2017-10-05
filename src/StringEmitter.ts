@@ -49,6 +49,7 @@ export class StringEmitter {
 	removeLastNewLines() {
 		this.logger.log("Removing last lines.");
 		while (this.removeLastCharacters("\n"));
+		while (this.removeLastCharacters("\r"));
 	}
 
 	ensureNewLine() {
@@ -56,19 +57,26 @@ export class StringEmitter {
 		this.writeLine();
 	}
 
-	ensureLineSplit() {
+	ensureNewParagraph() {
 		this.ensureNewLine();
 		this.writeLine();
 	}
 
 	removeLastCharacters(characters: string) {
+		if(characters !== this.indentation)
+			while (this.removeLastCharacters(this.indentation));
+
 		if (this._output.substr(this._output.length - characters.length) !== characters)
 			return false;
 
 		for (var character of characters) {
-			while (this.removeLastCharacters(this.indentation));
+			if(characters !== this.indentation)
+				while (this.removeLastCharacters(this.indentation));
+
 			this._output = this._output.substr(0, this._output.length - character.length);
-			while (this.removeLastCharacters(this.indentation));
+
+			if(characters !== this.indentation)
+				while (this.removeLastCharacters(this.indentation));
 		}
 
 		return true;

@@ -53,7 +53,7 @@ namespace MyNamespace.Domain\n\
     }\n\
 }\n";
 
-var expectedOutput = "interface MyPoco {\n\
+var expectedOutput = "declare interface MyPoco {\n\
     Id: number;\n\
     Name: string;\n\
     Title: string;\n\
@@ -66,11 +66,11 @@ var expectedOutput = "interface MyPoco {\n\
     SomeGuid: string;\n\
 }\n\
 \n\
-interface MyOtherPoco {\n\
+declare interface MyOtherPoco {\n\
     SomeField: number;\n\
 }\n\
 \n\
-interface MyStruct {\n\
+declare interface MyStruct {\n\
     SomeIntField: number;\n\
 }";
 

@@ -14,7 +14,8 @@ var PropertyEmitter = (function () {
         }
     };
     PropertyEmitter.prototype.emitProperty = function (property, options) {
-        options = Object.assign(this.prepareOptions(options), options.perPropertyEmitOptions(property));
+        options = this.prepareOptions(options);
+        options = Object.assign(options, options.perPropertyEmitOptions(property));
         if (!options.filter(property))
             return;
         this.stringEmitter.writeIndentation();

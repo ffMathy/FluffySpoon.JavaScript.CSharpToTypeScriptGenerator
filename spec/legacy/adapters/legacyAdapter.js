@@ -5,16 +5,9 @@ function pocoGen(contents, options) {
     var emitter = new FileEmitter_1.FileEmitter(contents);
     var emitOptions = {
         namespaceEmitOptions: {
-            skip: true,
-            structEmitOptions: {
-                declare: false
-            },
-            interfaceEmitOptions: {
-                declare: false
-            }
+            skip: true
         },
         classEmitOptions: {
-            declare: false,
             propertyEmitOptions: {
                 typeEmitOptions: {}
             },
@@ -28,11 +21,8 @@ function pocoGen(contents, options) {
                 }); }
             }
         },
-        enumEmitOptions: {
-            declare: true
-        },
+        enumEmitOptions: {},
         interfaceEmitOptions: {
-            declare: false,
             methodEmitOptions: {
                 argumentTypeEmitOptions: {},
                 returnTypeEmitOptions: {}
@@ -41,9 +31,7 @@ function pocoGen(contents, options) {
                 typeEmitOptions: {}
             }
         },
-        structEmitOptions: {
-            declare: false
-        }
+        structEmitOptions: {}
     };
     emitter.logger.setLogMethod(function (message) {
         var parameters = [];
@@ -125,7 +113,10 @@ function pocoGen(contents, options) {
         }
         if (options.baseNamespace) {
             emitOptions.namespaceEmitOptions.skip = false;
+            emitOptions.namespaceEmitOptions.declare = true;
             emitOptions.afterParsing = function (file) {
+                if (file.namespaces.filter(function (n) { return n.name === options.baseNamespace; })[0])
+                    return;
                 var namespace = new fluffy_spoon_javascript_csharp_parser_1.CSharpNamespace(options.baseNamespace);
                 namespace.classes = file.classes;
                 namespace.enums = file.enums;

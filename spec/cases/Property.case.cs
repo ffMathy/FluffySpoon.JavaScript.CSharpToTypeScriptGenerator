@@ -1,8 +1,8 @@
 ﻿class Foobar
 {
-    string MyProperty { get; set; }
+    public string MyProperty { get; set; }
 
-    string ReadOnlyProperty
+    public string ReadOnlyProperty
     {
         get
         {
@@ -10,7 +10,7 @@
         }
     }
 
-    string GetSetProperty
+    public string GetSetProperty
     {
         get
         {

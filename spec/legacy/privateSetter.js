@@ -19,7 +19,7 @@ namespace MyNamespace.Domain\n\
   }\n\
 }\n";
 
-var expectedOutput = "interface MyPoco {\n\
+var expectedOutput = "declare interface MyPoco {\n\
     PrivateSetter: string;\n\
     InterestingWhitespace: string;\n\
 }";

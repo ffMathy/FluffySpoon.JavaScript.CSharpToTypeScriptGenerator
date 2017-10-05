@@ -41,11 +41,14 @@ var NamespaceEmitter = (function () {
             this.stringEmitter.increaseIndentation();
         }
         if (namespace.enums.length > 0) {
+            var declare = typeof options.interfaceEmitOptions.declare !== "undefined" ?
+                options.interfaceEmitOptions.declare :
+                options.skip;
             var namespaceEnumOptions = Object.assign(options.enumEmitOptions || {}, {
-                declare: options.skip
+                declare: declare
             });
             this.enumEmitter.emitEnums(namespace.enums, namespaceEnumOptions);
-            this.stringEmitter.ensureLineSplit();
+            this.stringEmitter.ensureNewParagraph();
         }
         if (namespace.interfaces.length > 0) {
             var declare = typeof options.interfaceEmitOptions.declare !== "undefined" ?
@@ -55,11 +58,17 @@ var NamespaceEmitter = (function () {
                 declare: declare
             });
             this.interfaceEmitter.emitInterfaces(namespace.interfaces, interfaceOptions);
-            this.stringEmitter.ensureLineSplit();
+            this.stringEmitter.ensureNewParagraph();
         }
         if (namespace.classes.length > 0) {
-            this.classEmitter.emitClasses(namespace.classes, options.classEmitOptions);
-            this.stringEmitter.ensureLineSplit();
+            var declare = typeof options.classEmitOptions.declare !== "undefined" ?
+                options.classEmitOptions.declare :
+                options.skip;
+            var classOptions = Object.assign(options.classEmitOptions, {
+                declare: declare
+            });
+            this.classEmitter.emitClasses(namespace.classes, classOptions);
+            this.stringEmitter.ensureNewParagraph();
         }
         if (namespace.structs.length > 0) {
             var declare = typeof options.structEmitOptions.declare !== "undefined" ?
@@ -69,7 +78,7 @@ var NamespaceEmitter = (function () {
                 declare: declare
             });
             this.structEmitter.emitStructs(namespace.structs, structEmitOptions);
-            this.stringEmitter.ensureLineSplit();
+            this.stringEmitter.ensureNewParagraph();
         }
         if (namespace.namespaces.length > 0) {
             var declare = typeof options.declare !== "undefined" ?
@@ -79,7 +88,7 @@ var NamespaceEmitter = (function () {
                 declare: declare
             });
             this.emitNamespaces(namespace.namespaces, subNamespaceOptions);
-            this.stringEmitter.ensureLineSplit();
+            this.stringEmitter.ensureNewParagraph();
         }
         if (!options.skip) {
             this.stringEmitter.removeLastNewLines();
@@ -87,7 +96,7 @@ var NamespaceEmitter = (function () {
             this.stringEmitter.writeLine();
             this.stringEmitter.writeLine("}");
         }
-        this.stringEmitter.ensureLineSplit();
+        this.stringEmitter.ensureNewParagraph();
         this.logger.log("Done emitting namespace", namespace);
     };
     return NamespaceEmitter;

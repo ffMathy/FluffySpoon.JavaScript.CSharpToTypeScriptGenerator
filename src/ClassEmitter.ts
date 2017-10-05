@@ -73,9 +73,12 @@ export class ClassEmitter {
 		this.logger.log("Emitting class", classObject);
 
 		this.emitClassInterface(classObject, options);
+
+		this.stringEmitter.ensureNewParagraph();
+
 		this.emitSubElementsInClass(classObject, options);
 
-		this.stringEmitter.ensureLineSplit();
+		this.stringEmitter.ensureNewParagraph();
 
 		this.logger.log("Done emitting class", classObject);
 	}
@@ -100,7 +103,7 @@ export class ClassEmitter {
 
 	private emitClassInterface(classObject: CSharpClass, options?: ClassEmitOptions & PerClassEmitOptions) {
 		if (classObject.properties.length === 0 && classObject.methods.length === 0 && classObject.fields.length === 0) {
-			this.logger.log("Skipping class " + classObject.name + " because it contains no properties, fields or methods");
+			this.logger.log("Skipping emitting body of class " + classObject.name + " because it contains no properties, fields or methods");
 			return;
 		}
 
@@ -132,17 +135,17 @@ export class ClassEmitter {
 
 		if (classObject.fields.length > 0) {
 			this.fieldEmitter.emitFields(classObject.fields, options.fieldEmitOptions);
-			this.stringEmitter.ensureLineSplit();
+			this.stringEmitter.ensureNewParagraph();
 		}
 
 		if (classObject.properties.length > 0) {
 			this.propertyEmitter.emitProperties(classObject.properties, options.propertyEmitOptions);
-			this.stringEmitter.ensureLineSplit();
+			this.stringEmitter.ensureNewParagraph();
 		}
 
 		if (classObject.methods.length > 0) {
 			this.methodEmitter.emitMethods(classObject.methods, options.methodEmitOptions);
-			this.stringEmitter.ensureLineSplit();
+			this.stringEmitter.ensureNewParagraph();
 		}
 
 		this.stringEmitter.removeLastNewLines();
@@ -151,12 +154,11 @@ export class ClassEmitter {
 
 		this.stringEmitter.writeLine();
 		this.stringEmitter.writeLine("}");
-
-		this.stringEmitter.ensureLineSplit();
 	}
 
 	private emitSubElementsInClass(classObject: CSharpClass, options?: ClassEmitOptions) {
 		if (classObject.enums.length === 0 && classObject.classes.length === 0 && classObject.interfaces.length === 0) {
+			this.logger.log("Skipping sub elements of class " + classObject.name + " because it contains no enums, classes or interfaces");
 			return;
 		}
 
@@ -169,38 +171,43 @@ export class ClassEmitter {
 
 		this.stringEmitter.increaseIndentation();
 
-		var classEnumOptions = Object.assign(
-			options.enumEmitOptions || {},
-			<EnumEmitOptions>{
+		if(classObject.enums.length > 0) {
+			var classEnumOptions = Object.assign(
+				options.enumEmitOptions || {},
+				<EnumEmitOptions>{
+					declare: false
+				});
+			this.enumEmitter.emitEnums(
+				classObject.enums,
+				classEnumOptions);
+			this.stringEmitter.ensureNewParagraph();
+		}
+
+		if(classObject.classes.length > 0) {
+			var subClassOptions = Object.assign(options, <ClassEmitOptions>{
 				declare: false
 			});
-		this.enumEmitter.emitEnums(
-			classObject.enums,
-			classEnumOptions);
+			this.emitClasses(
+				classObject.classes,
+				subClassOptions);
+			this.stringEmitter.ensureNewParagraph();
+		}
 
-		this.stringEmitter.writeLine();
+		if(classObject.interfaces.length > 0) {
+			var classInterfaceOptions = Object.assign(options, <InterfaceEmitOptions>{
+				declare: false
+			});
+			this.interfaceEmitter.emitInterfaces(
+				classObject.interfaces,
+				classInterfaceOptions);
+			this.stringEmitter.ensureNewParagraph();
+		}
 
-		var subClassOptions = Object.assign(options, <ClassEmitOptions>{
-			declare: false
-		});
-		this.emitClasses(
-			classObject.classes,
-			subClassOptions);
-
-		var classInterfaceOptions = Object.assign(options, <InterfaceEmitOptions>{
-			declare: false
-		});
-		this.interfaceEmitter.emitInterfaces(
-			classObject.interfaces,
-			classInterfaceOptions);
-
-		this.stringEmitter.ensureLineSplit();
+		this.stringEmitter.removeLastNewLines();
 
 		this.stringEmitter.decreaseIndentation();
 
 		this.stringEmitter.writeLine();
 		this.stringEmitter.writeLine("}");
-
-		this.stringEmitter.ensureLineSplit();
 	}
 }

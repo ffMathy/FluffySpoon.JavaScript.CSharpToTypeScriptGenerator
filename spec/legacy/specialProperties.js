@@ -19,20 +19,20 @@ namespace MyNamespace.Domain\n\
     }\n\
 }\n";
 
-var expectedOutput = "interface MyPoco {\n\
+var expectedOutput = "declare interface MyPoco {\n\
     OtherPocos: MyOtherPoco[];\n\
     NonVirtualPocos: MyOtherPoco[];\n\
 }\n\
 \n\
-interface MyOtherPoco {\n\
+declare interface MyOtherPoco {\n\
     id: number;\n\
 }";
 
-var expectedWithoutVirtuals = "interface MyPoco {\n\
+var expectedWithoutVirtuals = "declare interface MyPoco {\n\
     NonVirtualPocos: MyOtherPoco[];\n\
 }\n\
 \n\
-interface MyOtherPoco {\n\
+declare interface MyOtherPoco {\n\
     id: number;\n\
 }";
 var pocoGen = require('./adapters/legacyAdapter.js');

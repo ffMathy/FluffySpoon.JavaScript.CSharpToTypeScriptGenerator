@@ -39,6 +39,8 @@ export class EnumEmitter {
 		}
 
 		this.stringEmitter.removeLastNewLines();
+
+		this.logger.log("Done emitting enums", enums);
 	}
 
 	emitEnum(enumObject: CSharpEnum, options?: EnumEmitOptions) {
@@ -84,7 +86,9 @@ export class EnumEmitter {
 			this.stringEmitter.writeLine("}");
 		}
 
-		this.stringEmitter.ensureLineSplit();
+		this.stringEmitter.ensureNewParagraph();
+
+		this.logger.log("Done emitting enum", enumObject);
 	}
 
 	private emitEnumOption(

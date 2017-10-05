@@ -53,7 +53,7 @@ namespace MyNamespace.Domain\n\
   }\n\
 }\n";
 
-var expectedOutput = "interface MyPoco {\n\
+var expectedOutput = "declare interface MyPoco {\n\
     MethodWithNoParameters(): string;\n\
     MethodWithMultipleParameters(baz: string, buz: number): string;\n\
     MethodWithMultipleParametersAnnotated(baz: string, buz: number): string;\n\

@@ -85,23 +85,23 @@ var FileEmitter = (function () {
             options.afterParsing(file);
         if (file.enums.length > 0) {
             this.enumEmitter.emitEnums(file.enums, options.enumEmitOptions);
-            this.stringEmitter.ensureLineSplit();
+            this.stringEmitter.ensureNewParagraph();
         }
         if (file.namespaces.length > 0) {
             this.namespaceEmitter.emitNamespaces(file.namespaces, options.namespaceEmitOptions);
-            this.stringEmitter.ensureLineSplit();
+            this.stringEmitter.ensureNewParagraph();
         }
         if (file.interfaces.length > 0) {
             this.interfaceEmitter.emitInterfaces(file.interfaces, options.interfaceEmitOptions);
-            this.stringEmitter.ensureLineSplit();
+            this.stringEmitter.ensureNewParagraph();
         }
         if (file.classes.length > 0) {
             this.classEmitter.emitClasses(file.classes, options.classEmitOptions);
-            this.stringEmitter.ensureLineSplit();
+            this.stringEmitter.ensureNewParagraph();
         }
         if (file.structs.length > 0) {
             this.structEmitter.emitStructs(file.structs, options.structEmitOptions);
-            this.stringEmitter.ensureLineSplit();
+            this.stringEmitter.ensureNewParagraph();
         }
         this.stringEmitter.removeLastNewLines();
         return this.stringEmitter.output;

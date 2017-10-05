@@ -18,16 +18,9 @@ function pocoGen(contents, options) {
 	var emitter = new FileEmitter(contents);
 	var emitOptions = <FileEmitOptions>{
 		namespaceEmitOptions: {
-			skip: true,
-			structEmitOptions: {
-				declare: false
-			},
-			interfaceEmitOptions: {
-				declare: false
-			}
+			skip: true
 		},
 		classEmitOptions: {
-			declare: false,
 			propertyEmitOptions: {
 				typeEmitOptions: {}
 			},
@@ -42,10 +35,8 @@ function pocoGen(contents, options) {
             }
 		},
 		enumEmitOptions: {
-			declare: true
         },
 		interfaceEmitOptions: {
-			declare: false,
 			methodEmitOptions: {
 				argumentTypeEmitOptions: {},
 				returnTypeEmitOptions: {}
@@ -55,7 +46,6 @@ function pocoGen(contents, options) {
 			}
 		},
         structEmitOptions: {
-            declare: false
         }
 	};
 
@@ -148,7 +138,11 @@ function pocoGen(contents, options) {
 
 		if(options.baseNamespace) {
 			emitOptions.namespaceEmitOptions.skip = false;
+			emitOptions.namespaceEmitOptions.declare = true;
 			emitOptions.afterParsing = (file) => {
+				if(file.namespaces.filter(n => n.name === options.baseNamespace)[0])
+					return;
+
 				var namespace = new CSharpNamespace(options.baseNamespace);
 				namespace.classes = file.classes;
 				namespace.enums = file.enums;

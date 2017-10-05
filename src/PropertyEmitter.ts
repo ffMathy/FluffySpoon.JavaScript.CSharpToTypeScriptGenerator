@@ -36,8 +36,9 @@ export class PropertyEmitter {
 	}
 
 	emitProperty(property: CSharpProperty, options?: PropertyEmitOptions & PerPropertyEmitOptions) {
+		options = this.prepareOptions(options);
 		options = Object.assign(
-			this.prepareOptions(options),
+			options,
 			options.perPropertyEmitOptions(property));
 
 		if (!options.filter(property))

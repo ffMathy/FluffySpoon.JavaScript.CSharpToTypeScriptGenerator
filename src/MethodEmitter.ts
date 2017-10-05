@@ -40,8 +40,9 @@ export class MethodEmitter {
 	}
 
 	emitMethod(method: CSharpMethod, options?: MethodEmitOptions & PerMethodEmitOptions) {
+		options = this.prepareOptions(options);
 		options = Object.assign(
-			this.prepareOptions(options),
+			options,
 			options.perMethodEmitOptions(method));
 
 		if (!options.filter(method))

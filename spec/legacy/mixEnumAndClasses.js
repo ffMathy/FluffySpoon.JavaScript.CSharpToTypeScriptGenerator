@@ -53,7 +53,7 @@ var expectedOutput = "declare enum MyEnum {\n\
     Green = 0,\n\
     Blue = 1\n\
 }\n\n\
-interface MyPoco {\n\
+declare interface MyPoco {\n\
     Id: number;\n\
     Name: string;\n\
     Title: string;\n\

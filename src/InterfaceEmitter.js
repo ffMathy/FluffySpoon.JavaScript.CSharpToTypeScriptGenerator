@@ -26,7 +26,7 @@ var InterfaceEmitter = (function () {
             return;
         this.logger.log("Emitting interface", interfaceObject);
         this.emitClassInterface(interfaceObject, options);
-        this.stringEmitter.ensureLineSplit();
+        this.stringEmitter.ensureNewParagraph();
         this.logger.log("Done emitting interface", interfaceObject);
     };
     InterfaceEmitter.prototype.prepareOptions = function (options) {
@@ -65,17 +65,17 @@ var InterfaceEmitter = (function () {
         this.stringEmitter.increaseIndentation();
         if (interfaceObject.properties.length > 0) {
             this.propertyEmitter.emitProperties(interfaceObject.properties, options.propertyEmitOptions);
-            this.stringEmitter.ensureLineSplit();
+            this.stringEmitter.ensureNewParagraph();
         }
         if (interfaceObject.methods.length > 0) {
             this.methodEmitter.emitMethods(interfaceObject.methods, options.methodEmitOptions);
-            this.stringEmitter.ensureLineSplit();
+            this.stringEmitter.ensureNewParagraph();
         }
         this.stringEmitter.removeLastNewLines();
         this.stringEmitter.decreaseIndentation();
         this.stringEmitter.writeLine();
         this.stringEmitter.writeLine("}");
-        this.stringEmitter.ensureLineSplit();
+        this.stringEmitter.ensureNewParagraph();
     };
     return InterfaceEmitter;
 }());
