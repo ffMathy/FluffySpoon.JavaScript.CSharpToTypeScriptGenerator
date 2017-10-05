@@ -3,15 +3,17 @@
 # Recipes
 These recipes help you quickly get started with common scenarios you may need. Feel free to contribute with your own!
 
-## TypeScript
-### Generating TypeScript DTO models from CSharp models
 ```typescript
 import { FileEmitter } from 'fluffy-spoon.javascript.csharp-to-typescript-generator';
 
 var csharpCode = "insert the CSharp model code here - you could also read it from a file.";
 var emitter = new FileEmitter(csharpCode);
-var typescriptCode = emitter.emitFile();
+var options = <FileEmitOptions>{ };
+var typescriptCode = emitter.emitFile(options);
 ```
+
+## TypeScript
+### Generating TypeScript DTO models from CSharp models
 
 #### Default settings
 ```typescript
