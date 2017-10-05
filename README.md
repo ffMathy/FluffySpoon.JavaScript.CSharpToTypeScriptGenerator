@@ -191,6 +191,8 @@ declare interface MyClass {
 }
 ```
 
+**Note: This can also be done for classes, types, methods and so on by using the `ClassEmitOptions`, `TypeEmitOptions` and `MethodEmitOptions` respectively.**
+
 ### Prefixing all class and interface names with "I"
 ```typescript
 var typescriptCode = emitter.emitFile(<FileEmitOptions>{
