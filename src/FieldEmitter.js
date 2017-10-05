@@ -42,3 +42,4 @@ var FieldEmitter = (function () {
     return FieldEmitter;
 }());
 exports.FieldEmitter = FieldEmitter;
+//# sourceMappingURL=FieldEmitter.js.map

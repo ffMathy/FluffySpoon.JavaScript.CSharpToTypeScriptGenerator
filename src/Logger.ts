@@ -1,4 +1,4 @@
-﻿declare type LogMethod = (message: any, ...parameters: any[]) => void;
+﻿export declare type LogMethod = (message: any, ...parameters: any[]) => void;
 
 export class Logger {
 	private logMethod: LogMethod;

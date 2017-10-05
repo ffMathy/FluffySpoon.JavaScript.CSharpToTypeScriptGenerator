@@ -2,7 +2,8 @@
   "name": "fluffy-spoon.javascript.csharp-to-typescript-generator",
   "version": "1.0.0",
   "description": "Parses C# code as well as possible into JavaScript objects.",
-  "main": "dist/index.js",
+  "main": "./src/Index",
+  "typings": "./src/Index.d.ts",
   "scripts": {
     "test": "jasmine"
   },

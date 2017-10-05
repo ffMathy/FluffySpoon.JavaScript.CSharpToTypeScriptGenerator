@@ -161,3 +161,4 @@ var FileEmitter = (function () {
     return FileEmitter;
 }());
 exports.FileEmitter = FileEmitter;
+//# sourceMappingURL=FileEmitter.js.map

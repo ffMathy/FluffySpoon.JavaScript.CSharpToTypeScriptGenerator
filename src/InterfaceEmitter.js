@@ -78,3 +78,4 @@ var InterfaceEmitter = (function () {
     return InterfaceEmitter;
 }());
 exports.InterfaceEmitter = InterfaceEmitter;
+//# sourceMappingURL=InterfaceEmitter.js.map

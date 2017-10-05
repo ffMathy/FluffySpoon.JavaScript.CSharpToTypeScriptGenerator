@@ -127,3 +127,4 @@ var ClassEmitter = (function () {
     return ClassEmitter;
 }());
 exports.ClassEmitter = ClassEmitter;
+//# sourceMappingURL=ClassEmitter.js.map

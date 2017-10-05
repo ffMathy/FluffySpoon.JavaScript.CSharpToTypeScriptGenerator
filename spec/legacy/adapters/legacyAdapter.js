@@ -167,3 +167,4 @@ function pocoGen(contents, options) {
     return emitter.emitFile(emitOptions);
 }
 module.exports = pocoGen;
+//# sourceMappingURL=legacyAdapter.js.map

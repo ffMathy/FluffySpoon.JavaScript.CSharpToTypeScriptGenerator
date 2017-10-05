@@ -100,3 +100,4 @@ var NamespaceEmitter = (function () {
     return NamespaceEmitter;
 }());
 exports.NamespaceEmitter = NamespaceEmitter;
+//# sourceMappingURL=NamespaceEmitter.js.map

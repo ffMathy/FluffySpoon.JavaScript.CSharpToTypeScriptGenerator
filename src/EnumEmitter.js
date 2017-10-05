@@ -79,3 +79,4 @@ var EnumEmitter = (function () {
     return EnumEmitter;
 }());
 exports.EnumEmitter = EnumEmitter;
+//# sourceMappingURL=EnumEmitter.js.map

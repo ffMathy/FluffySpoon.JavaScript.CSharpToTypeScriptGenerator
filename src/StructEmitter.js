@@ -75,3 +75,4 @@ var StructEmitter = (function () {
     return StructEmitter;
 }());
 exports.StructEmitter = StructEmitter;
+//# sourceMappingURL=StructEmitter.js.map

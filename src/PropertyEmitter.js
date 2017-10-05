@@ -41,3 +41,4 @@ var PropertyEmitter = (function () {
     return PropertyEmitter;
 }());
 exports.PropertyEmitter = PropertyEmitter;
+//# sourceMappingURL=PropertyEmitter.js.map

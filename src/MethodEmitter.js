@@ -55,3 +55,4 @@ var MethodEmitter = (function () {
     return MethodEmitter;
 }());
 exports.MethodEmitter = MethodEmitter;
+//# sourceMappingURL=MethodEmitter.js.map

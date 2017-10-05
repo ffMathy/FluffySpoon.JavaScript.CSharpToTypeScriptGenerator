@@ -60,3 +60,4 @@ describe("OptionsHelper", function () {
         expect(result.namespaceEmitOptions.interfaceEmitOptions.declare).toBe(false);
     });
 });
+//# sourceMappingURL=OptionsHelperSpec.js.map

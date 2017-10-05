@@ -48,3 +48,4 @@ describe("UseCases", function () {
     runCase("Property");
     runCase("Class");
 });
+//# sourceMappingURL=FileEmitterSpec.js.map
