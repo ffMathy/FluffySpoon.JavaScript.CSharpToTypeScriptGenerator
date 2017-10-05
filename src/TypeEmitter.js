@@ -37,12 +37,15 @@ var TypeEmitter = (function () {
     };
     TypeEmitter.prototype.emitType = function (type, options) {
         options = this.prepareOptions(options);
-        if (!options.filter(type))
+        if (!this.canEmitType(type, options))
             return;
         var mapping = this.getMatchingTypeMapping(type, options);
         this.logger.log("Emitting type " + type.fullName);
         this.stringEmitter.write(mapping);
-        return type;
+    };
+    TypeEmitter.prototype.emitGenericParameters = function (genericParameters, options) {
+        options = this.prepareOptions(options);
+        this.stringEmitter.write(this.generateGenericParametersString(genericParameters, options));
     };
     TypeEmitter.prototype.prepareOptions = function (options) {
         if (!options) {
@@ -63,9 +66,9 @@ var TypeEmitter = (function () {
     };
     TypeEmitter.prototype.getMatchingTypeMapping = function (type, options) {
         if (options && options.mapper) {
-            var mapping = options.mapper(type, this.getMatchingTypeMapping(type));
-            if (mapping)
-                return mapping;
+            var mapping_1 = options.mapper(type, this.getMatchingTypeMapping(type));
+            if (mapping_1)
+                return mapping_1;
         }
         for (var mappingKey in this.defaultTypeMap) {
             if (!this.defaultTypeMap.hasOwnProperty(mappingKey))
@@ -73,13 +76,28 @@ var TypeEmitter = (function () {
             var mappingKeyType = this.typeParser.parseType(mappingKey);
             if (type.name !== mappingKeyType.name)
                 continue;
-            var mapping_1 = this.defaultTypeMap[mappingKey];
+            var mapping_2 = this.defaultTypeMap[mappingKey];
             if (mappingKeyType.genericParameters) {
-                mapping_1 = this.substituteMultipleGenericReferencesIntoMapping(mappingKeyType, type, mapping_1, options);
+                mapping_2 = this.substituteMultipleGenericReferencesIntoMapping(mappingKeyType, type, mapping_2, options);
             }
-            return mapping_1;
+            return mapping_2;
         }
-        return type.name;
+        var mapping = this.getNonGenericTypeName(type);
+        if (type.genericParameters) {
+            mapping += this.generateGenericParametersString(type.genericParameters, options);
+        }
+        return mapping;
+    };
+    TypeEmitter.prototype.generateGenericParametersString = function (genericParameters, options) {
+        var mapping = "<";
+        for (var _i = 0, genericParameters_1 = genericParameters; _i < genericParameters_1.length; _i++) {
+            var genericParameter = genericParameters_1[_i];
+            mapping += this.getMatchingTypeMapping(genericParameter, options);
+            if (genericParameter !== genericParameters[genericParameters.length - 1])
+                mapping += ", ";
+        }
+        mapping += ">";
+        return mapping;
     };
     TypeEmitter.prototype.substituteMultipleGenericReferencesIntoMapping = function (mappingKeyType, concreteType, mapping, options) {
         for (var i = 0; i < mappingKeyType.genericParameters.length; i++) {

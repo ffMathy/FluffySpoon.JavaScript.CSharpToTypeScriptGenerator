@@ -53,15 +53,18 @@ export class TypeEmitter {
 	emitType(type: CSharpType, options?: TypeEmitOptions) {
 		options = this.prepareOptions(options);
 
-		if (!options.filter(type))
+		if (!this.canEmitType(type, options))
 			return;
 
 		var mapping = this.getMatchingTypeMapping(type, options);
 
 		this.logger.log("Emitting type " + type.fullName);
 		this.stringEmitter.write(mapping);
+	}
 
-		return type;
+	emitGenericParameters(genericParameters: CSharpType[], options?: TypeEmitOptions) {
+		options = this.prepareOptions(options);
+		this.stringEmitter.write(this.generateGenericParametersString(genericParameters, options));
 	}
 
 	private prepareOptions(options?: TypeEmitOptions) {
@@ -91,7 +94,7 @@ export class TypeEmitter {
 		options?: TypeEmitOptions) {
 
 		if (options && options.mapper) {
-			var mapping = options.mapper(type, this.getMatchingTypeMapping(type));
+			let mapping = options.mapper(type, this.getMatchingTypeMapping(type));
 			if(mapping)
 				return mapping;
 		}
@@ -116,7 +119,23 @@ export class TypeEmitter {
 			return mapping;
 		}
 
-		return type.name;
+		let mapping = this.getNonGenericTypeName(type);
+		if(type.genericParameters) {
+			mapping += this.generateGenericParametersString(type.genericParameters, options);
+		}
+
+		return mapping;
+	}
+
+	private generateGenericParametersString(genericParameters: CSharpType[], options: TypeEmitOptions) {
+		var mapping = "<";
+		for(var genericParameter of genericParameters) {
+			mapping += this.getMatchingTypeMapping(genericParameter, options);
+			if(genericParameter !== genericParameters[genericParameters.length-1])
+				mapping += ", ";
+		}
+		mapping += ">";
+		return mapping;
 	}
 
 	private substituteMultipleGenericReferencesIntoMapping(

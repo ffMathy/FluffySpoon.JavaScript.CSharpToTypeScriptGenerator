@@ -20,7 +20,8 @@ var InterfaceEmitter = (function () {
         this.logger.log("Done emitting interfaces", interfaces);
     };
     InterfaceEmitter.prototype.emitInterface = function (interfaceObject, options) {
-        options = Object.assign(this.prepareOptions(options), options.perInterfaceEmitOptions(interfaceObject));
+        options = this.prepareOptions(options);
+        options = Object.assign(options, options.perInterfaceEmitOptions(interfaceObject));
         if (!options.filter(interfaceObject))
             return;
         this.logger.log("Emitting interface", interfaceObject);
@@ -53,6 +54,8 @@ var InterfaceEmitter = (function () {
         var className = options.name || interfaceObject.name;
         this.logger.log("Emitting interface " + className);
         this.stringEmitter.write("interface " + className);
+        if (interfaceObject.genericParameters)
+            this.typeEmitter.emitGenericParameters(interfaceObject.genericParameters, options.genericParameterTypeEmitOptions);
         if (interfaceObject.inheritsFrom && this.typeEmitter.canEmitType(interfaceObject.inheritsFrom, options.inheritedTypeEmitOptions)) {
             this.stringEmitter.write(" extends ");
             this.typeEmitter.emitType(interfaceObject.inheritsFrom, options.inheritedTypeEmitOptions);

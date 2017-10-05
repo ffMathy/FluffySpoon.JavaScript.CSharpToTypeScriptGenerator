@@ -30,7 +30,7 @@ var expectedOutput = "declare enum MyEnum {\n\
     Pink = 10,\n\
     Ultraviolet = 11,\n\
     Foo = 1337\n\
-}\n";
+}";
 
 var pocoGen = require('./adapters/legacyAdapter.js');
 

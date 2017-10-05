@@ -14,8 +14,8 @@ namespace MyNamespace.Domain\n\
 }\n";
 
 var expectedOutput = "interface MyPoco {\n\
-    Stuff: { [index: number]: number };\n\
-}\n";
+    Stuff: { [key: number]: number };\n\
+}";
 
 var pocoGen = require('./adapters/legacyAdapter.js');
 

@@ -17,6 +17,7 @@ export interface ClassEmitOptionsBase {
 	interfaceEmitOptions?: InterfaceEmitOptions;
 	methodEmitOptions?: MethodEmitOptions;
 	fieldEmitOptions?: FieldEmitOptions;
+	genericParameterTypeEmitOptions?: TypeEmitOptions;
 	inheritedTypeEmitOptions?: TypeEmitOptions;
 }
 
@@ -45,6 +46,7 @@ export class ClassEmitter {
 		this.fieldEmitter = new FieldEmitter(stringEmitter, logger);
 		this.methodEmitter = new MethodEmitter(stringEmitter, logger);
 		this.typeEmitter = new TypeEmitter(stringEmitter, logger);
+		this.interfaceEmitter = new InterfaceEmitter(stringEmitter, logger);
 	}
 
 	emitClasses(classes: CSharpClass[], options?: ClassEmitOptions) {
@@ -60,8 +62,9 @@ export class ClassEmitter {
 	}
 
 	emitClass(classObject: CSharpClass, options?: ClassEmitOptions) {
+		options = this.prepareOptions(options);
 		options = Object.assign(
-			this.prepareOptions(options),
+			options,
 			options.perClassEmitOptions(classObject));
 
 		if (!options.filter(classObject))
@@ -110,6 +113,10 @@ export class ClassEmitter {
 		this.logger.log("Emitting class " + className);
 
 		this.stringEmitter.write("interface " + className);
+		if(classObject.genericParameters)
+			this.typeEmitter.emitGenericParameters(
+				classObject.genericParameters,
+				options.genericParameterTypeEmitOptions);
 
 		if (classObject.inheritsFrom && this.typeEmitter.canEmitType(classObject.inheritsFrom, options.inheritedTypeEmitOptions)) {
 			this.stringEmitter.write(" extends ");

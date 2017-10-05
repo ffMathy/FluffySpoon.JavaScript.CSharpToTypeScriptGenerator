@@ -4,6 +4,7 @@ import { PerPropertyEmitOptions } from '../../../src/PropertyEmitter';
 import { PerClassEmitOptions } from '../../../src/ClassEmitter';
 import { PerInterfaceEmitOptions } from '../../../src/InterfaceEmitter';
 import { PerMethodEmitOptions } from '../../../src/MethodEmitter';
+import { TypeEmitOptions } from '../../../src/TypeEmitter';
 
 import {
 	CSharpClass,
@@ -141,6 +142,12 @@ function pocoGen(contents, options) {
 				inheritedTypeEmitOptions: {
 					filter: (type) => options.ignoreInheritance.indexOf(type.name) === -1
 				}
+			};
+		}
+
+		if(options.dateTimeToDate) {
+			emitOptions.typeEmitOptions = <TypeEmitOptions>{
+				mapper: (type, suggested) => type.name === "DateTime" ? "Date" : suggested
 			};
 		}
 

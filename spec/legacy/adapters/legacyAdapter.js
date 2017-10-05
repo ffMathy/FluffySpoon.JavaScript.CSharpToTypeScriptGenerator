@@ -122,6 +122,11 @@ function pocoGen(contents, options) {
                 }
             }); };
         }
+        if (options.dateTimeToDate) {
+            emitOptions.typeEmitOptions = {
+                mapper: function (type, suggested) { return type.name === "DateTime" ? "Date" : suggested; }
+            };
+        }
         if (options.typeResolver) {
             emitOptions.classEmitOptions
                 .propertyEmitOptions

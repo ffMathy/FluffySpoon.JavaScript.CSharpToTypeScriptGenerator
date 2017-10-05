@@ -18,7 +18,7 @@ namespace MyNamespace.Domain\n\
 var expectedOutput = "interface MyPoco {\n\
     Field: string;\n\
     InterestingWhitespace: string;\n\
-}\n";
+}";
 
 var pocoGen = require('./adapters/legacyAdapter.js');
 

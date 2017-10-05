@@ -62,7 +62,7 @@ var expectedOutput = "interface MyPoco {\n\
     MorePocos: SomeOtherPoco[];\n\
     ArrayPocos: SomeOtherPoco[];\n\
     SomeSpecifiedDateTime: Date;\n\
-}\n";
+}";
 
 var pocoGen = require('./adapters/legacyAdapter.js');
 

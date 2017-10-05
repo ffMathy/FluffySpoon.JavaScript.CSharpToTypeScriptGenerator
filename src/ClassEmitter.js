@@ -2,6 +2,7 @@
 var EnumEmitter_1 = require("./EnumEmitter");
 var TypeEmitter_1 = require("./TypeEmitter");
 var PropertyEmitter_1 = require("./PropertyEmitter");
+var InterfaceEmitter_1 = require("./InterfaceEmitter");
 var FieldEmitter_1 = require("./FieldEmitter");
 var MethodEmitter_1 = require("./MethodEmitter");
 var ClassEmitter = (function () {
@@ -13,6 +14,7 @@ var ClassEmitter = (function () {
         this.fieldEmitter = new FieldEmitter_1.FieldEmitter(stringEmitter, logger);
         this.methodEmitter = new MethodEmitter_1.MethodEmitter(stringEmitter, logger);
         this.typeEmitter = new TypeEmitter_1.TypeEmitter(stringEmitter, logger);
+        this.interfaceEmitter = new InterfaceEmitter_1.InterfaceEmitter(stringEmitter, logger);
     }
     ClassEmitter.prototype.emitClasses = function (classes, options) {
         this.logger.log("Emitting classes", classes);
@@ -24,7 +26,8 @@ var ClassEmitter = (function () {
         this.logger.log("Done emitting classes", classes);
     };
     ClassEmitter.prototype.emitClass = function (classObject, options) {
-        options = Object.assign(this.prepareOptions(options), options.perClassEmitOptions(classObject));
+        options = this.prepareOptions(options);
+        options = Object.assign(options, options.perClassEmitOptions(classObject));
         if (!options.filter(classObject))
             return;
         this.logger.log("Emitting class", classObject);
@@ -58,6 +61,8 @@ var ClassEmitter = (function () {
         var className = options.name || classObject.name;
         this.logger.log("Emitting class " + className);
         this.stringEmitter.write("interface " + className);
+        if (classObject.genericParameters)
+            this.typeEmitter.emitGenericParameters(classObject.genericParameters, options.genericParameterTypeEmitOptions);
         if (classObject.inheritsFrom && this.typeEmitter.canEmitType(classObject.inheritsFrom, options.inheritedTypeEmitOptions)) {
             this.stringEmitter.write(" extends ");
             this.typeEmitter.emitType(classObject.inheritsFrom, options.inheritedTypeEmitOptions);

@@ -20,7 +20,7 @@ namespace MyNamespace.Domain\n\
 
         var expectedOutput = "interface MyPoco<T> {\n\
     GenericTypeValue: T;\n\
-}\n";
+}";
 
 		var result = pocoGen(sampleFile);
         
@@ -44,7 +44,7 @@ namespace MyNamespace.Domain\n\
         var expectedOutput = "interface MyPoco<T, K> {\n\
     GenericTypeValue: T;\n\
     GenericTypeValue: K;\n\
-}\n";
+}";
 
 		var result = pocoGen(sampleFile);
         
@@ -66,7 +66,7 @@ namespace MyNamespace.Domain\n\
 
         var expectedOutput = "interface MyPoco {\n\
     Stuff: SomeFoo<number, string>;\n\
-}\n";
+}";
 
 		var result = pocoGen(sampleFile);
         

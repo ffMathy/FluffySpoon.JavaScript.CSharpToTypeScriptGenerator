@@ -13,6 +13,7 @@ export interface InterfaceEmitOptionsBase {
 
 	propertyEmitOptions?: PropertyEmitOptions;
 	methodEmitOptions?: MethodEmitOptions;
+	genericParameterTypeEmitOptions?: TypeEmitOptions;
 	inheritedTypeEmitOptions?: TypeEmitOptions;
 }
 
@@ -51,8 +52,9 @@ export class InterfaceEmitter {
 	}
 
 	emitInterface(interfaceObject: CSharpInterface, options?: InterfaceEmitOptions) {
+		options = this.prepareOptions(options);
 		options = Object.assign(
-			this.prepareOptions(options),
+			options,
 			options.perInterfaceEmitOptions(interfaceObject));
 			
 		if (!options.filter(interfaceObject))
@@ -100,6 +102,10 @@ export class InterfaceEmitter {
 		this.logger.log("Emitting interface " + className);
 
 		this.stringEmitter.write("interface " + className);
+		if(interfaceObject.genericParameters)
+			this.typeEmitter.emitGenericParameters(
+				interfaceObject.genericParameters,
+				options.genericParameterTypeEmitOptions);
 
 		if (interfaceObject.inheritsFrom && this.typeEmitter.canEmitType(interfaceObject.inheritsFrom, options.inheritedTypeEmitOptions)) {
 			this.stringEmitter.write(" extends ");
