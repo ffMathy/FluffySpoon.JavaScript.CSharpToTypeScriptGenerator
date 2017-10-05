@@ -94,9 +94,9 @@ export class TypeEmitter {
 		options?: TypeEmitOptions) {
 
 		if (options && options.mapper) {
-			let mapping = options.mapper(type, this.getMatchingTypeMapping(type));
-			if(mapping)
-				return mapping;
+			let mappedValue: string = options.mapper(type, this.getMatchingTypeMapping(type));
+			if(mappedValue)
+				return mappedValue;
 		}
         
 		for (var mappingKey in this.defaultTypeMap) {
@@ -119,12 +119,12 @@ export class TypeEmitter {
 			return mapping;
 		}
 
-		let mapping = this.getNonGenericTypeName(type);
+		let mappedValue = this.getNonGenericTypeName(type);
 		if(type.genericParameters) {
-			mapping += this.generateGenericParametersString(type.genericParameters, options);
+			mappedValue += this.generateGenericParametersString(type.genericParameters, options);
 		}
 
-		return mapping;
+		return mappedValue;
 	}
 
 	private generateGenericParametersString(genericParameters: CSharpType[], options: TypeEmitOptions) {

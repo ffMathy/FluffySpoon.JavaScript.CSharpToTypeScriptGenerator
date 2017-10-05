@@ -66,9 +66,9 @@ var TypeEmitter = (function () {
     };
     TypeEmitter.prototype.getMatchingTypeMapping = function (type, options) {
         if (options && options.mapper) {
-            var mapping_1 = options.mapper(type, this.getMatchingTypeMapping(type));
-            if (mapping_1)
-                return mapping_1;
+            var mappedValue_1 = options.mapper(type, this.getMatchingTypeMapping(type));
+            if (mappedValue_1)
+                return mappedValue_1;
         }
         for (var mappingKey in this.defaultTypeMap) {
             if (!this.defaultTypeMap.hasOwnProperty(mappingKey))
@@ -76,17 +76,17 @@ var TypeEmitter = (function () {
             var mappingKeyType = this.typeParser.parseType(mappingKey);
             if (type.name !== mappingKeyType.name)
                 continue;
-            var mapping_2 = this.defaultTypeMap[mappingKey];
+            var mapping = this.defaultTypeMap[mappingKey];
             if (mappingKeyType.genericParameters) {
-                mapping_2 = this.substituteMultipleGenericReferencesIntoMapping(mappingKeyType, type, mapping_2, options);
+                mapping = this.substituteMultipleGenericReferencesIntoMapping(mappingKeyType, type, mapping, options);
             }
-            return mapping_2;
+            return mapping;
         }
-        var mapping = this.getNonGenericTypeName(type);
+        var mappedValue = this.getNonGenericTypeName(type);
         if (type.genericParameters) {
-            mapping += this.generateGenericParametersString(type.genericParameters, options);
+            mappedValue += this.generateGenericParametersString(type.genericParameters, options);
         }
-        return mapping;
+        return mappedValue;
     };
     TypeEmitter.prototype.generateGenericParametersString = function (genericParameters, options) {
         var mapping = "<";

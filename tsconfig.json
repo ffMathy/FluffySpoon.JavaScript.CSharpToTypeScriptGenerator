@@ -1,10 +1,11 @@
 ﻿{
   "compileOnSave": true,
-  "exclude": [ "./spec/cases/" ],
+  "exclude": [ "./spec/cases/", "./node_modules" ],
   "compilerOptions": {
     "target": "es5",
     "lib": [ "es2015", "es2017", "dom" ],
     "sourceMap": true,
+    "allowJs": false,
     "declaration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,

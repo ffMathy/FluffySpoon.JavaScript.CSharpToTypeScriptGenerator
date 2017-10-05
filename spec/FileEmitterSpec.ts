@@ -7,14 +7,14 @@ function runCase(caseName: string, options?: FileEmitOptions) {
 	it("should be able to handle case " + caseName, function (done) {
 		let localCaseName = caseName;
 		let localOptions = options;
-		fs.readFile('./spec/cases/' + localCaseName + '.case.cs', 'utf8', function (err, caseInput) {
+		fs.readFile('./spec/cases/' + localCaseName + '.case.cs', 'utf8', function (err: any, caseInput: any) {
 			let tsFileToUse = './spec/cases/' + localCaseName + '.expected.ts';
 			let dtsFileToUse = './spec/cases/' + localCaseName + '.expected.d.ts';
 
 			let fileToUse = fs.existsSync(tsFileToUse) ? tsFileToUse : dtsFileToUse;
 			console.log("Comparing result with", fileToUse);
 
-			fs.readFile(fileToUse, 'utf8', function (err, caseExpected) {
+			fs.readFile(fileToUse, 'utf8', function (err: any, caseExpected: any) {
 				caseExpected = caseExpected
 					.replace(/\r/g, '')
 					.replace(/    /g, '\t')

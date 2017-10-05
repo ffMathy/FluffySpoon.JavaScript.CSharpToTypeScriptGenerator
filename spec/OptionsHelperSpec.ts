@@ -16,7 +16,7 @@ describe("OptionsHelper", function () {
                 c: {
                     d: true,
                     e: 42,
-                    f: (number) => offset += number + 2
+                    f: (number: number) => offset += number + 2
                 }
             },
             {
@@ -25,7 +25,7 @@ describe("OptionsHelper", function () {
                 c: {
                     d: false,
                     e: 42,
-                    f: (number) => offset += number + 1337
+                    f: (number: number) => offset += number + 1337
                 }
             });
 
