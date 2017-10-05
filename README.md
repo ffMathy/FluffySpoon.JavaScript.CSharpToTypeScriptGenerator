@@ -163,5 +163,34 @@ interface MyClass {
 }
 ```
 
+#### Camel-casing property names
+```typescript
+var typescriptCode = emitter.emitFile(<FileEmitOptions>{
+  propertyEmitOptions: <PropertyEmitOptions>{
+    perPropertyEmitOptions: (property: CSharpProperty) => {
+      name: property.name[0].toLowerCase() + property.name.substring(1)
+    }
+  }
+});
+```
+
+Given the following CSharp model code:
+
+```csharp
+public class MyClass {
+  public int MyProperty { get; set; }
+  public string MyOtherProperty { get; set; }
+}
+```
+
+The following TypeScript code would be generated:
+
+```typescript
+interface MyClass {
+  myProperty: number;
+  myOtherProperty: string;
+}
+```
+
 ## Angular
 ### Generating TypeScript AJAX clients for CSharp controllers
