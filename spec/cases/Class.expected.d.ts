@@ -2,7 +2,7 @@
 	MyProperty: string;
 }
 
-declare interface MainClass {
+declare interface MainClass<Foo> {
 	MyProperty: string;
 	BlahProperty: SomeStuff<OtherStuff, RegularStuff>;
 	OtherBlahProperty: OtherStuff[];

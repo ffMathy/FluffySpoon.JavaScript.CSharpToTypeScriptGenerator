@@ -3,7 +3,7 @@
 	public string MyProperty { get; set; }
 }
 
-class MainClass
+class MainClass<Foo> where Foo : new()
 {
 	public string MyProperty { get; set; }
 
