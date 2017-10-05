@@ -64,7 +64,7 @@ declare namespace MyNamespace {
 ```typescript
 var typescriptCode = emitter.emitFile({
   methodEmitOptions: {
-    filter: (method: CSharpMethod) => false
+    filter: (method: CSharpMethod) => false //returning false filters away all methods
   }
 });
 ```
@@ -85,6 +85,54 @@ The following TypeScript code would be generated:
 ```typescript
 declare interface MyClass {
   MyProperty: number;
+}
+```
+
+#### Wrapping all emitted code in a namespace
+```typescript
+var typescriptCode = emitter.emitFile({
+  methodEmitOptions: {
+    afterParsing: (file: CSharpFile) => {
+      //we create a namespace, move all items of the file into that namespace, and remove it from the file. 
+      //we then add the newly created namespace to the file.
+    
+      var namespace = new CSharpNamespace("MyNamespace");
+      namespace.classes = file.classes;
+      namespace.enums = file.enums;
+      namespace.innerScopeText = file.innerScopeText;
+      namespace.interfaces = file.interfaces;
+      namespace.namespaces = file.namespaces;
+      namespace.parent = file;
+      namespace.structs = file.structs;
+      namespace.usings = file.usings;
+
+      file.classes = [];
+      file.enums = [];
+      file.interfaces = [];
+      file.namespaces = [];
+      file.structs = [];
+      file.usings = [];
+
+      file.namespaces.push(namespace);
+    }
+  }
+});
+```
+
+Given the following CSharp model code:
+
+```csharp
+public class MyClass {
+}
+```
+
+The following TypeScript code would be generated:
+
+```typescript
+declare namespace MyNamespace {
+  interface MyClass {
+    MyProperty: number;
+  }
 }
 ```
 
