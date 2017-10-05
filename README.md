@@ -6,7 +6,7 @@ Uses the following library for parsing C# code from TypeScript: https://github.c
 ## Wrappers
 Wrappers for `Gulp` and `Grunt` are under construction and are coming soon!
 
-# Recipes
+# Examples
 These recipes help you quickly get started with common scenarios you may need. Feel free to contribute with your own!
 
 ```typescript
@@ -17,6 +17,8 @@ var emitter = new FileEmitter(csharpCode);
 var options = <FileEmitOptions>{ };
 var typescriptCode = emitter.emitFile(options);
 ```
+
+**To see the definitions of each type such as `FileEmitOptions`, look here: https://github.com/ffMathy/FluffySpoon.JavaScript.CSharpParser/blob/master/src/Models.ts**
 
 ## Vanilla TypeScript
 
