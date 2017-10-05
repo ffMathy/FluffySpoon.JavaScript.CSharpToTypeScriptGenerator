@@ -14,6 +14,10 @@ var typescriptCode = emitter.emitFile();
 ```
 
 #### Example with default settings
+```
+var typescriptCode = emitter.emitFile();
+```
+
 Given the following CSharp model code:
 
 ```csharp
