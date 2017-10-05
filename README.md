@@ -156,7 +156,7 @@ public class MyClass {
 The following TypeScript code would be generated:
 
 ```typescript
-interface MyClass {
+declare interface MyClass {
   MyProperty: Date;
   MyOtherProperty: string;
 }
@@ -185,8 +185,54 @@ public class MyClass {
 The following TypeScript code would be generated:
 
 ```typescript
-interface MyClass {
+declare interface MyClass {
   myProperty: number;
   myOtherProperty: string;
+}
+```
+
+### Prefixing all class and interface names with "I"
+```typescript
+var typescriptCode = emitter.emitFile(<FileEmitOptions>{
+  classEmitOptions: <ClassEmitOptions>{
+    perClassEmitOptions: (classObjcect: CSharpClass) => {
+      name: "I" + classObject.name,
+      inheritedTypeEmitOptions: { 
+        //this is needed to also change the name of the inherited class/interface, if any
+        mapper: (type, suggested) => "I" + suggested
+      }
+    }
+  },
+  interfaceEmitOptions: <InterfaceEmitOptions>{
+    perInterfaceEmitOptions: (interfaceObjcect: CSharpInterface) => {
+      name: "I" + interfaceObject.name,
+      inheritedTypeEmitOptions: { 
+        //this is needed to also change the name of the inherited class/interface, if any
+        mapper: (type, suggested) => "I" + suggested
+      }
+    }
+  }
+});
+```
+
+Given the following CSharp model code:
+
+```csharp
+public class MyClass: SomeInheritedClass {
+  public int MyProperty { get; set; }
+}
+
+public class SomeInheritedClass {
+}
+```
+
+The following TypeScript code would be generated:
+
+```typescript
+declare interface IMyClass extends ISomeInheritedClass {
+  MyProperty: number;
+}
+
+declare interface ISomeInheritedClass {
 }
 ```
