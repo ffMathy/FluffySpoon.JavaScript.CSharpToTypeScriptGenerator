@@ -43,7 +43,7 @@ namespace MyNamespace.Domain\n\
     }\n\
 }\n";
 
-var expectedOutput = "interface MyPoco extends BasePoco {\n\
+var expectedOutput = "declare interface MyPoco extends BasePoco {\n\
     Id: number;\n\
     Name: string;\n\
     Title: string;\n\

@@ -11,7 +11,7 @@ public class LatLng : IEquatable<LatLng>\n\
   public double lng { get; set; }\n\
 }\n";
 
-var expectedOutput = "interface LatLng extends IEquatable<LatLng> {\n\
+var expectedOutput = "declare interface LatLng extends IEquatable<LatLng> {\n\
     lat: number;\n\
     lng: number;\n\
 }";

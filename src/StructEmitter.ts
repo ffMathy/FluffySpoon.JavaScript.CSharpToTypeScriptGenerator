@@ -9,7 +9,7 @@ import { MethodEmitter, MethodEmitOptions } from './MethodEmitter';
 import { Logger } from './Logger';
 
 export interface StructEmitOptionsBase {
-	declare: boolean;
+	declare?: boolean;
     
 	propertyEmitOptions?: PropertyEmitOptions;
 	methodEmitOptions?: MethodEmitOptions;
@@ -70,9 +70,7 @@ export class StructEmitter {
 
 	private prepareOptions(options?: StructEmitOptions) {
 		if (!options) {
-			options = {
-				declare: true
-			}
+			options = {};
 		}
 
 		if (!options.perStructEmitOptions) {

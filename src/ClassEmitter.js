@@ -39,15 +39,13 @@ var ClassEmitter = (function () {
     };
     ClassEmitter.prototype.prepareOptions = function (options) {
         if (!options) {
-            options = {
-                declare: true
-            };
+            options = {};
         }
         if (!options.filter) {
             options.filter = function () { return true; };
         }
         if (!options.perClassEmitOptions) {
-            options.perClassEmitOptions = function () { return options; };
+            options.perClassEmitOptions = function () { return ({}); };
         }
         return options;
     };
@@ -100,14 +98,15 @@ var ClassEmitter = (function () {
         this.stringEmitter.writeLine();
         this.stringEmitter.increaseIndentation();
         if (classObject.enums.length > 0) {
-            var classEnumOptions = Object.assign(options.enumEmitOptions || {}, {
+            var classEnumOptions = Object.assign(options.enumEmitOptions, {
                 declare: false
             });
             this.enumEmitter.emitEnums(classObject.enums, classEnumOptions);
             this.stringEmitter.ensureNewParagraph();
         }
         if (classObject.classes.length > 0) {
-            var subClassOptions = Object.assign(options, {
+            var optionsClone = Object.assign({}, options);
+            var subClassOptions = Object.assign(optionsClone, {
                 declare: false
             });
             this.emitClasses(classObject.classes, subClassOptions);

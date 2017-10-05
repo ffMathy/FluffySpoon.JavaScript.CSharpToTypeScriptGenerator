@@ -31,9 +31,7 @@ var InterfaceEmitter = (function () {
     };
     InterfaceEmitter.prototype.prepareOptions = function (options) {
         if (!options) {
-            options = {
-                declare: true
-            };
+            options = {};
         }
         if (!options.filter) {
             options.filter = function () { return true; };

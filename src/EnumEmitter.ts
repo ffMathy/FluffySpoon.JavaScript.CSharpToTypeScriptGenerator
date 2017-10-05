@@ -3,7 +3,7 @@ import { StringEmitter } from './StringEmitter';
 import { Logger } from './Logger';
 
 export interface EnumEmitOptions {
-	declare: boolean;
+	declare?: boolean;
 	strategy?: "default" | "string-union";
 }
 
@@ -17,7 +17,6 @@ export class EnumEmitter {
 	private prepareOptions(options?: EnumEmitOptions) {
 		if (!options) {
 			options = {
-				declare: true,
 				strategy: "default"
 			}
 		}

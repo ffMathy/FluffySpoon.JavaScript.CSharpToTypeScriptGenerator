@@ -6,7 +6,11 @@ function runCase(caseName, options) {
         var localCaseName = caseName;
         var localOptions = options;
         fs.readFile('./spec/cases/' + localCaseName + '.case.cs', 'utf8', function (err, caseInput) {
-            fs.readFile('./spec/cases/' + localCaseName + '.expected.ts', 'utf8', function (err, caseExpected) {
+            var tsFileToUse = './spec/cases/' + localCaseName + '.expected.ts';
+            var dtsFileToUse = './spec/cases/' + localCaseName + '.expected.d.ts';
+            var fileToUse = fs.existsSync(tsFileToUse) ? tsFileToUse : dtsFileToUse;
+            console.log("Comparing result with", fileToUse);
+            fs.readFile(fileToUse, 'utf8', function (err, caseExpected) {
                 caseExpected = caseExpected
                     .replace(/\r/g, '')
                     .replace(/    /g, '\t')

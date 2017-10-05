@@ -38,7 +38,7 @@ export class OptionsHelper {
                 child[childKey] = childValue;
             }
 
-            console.log("Merging option objects", parent, child);
+            console.log("Merging option object", parent, "with", child);
 
             var merged = Object.assign(
                 parent,

@@ -33,9 +33,7 @@ var StructEmitter = (function () {
     };
     StructEmitter.prototype.prepareOptions = function (options) {
         if (!options) {
-            options = {
-                declare: true
-            };
+            options = {};
         }
         if (!options.perStructEmitOptions) {
             options.perStructEmitOptions = function () { return options; };

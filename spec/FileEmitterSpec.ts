@@ -5,10 +5,16 @@ import { Logger } from '../src/Logger';
 
 function runCase(caseName: string, options?: FileEmitOptions) {
 	it("should be able to handle case " + caseName, function (done) {
-		var localCaseName = caseName;
-		var localOptions = options;
+		let localCaseName = caseName;
+		let localOptions = options;
 		fs.readFile('./spec/cases/' + localCaseName + '.case.cs', 'utf8', function (err, caseInput) {
-			fs.readFile('./spec/cases/' + localCaseName + '.expected.ts', 'utf8', function (err, caseExpected) {
+			let tsFileToUse = './spec/cases/' + localCaseName + '.expected.ts';
+			let dtsFileToUse = './spec/cases/' + localCaseName + '.expected.d.ts';
+
+			let fileToUse = fs.existsSync(tsFileToUse) ? tsFileToUse : dtsFileToUse;
+			console.log("Comparing result with", fileToUse);
+
+			fs.readFile(fileToUse, 'utf8', function (err, caseExpected) {
 				caseExpected = caseExpected
 					.replace(/\r/g, '')
 					.replace(/    /g, '\t')
@@ -16,7 +22,7 @@ function runCase(caseName: string, options?: FileEmitOptions) {
 					.replace(/\n/g, '\\n\n')
 					.trim();
 
-				var emitter = new FileEmitter(caseInput);
+				let emitter = new FileEmitter(caseInput);
 				emitter.logger.setLogMethod((message, ...parameters) => {
 					if (parameters.length > 0) {
 						console.log(
@@ -28,7 +34,7 @@ function runCase(caseName: string, options?: FileEmitOptions) {
 					}
 				});
                 
-				var result = emitter.emitFile(localOptions);
+				let result = emitter.emitFile(localOptions);
 				result = result
 					.replace(/\r/g, '')
 					.replace(/    /g, '\t')

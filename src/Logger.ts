@@ -3,12 +3,26 @@
 export class Logger {
 	private logMethod: LogMethod;
 
+	private static _debugMessageDisplayed: boolean;
+	public static get debugMessageDisplayed() {
+		return Logger._debugMessageDisplayed;
+	}
+
+	debug(message: any, ...parameters: any[]) {
+		this.log(message, parameters);
+		Logger._debugMessageDisplayed = true;
+		console.log = () => {};
+	}
+
 	setLogMethod(method: LogMethod) {
 		this.logMethod = method;
         console.log("Log method set.");
 	}
 
 	log(message: any, ...parameters: any[]) {
+		if(Logger._debugMessageDisplayed)
+			return;
+
 		if (!this.logMethod)
 			this.setLogMethod(console.log);
 

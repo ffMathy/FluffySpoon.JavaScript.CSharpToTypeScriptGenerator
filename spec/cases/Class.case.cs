@@ -1,4 +1,9 @@
-﻿class MainClass
+﻿class BeforeClass
+{
+	public string MyProperty { get; set; }
+}
+
+class MainClass
 {
 	public string MyProperty { get; set; }
 

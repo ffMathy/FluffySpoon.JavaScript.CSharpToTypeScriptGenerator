@@ -71,9 +71,7 @@ export class InterfaceEmitter {
 
 	private prepareOptions(options?: InterfaceEmitOptions) {
 		if (!options) {
-			options = {
-				declare: true
-			}
+			options = {};
 		}
 
 		if (!options.filter) {

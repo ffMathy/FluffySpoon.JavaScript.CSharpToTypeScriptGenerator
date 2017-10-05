@@ -41,7 +41,7 @@ var OptionsHelper = (function () {
                     _loop_1();
                 }
             }
-            console.log("Merging option objects", parent, child);
+            console.log("Merging option object", parent, "with", child);
             var merged = Object.assign(parent, child);
             return merged;
         }

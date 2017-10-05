@@ -16,11 +16,11 @@ public class MyPoco : IPoco\n\
     public string Name { get; set; }\n\
 }\n";
 
-var expectedOutput = "interface IPoco {\n\
+var expectedOutput = "declare interface IPoco {\n\
     Id: number;\n\
 }\n\
 \n\
-interface MyPoco extends IPoco {\n\
+declare interface MyPoco extends IPoco {\n\
     Id: number;\n\
     Name: string;\n\
 }";

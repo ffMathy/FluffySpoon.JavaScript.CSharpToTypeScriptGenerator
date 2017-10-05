@@ -23,12 +23,10 @@ var NamespaceEmitter = (function () {
     };
     NamespaceEmitter.prototype.emitNamespace = function (namespace, options) {
         if (!options) {
-            options = {
-                declare: true
-            };
+            options = {};
         }
         if (namespace.enums.length === 0 && namespace.namespaces.length === 0 && namespace.classes.length === 0 && namespace.interfaces.length === 0) {
-            console.log("Skipping namespace " + namespace.name + " because it contains no enums, classes, interfaces or namespaces");
+            this.logger.log("Skipping namespace " + namespace.name + " because it contains no enums, classes, interfaces or namespaces");
             return;
         }
         this.logger.log("Emitting namespace", namespace);
@@ -41,10 +39,10 @@ var NamespaceEmitter = (function () {
             this.stringEmitter.increaseIndentation();
         }
         if (namespace.enums.length > 0) {
-            var declare = typeof options.interfaceEmitOptions.declare !== "undefined" ?
-                options.interfaceEmitOptions.declare :
-                options.skip;
-            var namespaceEnumOptions = Object.assign(options.enumEmitOptions || {}, {
+            var declare = typeof options.enumEmitOptions.declare !== "undefined"
+                ? options.enumEmitOptions.declare
+                : options.skip;
+            var namespaceEnumOptions = Object.assign(options.enumEmitOptions, {
                 declare: declare
             });
             this.enumEmitter.emitEnums(namespace.enums, namespaceEnumOptions);
@@ -53,7 +51,7 @@ var NamespaceEmitter = (function () {
         if (namespace.interfaces.length > 0) {
             var declare = typeof options.interfaceEmitOptions.declare !== "undefined" ?
                 options.interfaceEmitOptions.declare :
-                options.skip;
+                (options.skip || !options.declare);
             var interfaceOptions = Object.assign(options.interfaceEmitOptions, {
                 declare: declare
             });
@@ -63,7 +61,7 @@ var NamespaceEmitter = (function () {
         if (namespace.classes.length > 0) {
             var declare = typeof options.classEmitOptions.declare !== "undefined" ?
                 options.classEmitOptions.declare :
-                options.skip;
+                (options.skip || !options.declare);
             var classOptions = Object.assign(options.classEmitOptions, {
                 declare: declare
             });
@@ -73,7 +71,7 @@ var NamespaceEmitter = (function () {
         if (namespace.structs.length > 0) {
             var declare = typeof options.structEmitOptions.declare !== "undefined" ?
                 options.structEmitOptions.declare :
-                options.skip;
+                (options.skip || !options.declare);
             var structEmitOptions = Object.assign(options.structEmitOptions, {
                 declare: declare
             });
@@ -82,8 +80,8 @@ var NamespaceEmitter = (function () {
         }
         if (namespace.namespaces.length > 0) {
             var declare = typeof options.declare !== "undefined" ?
-                options.declare :
-                options.skip;
+                options.skip :
+                (options.skip || !options.declare);
             var subNamespaceOptions = Object.assign(options, {
                 declare: declare
             });

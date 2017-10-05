@@ -12,7 +12,7 @@ import {
 	CSharpNamespace
 } from 'fluffy-spoon.javascript.csharp-parser';
 
-declare type InterfaceNameDecorationFunction = (input: CSharpClass|CSharpInterface) => PerClassEmitOptions|PerInterfaceEmitOptions;
+declare type InterfaceNameDecorationFunction = (input: CSharpClass | CSharpInterface) => PerClassEmitOptions | PerInterfaceEmitOptions;
 
 function pocoGen(contents, options) {
 	var emitter = new FileEmitter(contents);
@@ -32,10 +32,10 @@ function pocoGen(contents, options) {
 				perFieldEmitOptions: (field) => <PerFieldEmitOptions>{
 					readOnly: field.isReadOnly
 				}
-            }
+			}
 		},
 		enumEmitOptions: {
-        },
+		},
 		interfaceEmitOptions: {
 			methodEmitOptions: {
 				argumentTypeEmitOptions: {},
@@ -45,8 +45,8 @@ function pocoGen(contents, options) {
 				typeEmitOptions: {}
 			}
 		},
-        structEmitOptions: {
-        }
+		structEmitOptions: {
+		}
 	};
 
 	emitter.logger.setLogMethod((message, ...parameters) => {
@@ -66,35 +66,35 @@ function pocoGen(contents, options) {
 		}
 
 		if (options.propertyNameResolver) {
-			emitOptions.classEmitOptions.propertyEmitOptions.perPropertyEmitOptions = 
-			emitOptions.interfaceEmitOptions.propertyEmitOptions.perPropertyEmitOptions = (property) => <PerPropertyEmitOptions>{
-				name: options.propertyNameResolver(property.name)
-			};
+			emitOptions.classEmitOptions.propertyEmitOptions.perPropertyEmitOptions =
+				emitOptions.interfaceEmitOptions.propertyEmitOptions.perPropertyEmitOptions = (property) => <PerPropertyEmitOptions>{
+					name: options.propertyNameResolver(property.name)
+				};
 		}
 
 		if (options.methodNameResolver) {
-			emitOptions.interfaceEmitOptions.methodEmitOptions.perMethodEmitOptions = 
-			emitOptions.classEmitOptions.methodEmitOptions.perMethodEmitOptions = (method) => <PerMethodEmitOptions>{
-				name: options.methodNameResolver(method.name)
-			};
+			emitOptions.interfaceEmitOptions.methodEmitOptions.perMethodEmitOptions =
+				emitOptions.classEmitOptions.methodEmitOptions.perMethodEmitOptions = (method) => <PerMethodEmitOptions>{
+					name: options.methodNameResolver(method.name)
+				};
 		}
 
-		let perInterfaceOrClassOptions = (input: CSharpClass|CSharpInterface) => <PerInterfaceEmitOptions|PerClassEmitOptions>{
-				name: input.name,
-				inheritedTypeEmitOptions: {
-					mapper: (type, suggestedOutput) => suggestedOutput
-				}
-			};
+		let perInterfaceOrClassOptions = (input: CSharpClass | CSharpInterface) => <PerInterfaceEmitOptions | PerClassEmitOptions>{
+			name: input.name,
+			inheritedTypeEmitOptions: {
+				mapper: (type, suggestedOutput) => suggestedOutput
+			}
+		};
 		if (options.interfaceNameResolver) {
-			perInterfaceOrClassOptions = (interfaceObject) => <PerInterfaceEmitOptions|PerClassEmitOptions>{
+			perInterfaceOrClassOptions = (interfaceObject) => <PerInterfaceEmitOptions | PerClassEmitOptions>{
 				name: options.interfaceNameResolver(interfaceObject.name),
 				inheritedTypeEmitOptions: {
 					mapper: (type, suggestedOutput) => options.interfaceNameResolver(suggestedOutput)
 				}
 			};
 
-			emitOptions.interfaceEmitOptions.perInterfaceEmitOptions = 
-			emitOptions.classEmitOptions.perClassEmitOptions = perInterfaceOrClassOptions;
+			emitOptions.interfaceEmitOptions.perInterfaceEmitOptions =
+				emitOptions.classEmitOptions.perClassEmitOptions = perInterfaceOrClassOptions;
 		}
 
 		if (options.prefixWithI) {
@@ -102,13 +102,13 @@ function pocoGen(contents, options) {
 			perInterfaceOrClassOptions = (classObject) => <PerClassEmitOptions>{
 				name: "I" + prefixWithIPerInterfaceOrClassOptions(classObject).name,
 				inheritedTypeEmitOptions: {
-					mapper: (type, suggested) => 
+					mapper: (type, suggested) =>
 						"I" + prefixWithIPerInterfaceOrClassOptions(classObject).inheritedTypeEmitOptions.mapper(type, suggested)
 				}
 			};
 
-			emitOptions.classEmitOptions.perClassEmitOptions = 
-			emitOptions.interfaceEmitOptions.perInterfaceEmitOptions = perInterfaceOrClassOptions;
+			emitOptions.classEmitOptions.perClassEmitOptions =
+				emitOptions.interfaceEmitOptions.perInterfaceEmitOptions = perInterfaceOrClassOptions;
 		}
 
 		if (options.ignoreVirtual) {
@@ -116,7 +116,7 @@ function pocoGen(contents, options) {
 			emitOptions.classEmitOptions.propertyEmitOptions.filter = (property) => !property.isVirtual;
 		}
 
-		if(options.ignoreMethods) {
+		if (options.ignoreMethods) {
 			emitOptions.classEmitOptions.methodEmitOptions.filter = (method) => false;
 		}
 
@@ -126,7 +126,7 @@ function pocoGen(contents, options) {
 			};
 		}
 
-		if(options.ignoreInheritance) {
+		if (options.ignoreInheritance) {
 			emitOptions.interfaceEmitOptions.filter = (classObject) => options.ignoreInheritance.indexOf(classObject.name) === -1;
 			emitOptions.classEmitOptions.filter = (classObject) => options.ignoreInheritance.indexOf(classObject.name) === -1;
 			emitOptions.classEmitOptions.perClassEmitOptions = (classObject) => <PerClassEmitOptions>{
@@ -136,11 +136,17 @@ function pocoGen(contents, options) {
 			};
 		}
 
-		if(options.baseNamespace) {
+		if (options.baseNamespace) {
 			emitOptions.namespaceEmitOptions.skip = false;
 			emitOptions.namespaceEmitOptions.declare = true;
+
+			emitOptions.classEmitOptions.declare = false;
+			emitOptions.enumEmitOptions.declare = false;
+			emitOptions.interfaceEmitOptions.declare = false;
+			emitOptions.structEmitOptions.declare = false;
+
 			emitOptions.afterParsing = (file) => {
-				if(file.namespaces.filter(n => n.name === options.baseNamespace)[0])
+				if (file.namespaces.filter(n => n.name === options.baseNamespace)[0])
 					return;
 
 				var namespace = new CSharpNamespace(options.baseNamespace);
@@ -164,13 +170,13 @@ function pocoGen(contents, options) {
 			};
 		}
 
-		if(options.dateTimeToDate) {
+		if (options.dateTimeToDate) {
 			emitOptions.typeEmitOptions = <TypeEmitOptions>{
 				mapper: (type, suggested) => type.name === "DateTime" ? "Date" : suggested
 			};
 		}
 
-		if(options.customTypeTranslations) {
+		if (options.customTypeTranslations) {
 			emitOptions.typeEmitOptions = <TypeEmitOptions>{
 				mapper: (type, suggested) => options.customTypeTranslations[type.name] || suggested
 			};

@@ -18,7 +18,7 @@ namespace MyNamespace.Domain\n\
     }\n\
 }\n";
 
-        var expectedOutput = "interface MyPoco<T> {\n\
+        var expectedOutput = "declare interface MyPoco<T> {\n\
     GenericTypeValue: T;\n\
 }";
 
@@ -41,7 +41,7 @@ namespace MyNamespace.Domain\n\
     }\n\
 }\n";
 
-        var expectedOutput = "interface MyPoco<T, K> {\n\
+        var expectedOutput = "declare interface MyPoco<T, K> {\n\
     GenericTypeValue: T;\n\
     GenericTypeValue: K;\n\
 }";
@@ -64,7 +64,7 @@ namespace MyNamespace.Domain\n\
     }\n\
 }\n";
 
-        var expectedOutput = "interface MyPoco {\n\
+        var expectedOutput = "declare interface MyPoco {\n\
     Stuff: SomeFoo<number, string>;\n\
 }";
 

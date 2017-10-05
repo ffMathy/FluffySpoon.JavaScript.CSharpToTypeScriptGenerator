@@ -7,7 +7,6 @@ var EnumEmitter = (function () {
     EnumEmitter.prototype.prepareOptions = function (options) {
         if (!options) {
             options = {
-                declare: true,
                 strategy: "default"
             };
         }

@@ -114,6 +114,10 @@ function pocoGen(contents, options) {
         if (options.baseNamespace) {
             emitOptions.namespaceEmitOptions.skip = false;
             emitOptions.namespaceEmitOptions.declare = true;
+            emitOptions.classEmitOptions.declare = false;
+            emitOptions.enumEmitOptions.declare = false;
+            emitOptions.interfaceEmitOptions.declare = false;
+            emitOptions.structEmitOptions.declare = false;
             emitOptions.afterParsing = function (file) {
                 if (file.namespaces.filter(function (n) { return n.name === options.baseNamespace; })[0])
                     return;

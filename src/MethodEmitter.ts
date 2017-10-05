@@ -1,4 +1,5 @@
 ﻿import { CSharpMethod, CSharpMethodParameter } from 'fluffy-spoon.javascript.csharp-parser';
+
 import { StringEmitter } from './StringEmitter';
 import { TypeEmitter, TypeEmitOptions } from './TypeEmitter';
 import { Logger } from './Logger';

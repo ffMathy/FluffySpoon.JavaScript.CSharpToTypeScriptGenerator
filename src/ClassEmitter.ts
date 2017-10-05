@@ -73,11 +73,9 @@ export class ClassEmitter {
 		this.logger.log("Emitting class", classObject);
 
 		this.emitClassInterface(classObject, options);
-
 		this.stringEmitter.ensureNewParagraph();
 
 		this.emitSubElementsInClass(classObject, options);
-
 		this.stringEmitter.ensureNewParagraph();
 
 		this.logger.log("Done emitting class", classObject);
@@ -85,9 +83,7 @@ export class ClassEmitter {
 
 	private prepareOptions(options?: ClassEmitOptions) {
 		if (!options) {
-			options = {
-				declare: true
-			}
+			options = {}
 		}
 
 		if (!options.filter) {
@@ -95,7 +91,7 @@ export class ClassEmitter {
 		}
 
 		if (!options.perClassEmitOptions) {
-			options.perClassEmitOptions = () => options;
+			options.perClassEmitOptions = () => <PerClassEmitOptions>{};
 		}
 
 		return options;
@@ -173,7 +169,7 @@ export class ClassEmitter {
 
 		if(classObject.enums.length > 0) {
 			var classEnumOptions = Object.assign(
-				options.enumEmitOptions || {},
+				options.enumEmitOptions,
 				<EnumEmitOptions>{
 					declare: false
 				});
@@ -184,7 +180,8 @@ export class ClassEmitter {
 		}
 
 		if(classObject.classes.length > 0) {
-			var subClassOptions = Object.assign(options, <ClassEmitOptions>{
+			var optionsClone = Object.assign({}, options);
+			var subClassOptions = Object.assign(optionsClone, <ClassEmitOptions>{
 				declare: false
 			});
 			this.emitClasses(

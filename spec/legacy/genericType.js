@@ -11,7 +11,7 @@ public class Profile\n\
 }\n";
 
 var expectedOutput = "\
-interface Profile {\n\
+declare interface Profile {\n\
     Value: Entry<boolean>;\n\
 }";
 

@@ -15,7 +15,7 @@ namespace MyNamespace.Domain\n\
     }\n\
 }\n";
 
-var expectedOutput = "interface MyPoco {\n\
+var expectedOutput = "declare interface MyPoco {\n\
     Id: number;\n\
     NameOfStuff: string;\n\
 }";

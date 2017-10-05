@@ -1,4 +1,8 @@
-﻿declare interface MainClass {
+﻿declare interface BeforeClass {
+	MyProperty: string;
+}
+
+declare interface MainClass {
 	MyProperty: string;
 	BlahProperty: SomeStuff<OtherStuff, RegularStuff>;
 	OtherBlahProperty: OtherStuff[];
