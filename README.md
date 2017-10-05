@@ -14,7 +14,7 @@ var typescriptCode = emitter.emitFile();
 ```
 
 #### Example with default settings
-```
+```typescript
 var typescriptCode = emitter.emitFile();
 ```
 
