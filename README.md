@@ -191,25 +191,16 @@ declare interface MyClass {
 }
 ```
 
-**Note: This can also be done for classes, types, methods and so on by using the `ClassEmitOptions`, `TypeEmitOptions` and `MethodEmitOptions` respectively.**
+**Note: This can also be done for classes, types, methods and properties by using the `ClassEmitOptions`, `TypeEmitOptions`, `MethodEmitOptions` and `PropertyEmitOptions` respectively.**
 
-### Prefixing all class and interface names with "I"
+### Prefixing all class names with "I"
 ```typescript
 var typescriptCode = emitter.emitFile(<FileEmitOptions>{
   classEmitOptions: <ClassEmitOptions>{
     perClassEmitOptions: (classObjcect: CSharpClass) => {
       name: "I" + classObject.name,
       inheritedTypeEmitOptions: { 
-        //this is needed to also change the name of the inherited class/interface, if any
-        mapper: (type, suggested) => "I" + suggested
-      }
-    }
-  },
-  interfaceEmitOptions: <InterfaceEmitOptions>{
-    perInterfaceEmitOptions: (interfaceObjcect: CSharpInterface) => {
-      name: "I" + interfaceObject.name,
-      inheritedTypeEmitOptions: { 
-        //this is needed to also change the name of the inherited class/interface, if any
+        //this is needed to also change the name of the inherited class, if any
         mapper: (type, suggested) => "I" + suggested
       }
     }
@@ -238,3 +229,43 @@ declare interface IMyClass extends ISomeInheritedClass {
 declare interface ISomeInheritedClass {
 }
 ```
+
+**Note: This can also be done for interfaces by using the `InterfaceEmitOptions` instead.**
+
+### Removing inheritance
+```typescript
+var typescriptCode = emitter.emitFile(<FileEmitOptions>{
+  classEmitOptions: <ClassEmitOptions>{
+    perClassEmitOptions: (classObjcect: CSharpClass) => {
+      inheritedTypeEmitOptions: { 
+        //by mapping the inherited type to "null", it is not emitted
+        mapper: (type, suggested) => null
+      }
+    }
+  }
+});
+```
+
+Given the following CSharp model code:
+
+```csharp
+public class MyClass: SomeInheritedClass {
+  public int MyProperty { get; set; }
+}
+
+public class SomeInheritedClass {
+}
+```
+
+The following TypeScript code would be generated:
+
+```typescript
+declare interface MyClass {
+  MyProperty: number;
+}
+
+declare interface SomeInheritedClass {
+}
+```
+
+**Note: This can also be done for interfaces by using the `InterfaceEmitOptions` instead.**
