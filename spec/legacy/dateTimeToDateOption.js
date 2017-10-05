@@ -64,11 +64,11 @@ var expectedOutput = "declare interface MyPoco {\n\
     SomeSpecifiedDateTime: Date;\n\
 }";
 
-var pocoGen = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('./adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function() {
 	it('should turn DateTime into Date with option set', function() {
-		var result = pocoGen(sampleFile, {
+		var result = LegacyAdapter(sampleFile, {
             dateTimeToDate: true
         });
 

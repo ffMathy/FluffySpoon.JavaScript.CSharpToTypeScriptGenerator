@@ -29,11 +29,11 @@ var expectedOutput = "declare enum MyEnum {\n\
     Ultraviolet = 11\n\
 }";
 
-var pocoGen = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('./adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function() {
 	it('should ignore an enum\'s explicit type', function() {
-		var result = pocoGen(sampleFile);
+		var result = LegacyAdapter(sampleFile);
 
         expect(result).toEqual(expectedOutput);
 	});

@@ -74,11 +74,11 @@ declare interface MyStruct {\n\
     SomeIntField: number;\n\
 }";
 
-var pocoGen = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('./adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function() {
 	it('should handle multiple classes in the same file', function() {
-		var result = pocoGen(sampleFile);
+		var result = LegacyAdapter(sampleFile);
         
         expect(result).toEqual(expectedOutput);
 	});

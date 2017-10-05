@@ -1,2 +1,1 @@
-declare function pocoGen(contents: any, options: any): string;
-export = pocoGen;
+export declare function LegacyAdapter(contents: any, options: any): string;

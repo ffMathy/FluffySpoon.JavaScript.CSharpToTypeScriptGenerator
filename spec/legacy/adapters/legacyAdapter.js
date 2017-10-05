@@ -1,7 +1,7 @@
 "use strict";
 var FileEmitter_1 = require("../../../src/FileEmitter");
 var fluffy_spoon_javascript_csharp_parser_1 = require("fluffy-spoon.javascript.csharp-parser");
-function pocoGen(contents, options) {
+function LegacyAdapter(contents, options) {
     var emitter = new FileEmitter_1.FileEmitter(contents);
     var emitOptions = {
         namespaceEmitOptions: {
@@ -166,5 +166,5 @@ function pocoGen(contents, options) {
     }
     return emitter.emitFile(emitOptions);
 }
-module.exports = pocoGen;
+exports.LegacyAdapter = LegacyAdapter;
 //# sourceMappingURL=legacyAdapter.js.map

@@ -21,11 +21,11 @@ var expectedOutput = "declare interface MyPoco {\n\
     foo(): string;\n\
 }";
 
-var pocoGen = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('./adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function () {
     it('should use the methodNameResolver option correctly', function () {
-        var result = pocoGen(sampleFile, { methodNameResolver: camelCaseResolver });
+        var result = LegacyAdapter(sampleFile, { methodNameResolver: camelCaseResolver });
 
         expect(result).toEqual(expectedOutput);
 

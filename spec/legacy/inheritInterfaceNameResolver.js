@@ -1,7 +1,7 @@
 /// <reference path="../typings/tsd.d.ts" />
 // Disabled multiline warning, we're fine with ES5
 // jshint -W043
-var pocoGen = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('./adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function () {
     it('should use the interfaceNameResolver option correctly for base class names', function () {
@@ -59,7 +59,7 @@ namespace MyNamespace.Domain\n\
     SomeDecimal: number;\n\
 }";
 
-        var result = pocoGen(sampleFile, { interfaceNameResolver: camelCaseResolver, debug: true });
+        var result = LegacyAdapter(sampleFile, { interfaceNameResolver: camelCaseResolver, debug: true });
 
         expect(result).toEqual(expectedOutput);
 
@@ -125,7 +125,7 @@ namespace MyNamespace.Domain\n\
     SomeGuid: string;\n\
 }";
 
-        var result = pocoGen(sampleFile, { interfaceNameResolver: camelCaseResolver, prefixWithI: true, debug: true });
+        var result = LegacyAdapter(sampleFile, { interfaceNameResolver: camelCaseResolver, prefixWithI: true, debug: true });
 
         expect(result).toEqual(expectedOutput);
 

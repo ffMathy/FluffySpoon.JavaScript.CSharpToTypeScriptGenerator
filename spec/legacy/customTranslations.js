@@ -21,11 +21,11 @@ var expectedOutput = "declare interface MyPoco {\n\
     SomeDate: string;\n\
 }";
 
-var pocoGen = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('./adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function() {
 	it('should handle custom translations correctly', function() {
-		var result = pocoGen(sampleFile, {
+		var result = LegacyAdapter(sampleFile, {
             customTypeTranslations: {
               DateTimeOffset: 'string'
             }

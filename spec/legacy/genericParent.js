@@ -16,11 +16,11 @@ var expectedOutput = "declare interface LatLng extends IEquatable<LatLng> {\n\
     lng: number;\n\
 }";
 
-var pocoGen = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('./adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function() {
 	it('should convert a class with a generic base class correctly', function() {
-		var result = pocoGen(sampleFile);
+		var result = LegacyAdapter(sampleFile);
         
     expect(result).toEqual(expectedOutput);
 	});

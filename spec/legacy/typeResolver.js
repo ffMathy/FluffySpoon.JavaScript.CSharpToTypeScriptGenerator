@@ -2,7 +2,7 @@
 // Disabled multiline warning, we're fine with ES5
 // jshint -W043
 
-var pocoGen = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('./adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function () {
     it('should use the typeResolver option correctly for properties', function () {
@@ -29,7 +29,7 @@ namespace MyNamespace.Domain\n\
     Foo(foo: string, bar: number): string;\n\
 }";
 
-        var result = pocoGen(sampleFile, { typeResolver: observablePropertyResolver });
+        var result = LegacyAdapter(sampleFile, { typeResolver: observablePropertyResolver });
 
         expect(result).toEqual(expectedOutput);
 
@@ -63,7 +63,7 @@ namespace MyNamespace.Domain\n\
     Foo(foo: string, bar: number): Observable<string>;\n\
 }";
 
-        var result = pocoGen(sampleFile, { typeResolver: observablePropertyResolver });
+        var result = LegacyAdapter(sampleFile, { typeResolver: observablePropertyResolver });
 
         expect(result).toEqual(expectedOutput);
 
@@ -97,7 +97,7 @@ namespace MyNamespace.Domain\n\
     Foo(foo: Observable<string>, bar: Observable<number>): string;\n\
 }";
 
-        var result = pocoGen(sampleFile, { typeResolver: observablePropertyResolver });
+        var result = LegacyAdapter(sampleFile, { typeResolver: observablePropertyResolver });
 
         expect(result).toEqual(expectedOutput);
 

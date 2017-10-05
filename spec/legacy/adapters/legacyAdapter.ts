@@ -12,9 +12,7 @@ import {
 	CSharpNamespace
 } from 'fluffy-spoon.javascript.csharp-parser';
 
-declare type InterfaceNameDecorationFunction = (input: CSharpClass | CSharpInterface) => PerClassEmitOptions | PerInterfaceEmitOptions;
-
-function pocoGen(contents, options) {
+export function LegacyAdapter(contents: any, options: any) {
 	var emitter = new FileEmitter(contents);
 	var emitOptions = <FileEmitOptions>{
 		namespaceEmitOptions: {
@@ -208,5 +206,3 @@ function pocoGen(contents, options) {
 
 	return emitter.emitFile(emitOptions);
 }
-
-export = pocoGen;

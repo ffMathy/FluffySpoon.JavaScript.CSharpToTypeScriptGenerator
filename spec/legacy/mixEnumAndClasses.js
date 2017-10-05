@@ -65,11 +65,11 @@ declare interface MyPoco {\n\
     SomeDecimal: number;\n\
     SomeGuid: string;\n\
 }";
-var pocoGen = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('./adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function() {
 	it('should handle enums and classes in the same file', function() {
-		var result = pocoGen(sampleFile);
+		var result = LegacyAdapter(sampleFile);
 
         expect(result).toEqual(expectedOutput);
 	});

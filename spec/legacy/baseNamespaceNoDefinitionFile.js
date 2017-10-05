@@ -28,11 +28,11 @@ var expectedOutput = "declare namespace MyNamespace {\n\
     }\n\
 }";
 
-var pocoGen = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('./adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function() {
 	it('should not use declare if there is no definition file', function() {
-		var result = pocoGen(sampleFile, { baseNamespace: 'MyNamespace', definitionFile: false });
+		var result = LegacyAdapter(sampleFile, { baseNamespace: 'MyNamespace', definitionFile: false });
 
         expect(result).toEqual(expectedOutput);
 	});

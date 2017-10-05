@@ -57,11 +57,11 @@ var expectedOutput = "declare interface MyPoco extends BasePoco {\n\
     SomeGuid: string;\n\
 }";
 
-var pocoGen = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('./adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function() {
 	it('should turn inheritence into extends', function() {
-		var result = pocoGen(sampleFile);
+		var result = LegacyAdapter(sampleFile);
         
         expect(result).toEqual(expectedOutput);
 	});

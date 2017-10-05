@@ -1,7 +1,7 @@
 ﻿/// <reference path="../typings/tsd.d.ts" />
 // Disabled multiline warning, we're fine with ES5
 // jshint -W043
-var pocoGen = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('./adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function () {
     it('should use the prefixWithI option correctly for multiple files', function () {
@@ -41,7 +41,7 @@ declare interface IThirdClass {\n\
         var options = {
                 prefixWithI: true
           };
-        var result = pocoGen(sampleFile, options);
+        var result = LegacyAdapter(sampleFile, options);
 
         expect(result).toEqual(expectedOutput);
     });
@@ -83,7 +83,7 @@ declare interface IThirdClass extends IBaseClass {\n\
         var options = {
                 prefixWithI: true
           };
-        var result = pocoGen(sampleFile, options);
+        var result = LegacyAdapter(sampleFile, options);
 
         expect(result).toEqual(expectedOutput);
     });

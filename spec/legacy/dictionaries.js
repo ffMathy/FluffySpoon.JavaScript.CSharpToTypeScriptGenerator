@@ -17,12 +17,12 @@ var expectedOutput = "declare interface MyPoco {\n\
     Stuff: { [key: number]: number };\n\
 }";
 
-var pocoGen = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('./adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function() {
 	it('should transform a POCO with a dictionary property correctly', function() {
 
-		var result = pocoGen(sampleFile);
+		var result = LegacyAdapter(sampleFile);
         
         expect(result).toEqual(expectedOutput);
 	});

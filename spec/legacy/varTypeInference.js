@@ -2,7 +2,7 @@
 // Disabled multiline warning, we're fine with ES5
 // jshint -W043
 
-var pocoGen = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('./adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function() {
 	it('should transform types correctly', function() {
@@ -27,7 +27,7 @@ public class MyPoco\n\
     Foo: " + destinationType + ";\n\
 }";
 
-            var result = pocoGen(sampleFile);
+            var result = LegacyAdapter(sampleFile);
             
             expect(result).toEqual(expectedOutput);
 

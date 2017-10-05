@@ -65,11 +65,11 @@ var expectedOutput = "declare interface MyPoco {\n\
     EmptyVoid(): void;\n\
 }";
 
-var pocoGen = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('./adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function () {
     it('should transform a method correctly', function () {
-        var result = pocoGen(sampleFile);
+        var result = LegacyAdapter(sampleFile);
         expect(result).toEqual(expectedOutput);
     });
 });

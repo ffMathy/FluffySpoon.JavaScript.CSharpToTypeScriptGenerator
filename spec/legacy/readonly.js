@@ -25,17 +25,17 @@ var expectedOutputWithoutReadOnly = "declare interface MyPoco {\n\
     InterestingWhitespace: string;\n\
 }";
 
-var pocoGen = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('./adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function() {
 	it('should transform readonly properties correctly', function() {
-        var result = pocoGen(sampleFile);
+        var result = LegacyAdapter(sampleFile);
 
         expect(result).toEqual(expectedOutput);
 	});
 
 	it('should not include readonly keywords if option is set', function() {
-        var result = pocoGen(sampleFile, { stripReadOnly: true });
+        var result = LegacyAdapter(sampleFile, { stripReadOnly: true });
 
         expect(result).toEqual(expectedOutputWithoutReadOnly);
 	});

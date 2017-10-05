@@ -25,11 +25,11 @@ declare interface MyPoco extends IPoco {\n\
     Name: string;\n\
 }";
 
-var pocoGen = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('./adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function() {
 	it('should export an interface if option is set', function() {
-		var result = pocoGen(sampleFile, { includeInterfaces: true });
+		var result = LegacyAdapter(sampleFile, { includeInterfaces: true });
         
         expect(result).toEqual(expectedOutput);
 	});

@@ -2,7 +2,7 @@
 // Disable multiline warning, we're fine with ES5
 // jshint -W043
 
-var pocoGen = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('./adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function() {
     it('should transform an enum with a decorator correctly', function () {
@@ -27,7 +27,7 @@ namespace MyNamespace.Domain\n\
     Blue = 2\n\
 }";
 
-		var result = pocoGen(sampleFile);
+		var result = LegacyAdapter(sampleFile);
 
         expect(result).toEqual(expectedOutput);
     });
@@ -54,7 +54,7 @@ namespace MyNamespace.Domain\n\
     Blue = 2\n\
 }";
 
-        var result = pocoGen(sampleFile);
+        var result = LegacyAdapter(sampleFile);
 
         expect(result).toEqual(expectedOutput);
     });

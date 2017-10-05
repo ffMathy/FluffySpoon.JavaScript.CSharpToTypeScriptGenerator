@@ -22,11 +22,11 @@ var expectedOutput = "declare interface MyPoco {\n\
     Name: string;\n\
 }";
 
-var pocoGen = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('./adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function() {
 	it('should transform an abstract class correctly', function() {
-		var result = pocoGen(sampleFile, { ignoreInheritance: ['IMyPoco'] });
+		var result = LegacyAdapter(sampleFile, { ignoreInheritance: ['IMyPoco'] });
         
         expect(result).toEqual(expectedOutput);
 	});

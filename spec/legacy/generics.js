@@ -2,7 +2,7 @@
 // Disabled multiline warning, we're fine with ES5
 // jshint -W043
 
-var pocoGen = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('./adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function() {
 	it('should transform a POCO with a single generic type correctly', function() {
@@ -22,7 +22,7 @@ namespace MyNamespace.Domain\n\
     GenericTypeValue: T;\n\
 }";
 
-		var result = pocoGen(sampleFile);
+		var result = LegacyAdapter(sampleFile);
         
         expect(result).toEqual(expectedOutput);
 	});
@@ -46,7 +46,7 @@ namespace MyNamespace.Domain\n\
     GenericTypeValue: K;\n\
 }";
 
-		var result = pocoGen(sampleFile);
+		var result = LegacyAdapter(sampleFile);
         
         expect(result).toEqual(expectedOutput);
 	});
@@ -68,7 +68,7 @@ namespace MyNamespace.Domain\n\
     Stuff: SomeFoo<number, string>;\n\
 }";
 
-		var result = pocoGen(sampleFile);
+		var result = LegacyAdapter(sampleFile);
         
         expect(result).toEqual(expectedOutput);
 	});

@@ -35,17 +35,17 @@ var expectedWithoutVirtuals = "declare interface MyPoco {\n\
 declare interface MyOtherPoco {\n\
     id: number;\n\
 }";
-var pocoGen = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('./adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function() {
 	it('should include properties marked as virtual', function() {
-        var result = pocoGen(sampleFile);
+        var result = LegacyAdapter(sampleFile);
             
         expect(result).toEqual(expectedOutput);
 	});
 
 	it('should not include properties marked as virtual if option is set', function() {
-        var r = pocoGen(sampleFile, { ignoreVirtual: true, debug: true });
+        var r = LegacyAdapter(sampleFile, { ignoreVirtual: true, debug: true });
             
         expect(r).toEqual(expectedWithoutVirtuals);
 	});

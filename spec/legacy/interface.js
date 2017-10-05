@@ -20,11 +20,11 @@ var expectedOutput = "declare interface MyInterface {\n\
     Foo(bar: string): string;\n\
 }";
 
-var pocoGen = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('./adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function() {
 	it('should transform an interface correctly', function() {
-		var result = pocoGen(sampleFile, { includeInterfaces: true });
+		var result = LegacyAdapter(sampleFile, { includeInterfaces: true });
         
         expect(result).toEqual(expectedOutput);
 	});

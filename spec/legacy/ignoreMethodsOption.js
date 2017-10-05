@@ -20,11 +20,11 @@ var expectedOutput = "declare interface MyPoco {\n\
     NameOfStuff: string;\n\
 }";
 
-var pocoGen = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('./adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function () {
     it('should ignore methods', function () {
-        var result = pocoGen(sampleFile, { ignoreMethods: true });
+        var result = LegacyAdapter(sampleFile, { ignoreMethods: true });
 
         expect(result).toEqual(expectedOutput);
     });

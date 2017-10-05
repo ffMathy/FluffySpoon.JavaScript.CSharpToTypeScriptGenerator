@@ -28,11 +28,11 @@ var expectedOutput = "declare namespace MyNamespace {\n\
     }\n\
 }";
 
-var pocoGen = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('./adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function() {
 	it('should use the baseNamespace option correctly', function() {
-		var result = pocoGen(sampleFile, { baseNamespace: 'MyNamespace' });
+		var result = LegacyAdapter(sampleFile, { baseNamespace: 'MyNamespace' });
 
         expect(result).toEqual(expectedOutput);
 	});

@@ -22,11 +22,11 @@ var expectedOutput = "declare type MyEnum =\n\
     'Red' |\n\
     'Blue'";
 
-var pocoGen = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('./adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function() {
 	it('should transform an enum to a string union type correctly', function() {
-		var result = pocoGen(sampleFile, { useStringUnionTypes: true });
+		var result = LegacyAdapter(sampleFile, { useStringUnionTypes: true });
 
         expect(result).toEqual(expectedOutput);
 	});

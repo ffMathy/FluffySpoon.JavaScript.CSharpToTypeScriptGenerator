@@ -15,11 +15,11 @@ declare interface Profile {\n\
     Value: Entry<boolean>;\n\
 }";
 
-var pocoGen = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('./adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function() {
     it('should convert a generic property correctly', function() {
-        var result = pocoGen(sampleFile);
+        var result = LegacyAdapter(sampleFile);
         
         expect(result).toEqual(expectedOutput);
     });
