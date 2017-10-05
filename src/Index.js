@@ -1,8 +1,20 @@
 "use strict";
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
-__export(require("fluffy-spoon.javascript.csharp-parser"));
+var fluffy_spoon_javascript_csharp_parser_1 = require("fluffy-spoon.javascript.csharp-parser");
+exports.CSharpType = fluffy_spoon_javascript_csharp_parser_1.CSharpType;
+exports.CSharpNamespace = fluffy_spoon_javascript_csharp_parser_1.CSharpNamespace;
+exports.CSharpFile = fluffy_spoon_javascript_csharp_parser_1.CSharpFile;
+exports.CSharpMethod = fluffy_spoon_javascript_csharp_parser_1.CSharpMethod;
+exports.CSharpNamedToken = fluffy_spoon_javascript_csharp_parser_1.CSharpNamedToken;
+exports.CSharpMethodParameter = fluffy_spoon_javascript_csharp_parser_1.CSharpMethodParameter;
+exports.CSharpClass = fluffy_spoon_javascript_csharp_parser_1.CSharpClass;
+exports.CSharpInterface = fluffy_spoon_javascript_csharp_parser_1.CSharpInterface;
+exports.CSharpEnum = fluffy_spoon_javascript_csharp_parser_1.CSharpEnum;
+exports.CSharpEnumOption = fluffy_spoon_javascript_csharp_parser_1.CSharpEnumOption;
+exports.CSharpAttribute = fluffy_spoon_javascript_csharp_parser_1.CSharpAttribute;
+exports.CSharpProperty = fluffy_spoon_javascript_csharp_parser_1.CSharpProperty;
+exports.CSharpPropertyComponent = fluffy_spoon_javascript_csharp_parser_1.CSharpPropertyComponent;
+exports.CSharpField = fluffy_spoon_javascript_csharp_parser_1.CSharpField;
+exports.CSharpStruct = fluffy_spoon_javascript_csharp_parser_1.CSharpStruct;
 var ClassEmitter_1 = require("./ClassEmitter");
 exports.ClassEmitter = ClassEmitter_1.ClassEmitter;
 var EnumEmitter_1 = require("./EnumEmitter");
@@ -21,6 +33,4 @@ var StructEmitter_1 = require("./StructEmitter");
 exports.StructEmitter = StructEmitter_1.StructEmitter;
 var InterfaceEmitter_1 = require("./InterfaceEmitter");
 exports.InterfaceEmitter = InterfaceEmitter_1.InterfaceEmitter;
-var legacyAdapter_1 = require("../spec/legacy/adapters/legacyAdapter");
-exports.LegacyAdapter = legacyAdapter_1.LegacyAdapter;
 //# sourceMappingURL=Index.js.map
