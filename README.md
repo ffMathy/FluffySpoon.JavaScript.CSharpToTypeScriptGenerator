@@ -13,7 +13,7 @@ var emitter = new FileEmitter(csharpCode);
 var typescriptCode = emitter.emitFile();
 ```
 
-#### Example with default settings
+#### Default settings
 ```typescript
 var typescriptCode = emitter.emitFile();
 ```
@@ -55,6 +55,34 @@ declare namespace MyNamespace {
       MyFunction(input1: string, input2: number): Promise;
     }
   }
+}
+```
+
+#### Ignoring methods
+```typescript
+var typescriptCode = emitter.emitFile({
+  methodEmitOptions: {
+    filter: (method: CSharpMethod) => false
+  }
+});
+```
+
+Given the following CSharp model code:
+
+```csharp
+public class MyClass {
+  public int MyProperty { get; set; }
+  public Task MyFunction(string input1, int input2) { 
+    //some code
+  }
+}
+```
+
+The following TypeScript code would be generated:
+
+```typescript
+declare interface MyClass {
+  MyProperty: number;
 }
 ```
 
