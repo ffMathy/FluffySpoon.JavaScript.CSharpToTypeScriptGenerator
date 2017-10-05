@@ -4,9 +4,8 @@ A flexible CSharp to TypeScript generator that is `Gulp` and `Grunt` friendly, w
 Uses the following library for parsing C# code from TypeScript: https://github.com/ffMathy/FluffySpoon.JavaScript.CSharpParser
 
 ## Wrappers
-Currently only a wrapper for `Gulp` is available: https://github.com/ffMathy/FluffySpoon.JavaScript.CSharpToTypeScriptGenerator.Gulp
-
-However - I accept pull requests! And making one for `Grunt` or your own build tool should be simple!
+- **Gulp:** https://github.com/ffMathy/FluffySpoon.JavaScript.CSharpToTypeScriptGenerator.Gulp
+- **Grunt:** https://github.com/ffMathy/FluffySpoon.JavaScript.CSharpToTypeScriptGenerator.Grunt
 
 # Examples
 These recipes help you quickly get started with common scenarios you may need. Feel free to contribute with your own!
