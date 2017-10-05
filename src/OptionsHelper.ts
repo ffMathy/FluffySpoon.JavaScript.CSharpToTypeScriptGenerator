@@ -3,10 +3,10 @@ export class OptionsHelper {
     mergeOptions<T extends Object, K extends Object>(originalParent: T, originalChild: K): T&K {
         let me = this;
 
-        var parent = Object.assign({}, originalParent);
-        var child = Object.assign({}, originalChild);
+        if(!Array.isArray(originalParent) && !Array.isArray(originalChild) && typeof originalParent === "object" && typeof originalChild === "object") {
+            var parent = Object.assign({}, originalParent);
+            var child = Object.assign({}, originalChild);
 
-        if(!Array.isArray(parent) && !Array.isArray(child) && typeof parent === "object" && typeof child === "object") {
             for(var parentKey in parent)
             for(var childKey in child) {
                 if(!parent.hasOwnProperty(parentKey)) continue;
@@ -38,13 +38,15 @@ export class OptionsHelper {
                 child[childKey] = childValue;
             }
 
+            console.log("Merging option objects", parent, child);
+
             var merged = Object.assign(
                 parent,
                 child);
             return merged;
         }
 
-        var result = <any>(typeof child !== "undefined" ? child : parent);
+        var result = <any>(typeof originalChild !== "undefined" ? originalChild : originalParent);
         return result;
     }
 }

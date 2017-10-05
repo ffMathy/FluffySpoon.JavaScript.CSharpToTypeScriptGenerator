@@ -62,8 +62,13 @@ var NamespaceEmitter = (function () {
             this.stringEmitter.ensureLineSplit();
         }
         if (namespace.structs.length > 0) {
-            var subStructOptions = Object.assign(options.structEmitOptions, {});
-            this.structEmitter.emitStructs(namespace.structs, subStructOptions);
+            var declare = typeof options.structEmitOptions.declare !== "undefined" ?
+                options.structEmitOptions.declare :
+                options.skip;
+            var structEmitOptions = Object.assign(options.structEmitOptions, {
+                declare: declare
+            });
+            this.structEmitter.emitStructs(namespace.structs, structEmitOptions);
             this.stringEmitter.ensureLineSplit();
         }
         if (namespace.namespaces.length > 0) {
@@ -71,7 +76,7 @@ var NamespaceEmitter = (function () {
                 options.declare :
                 options.skip;
             var subNamespaceOptions = Object.assign(options, {
-                declare: options.skip
+                declare: declare
             });
             this.emitNamespaces(namespace.namespaces, subNamespaceOptions);
             this.stringEmitter.ensureLineSplit();

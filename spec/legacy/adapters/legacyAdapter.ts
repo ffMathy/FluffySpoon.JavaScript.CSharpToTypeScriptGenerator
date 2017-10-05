@@ -8,7 +8,8 @@ import { TypeEmitOptions } from '../../../src/TypeEmitter';
 
 import {
 	CSharpClass,
-	CSharpInterface
+	CSharpInterface,
+	CSharpNamespace
 } from 'fluffy-spoon.javascript.csharp-parser';
 
 declare type InterfaceNameDecorationFunction = (input: CSharpClass|CSharpInterface) => PerClassEmitOptions|PerInterfaceEmitOptions;
@@ -145,9 +146,39 @@ function pocoGen(contents, options) {
 			};
 		}
 
+		if(options.baseNamespace) {
+			emitOptions.namespaceEmitOptions.skip = false;
+			emitOptions.afterParsing = (file) => {
+				var namespace = new CSharpNamespace(options.baseNamespace);
+				namespace.classes = file.classes;
+				namespace.enums = file.enums;
+				namespace.innerScopeText = file.innerScopeText;
+				namespace.interfaces = file.interfaces;
+				namespace.namespaces = file.namespaces;
+				namespace.parent = file;
+				namespace.structs = file.structs;
+				namespace.usings = file.usings;
+
+				file.classes = [];
+				file.enums = [];
+				file.interfaces = [];
+				file.namespaces = [];
+				file.structs = [];
+				file.usings = [];
+
+				file.namespaces.push(namespace);
+			};
+		}
+
 		if(options.dateTimeToDate) {
 			emitOptions.typeEmitOptions = <TypeEmitOptions>{
 				mapper: (type, suggested) => type.name === "DateTime" ? "Date" : suggested
+			};
+		}
+
+		if(options.customTypeTranslations) {
+			emitOptions.typeEmitOptions = <TypeEmitOptions>{
+				mapper: (type, suggested) => options.customTypeTranslations[type.name] || suggested
 			};
 		}
 

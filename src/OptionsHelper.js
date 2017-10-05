@@ -4,9 +4,9 @@ var OptionsHelper = (function () {
     }
     OptionsHelper.prototype.mergeOptions = function (originalParent, originalChild) {
         var me = this;
-        var parent = Object.assign({}, originalParent);
-        var child = Object.assign({}, originalChild);
-        if (!Array.isArray(parent) && !Array.isArray(child) && typeof parent === "object" && typeof child === "object") {
+        if (!Array.isArray(originalParent) && !Array.isArray(originalChild) && typeof originalParent === "object" && typeof originalChild === "object") {
+            var parent = Object.assign({}, originalParent);
+            var child = Object.assign({}, originalChild);
             for (var parentKey in parent) {
                 var _loop_1 = function () {
                     if (!parent.hasOwnProperty(parentKey))
@@ -41,10 +41,11 @@ var OptionsHelper = (function () {
                     _loop_1();
                 }
             }
+            console.log("Merging option objects", parent, child);
             var merged = Object.assign(parent, child);
             return merged;
         }
-        var result = (typeof child !== "undefined" ? child : parent);
+        var result = (typeof originalChild !== "undefined" ? originalChild : originalParent);
         return result;
     };
     return OptionsHelper;

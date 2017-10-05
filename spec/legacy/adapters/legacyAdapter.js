@@ -1,5 +1,6 @@
 "use strict";
 var FileEmitter_1 = require("../../../src/FileEmitter");
+var fluffy_spoon_javascript_csharp_parser_1 = require("fluffy-spoon.javascript.csharp-parser");
 function pocoGen(contents, options) {
     var emitter = new FileEmitter_1.FileEmitter(contents);
     var emitOptions = {
@@ -122,9 +123,35 @@ function pocoGen(contents, options) {
                 }
             }); };
         }
+        if (options.baseNamespace) {
+            emitOptions.namespaceEmitOptions.skip = false;
+            emitOptions.afterParsing = function (file) {
+                var namespace = new fluffy_spoon_javascript_csharp_parser_1.CSharpNamespace(options.baseNamespace);
+                namespace.classes = file.classes;
+                namespace.enums = file.enums;
+                namespace.innerScopeText = file.innerScopeText;
+                namespace.interfaces = file.interfaces;
+                namespace.namespaces = file.namespaces;
+                namespace.parent = file;
+                namespace.structs = file.structs;
+                namespace.usings = file.usings;
+                file.classes = [];
+                file.enums = [];
+                file.interfaces = [];
+                file.namespaces = [];
+                file.structs = [];
+                file.usings = [];
+                file.namespaces.push(namespace);
+            };
+        }
         if (options.dateTimeToDate) {
             emitOptions.typeEmitOptions = {
                 mapper: function (type, suggested) { return type.name === "DateTime" ? "Date" : suggested; }
+            };
+        }
+        if (options.customTypeTranslations) {
+            emitOptions.typeEmitOptions = {
+                mapper: function (type, suggested) { return options.customTypeTranslations[type.name] || suggested; }
             };
         }
         if (options.typeResolver) {

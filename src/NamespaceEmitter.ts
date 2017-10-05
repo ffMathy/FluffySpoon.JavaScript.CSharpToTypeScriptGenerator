@@ -100,10 +100,15 @@ export class NamespaceEmitter {
 		}
 
 		if (namespace.structs.length > 0) {
-			var subStructOptions = Object.assign(options.structEmitOptions, <StructEmitOptions>{});
+			var declare = typeof options.structEmitOptions.declare !== "undefined" ? 
+				options.structEmitOptions.declare : 
+				options.skip;
+			var structEmitOptions = Object.assign(options.structEmitOptions, <StructEmitOptions>{
+				declare
+			});
 			this.structEmitter.emitStructs(
 				namespace.structs,
-				subStructOptions);
+				structEmitOptions);
 			this.stringEmitter.ensureLineSplit();
 		}
 
@@ -112,7 +117,7 @@ export class NamespaceEmitter {
 				options.declare : 
 				options.skip;
 			var subNamespaceOptions = Object.assign(options, <NamespaceEmitOptions>{
-				declare: options.skip
+				declare
 			});
 			this.emitNamespaces(
 				namespace.namespaces,

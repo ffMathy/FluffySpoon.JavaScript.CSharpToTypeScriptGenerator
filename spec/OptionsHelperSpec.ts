@@ -39,4 +39,37 @@ describe("OptionsHelper", function () {
         expect(result.c.f(20)).toBe(10+1337+2+20+20);
 	});
 
+	it("should be able to handle merging of declare values", function () {
+		var helper = new OptionsHelper();
+
+        var offset = 10;
+
+        var result = helper.mergeOptions({
+                namespaceEmitOptions: {
+                    skip: true,
+                    structEmitOptions: {
+                        declare: true
+                    },
+                    interfaceEmitOptions: {
+                        declare: true
+                    }
+                }
+            },
+            {
+                namespaceEmitOptions: {
+                    skip: true,
+                    structEmitOptions: {
+                        declare: false
+                    },
+                    interfaceEmitOptions: {
+                        declare: false
+                    }
+                }
+            });
+
+        expect(result.namespaceEmitOptions.skip).toBe(true);
+        expect(result.namespaceEmitOptions.structEmitOptions.declare).toBe(false);
+        expect(result.namespaceEmitOptions.interfaceEmitOptions.declare).toBe(false);
+	});
+
 });

@@ -79,7 +79,10 @@ var FileEmitter = (function () {
                 }
             }
         }
+        console.log("Using options", JSON.stringify(options, null, "\t"));
         var file = this.fileParser.parseFile();
+        if (options.afterParsing)
+            options.afterParsing(file);
         if (file.enums.length > 0) {
             this.enumEmitter.emitEnums(file.enums, options.enumEmitOptions);
             this.stringEmitter.ensureLineSplit();

@@ -19,7 +19,7 @@ var expectedOutput = "interface MyPoco {\n\
     IntField: number;\n\
     UntouchedString: string;\n\
     SomeDate: string;\n\
-}\n";
+}";
 
 var pocoGen = require('./adapters/legacyAdapter.js');
 

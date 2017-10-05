@@ -1,4 +1,4 @@
-﻿import { FileParser, CSharpEnum, CSharpEnumOption } from 'fluffy-spoon.javascript.csharp-parser';
+﻿import { FileParser, CSharpEnum, CSharpEnumOption, CSharpFile } from 'fluffy-spoon.javascript.csharp-parser';
 
 import { StringEmitter } from './StringEmitter';
 import { OptionsHelper } from './OptionsHelper';
@@ -16,7 +16,9 @@ export interface FileEmitOptions {
     enumEmitOptions?: EnumEmitOptions,
     structEmitOptions?: StructEmitOptions,
 	interfaceEmitOptions?: InterfaceEmitOptions,
-	typeEmitOptions?: TypeEmitOptions
+	typeEmitOptions?: TypeEmitOptions,
+
+	afterParsing?: (file: CSharpFile) => void
 }
 
 export class FileEmitter {
@@ -142,7 +144,11 @@ export class FileEmitter {
 			}
 		}
 
+		console.log("Using options", JSON.stringify(options, null, "\t"));
+
 		var file = this.fileParser.parseFile();
+		if(options.afterParsing)
+			options.afterParsing(file);
 
 		if (file.enums.length > 0) {
 			this.enumEmitter.emitEnums(file.enums, options.enumEmitOptions);
