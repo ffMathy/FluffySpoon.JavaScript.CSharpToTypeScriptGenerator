@@ -18,7 +18,7 @@ export interface FileEmitOptions {
     typeEmitOptions?: TypeEmitOptions;
     propertyEmitOptions?: PropertyEmitOptions;
     methodEmitOptions?: MethodEmitOptions;
-    afterParsing?: (file: CSharpFile) => void;
+    afterParsing?: (file: CSharpFile, fileEmitter: StringEmitter) => void;
 }
 export declare class FileEmitter {
     readonly stringEmitter: StringEmitter;

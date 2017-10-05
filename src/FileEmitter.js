@@ -134,7 +134,7 @@ var FileEmitter = (function () {
         this.logger.log("Using options", options);
         var file = this.fileParser.parseFile();
         if (options.afterParsing)
-            options.afterParsing(file);
+            options.afterParsing(file, this.stringEmitter);
         if (file.enums.length > 0) {
             this.enumEmitter.emitEnums(file.enums, Object.assign({ declare: true }, options.enumEmitOptions));
             this.stringEmitter.ensureNewParagraph();

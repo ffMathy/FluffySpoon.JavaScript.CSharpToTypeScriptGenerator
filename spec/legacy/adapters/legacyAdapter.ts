@@ -12,7 +12,7 @@ import {
 	CSharpNamespace
 } from 'fluffy-spoon.javascript.csharp-parser';
 
-export function LegacyAdapter(contents: any, options: any) {
+function LegacyAdapter(contents: any, options: any) {
 	var emitter = new FileEmitter(contents);
 	var emitOptions = <FileEmitOptions>{
 		namespaceEmitOptions: {
@@ -136,12 +136,6 @@ export function LegacyAdapter(contents: any, options: any) {
 
 		if (options.baseNamespace) {
 			emitOptions.namespaceEmitOptions.skip = false;
-			emitOptions.namespaceEmitOptions.declare = true;
-
-			emitOptions.classEmitOptions.declare = false;
-			emitOptions.enumEmitOptions.declare = false;
-			emitOptions.interfaceEmitOptions.declare = false;
-			emitOptions.structEmitOptions.declare = false;
 
 			emitOptions.afterParsing = (file) => {
 				if (file.namespaces.filter(n => n.name === options.baseNamespace)[0])
@@ -206,3 +200,5 @@ export function LegacyAdapter(contents: any, options: any) {
 
 	return emitter.emitFile(emitOptions);
 }
+
+export = LegacyAdapter;
