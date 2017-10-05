@@ -150,6 +150,7 @@ Given the following CSharp model code:
 ```csharp
 public class MyClass {
   public DateTime MyProperty { get; set; }
+  public string MyOtherProperty { get; set; }
 }
 ```
 
@@ -158,6 +159,7 @@ The following TypeScript code would be generated:
 ```typescript
 interface MyClass {
   MyProperty: Date;
+  MyOtherProperty: string;
 }
 ```
 
