@@ -6,7 +6,7 @@ Uses the following library for parsing C# code from TypeScript: https://github.c
 ## Wrappers
 Currently only a wrapper for `Gulp` is available: https://github.com/ffMathy/FluffySpoon.JavaScript.CSharpToTypeScriptGenerator.Gulp
 
-However - we accept pull requests! And making one for `Grunt` or your own build tool should be simple!
+However - I accept pull requests! And making one for `Grunt` or your own build tool should be simple!
 
 # Examples
 These recipes help you quickly get started with common scenarios you may need. Feel free to contribute with your own!
