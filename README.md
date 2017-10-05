@@ -18,7 +18,7 @@ var options = <FileEmitOptions>{ };
 var typescriptCode = emitter.emitFile(options);
 ```
 
-## TypeScript
+## Vanilla TypeScript
 
 ### Default settings
 ```typescript
