@@ -283,8 +283,8 @@ Given the following CSharp model code:
 
 ```csharp
 public enum MyEnum {
-  FirstOption = -1
-  SecondOption = 3
+  FirstOption,
+  SecondOption
 }
 ```
 
