@@ -13,9 +13,8 @@ var typescriptCode = emitter.emitFile(options);
 ```
 
 ## TypeScript
-### Generating TypeScript DTO models from CSharp models
 
-#### Default settings
+### Default settings
 ```typescript
 var typescriptCode = emitter.emitFile();
 ```
@@ -60,7 +59,7 @@ declare namespace MyNamespace {
 }
 ```
 
-#### Ignoring methods
+### Ignoring methods
 ```typescript
 var typescriptCode = emitter.emitFile(<FileEmitOptions>{
   methodEmitOptions: <MethodEmitOptions>{
@@ -88,7 +87,7 @@ declare interface MyClass {
 }
 ```
 
-#### Wrapping all emitted code in a namespace
+### Wrapping all emitted code in a namespace
 ```typescript
 var typescriptCode = emitter.emitFile(<FileEmitOptions>{
   methodEmitOptions: <MethodEmitOptions>{
@@ -136,7 +135,7 @@ declare namespace MyNamespace {
 }
 ```
 
-#### Specify what TypeScript types specific CSharp types map to
+### Specify what TypeScript types specific CSharp types map to
 ```typescript
 var typescriptCode = emitter.emitFile(<FileEmitOptions>{
   typeEmitOptions: <TypeEmitOptions>{
@@ -163,7 +162,7 @@ interface MyClass {
 }
 ```
 
-#### Camel-casing property names
+### Camel-casing property names
 ```typescript
 var typescriptCode = emitter.emitFile(<FileEmitOptions>{
   propertyEmitOptions: <PropertyEmitOptions>{
@@ -191,6 +190,3 @@ interface MyClass {
   myOtherProperty: string;
 }
 ```
-
-## Angular
-### Generating TypeScript AJAX clients for CSharp controllers
