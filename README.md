@@ -13,24 +13,42 @@ var emitter = new FileEmitter(csharpCode);
 var typescriptCode = emitter.emitFile();
 ```
 
-#### Example
+#### Example with default settings
 Given the following CSharp model code:
 
 ```csharp
-public class MyClass {
-  public int MyProperty { get; set; }
-  public string MyOtherProperty { get; set; }
-  public double? MyNullableProperty { get; set; }
+namespace MyNamespace {
+  public class MyClass {
+    public int MyProperty { get; set; }
+    public string MyOtherProperty { get; set; }
+    public double? MyNullableProperty { get; set; }
+    
+    public class MySubclass {
+      public List<string> MyListProperty { get; set; }
+      public Task MyFunction(string input1, int input2) { 
+        //some code
+      }
+    }
+  }
 }
 ```
 
 The following TypeScript code would be generated:
 
 ```typescript
-declare interface MyClass {
-  MyProperty: number;
-  MyOtherProperty: string;
-  MyNullableProperty?: number;
+declare namespace MyNamespace {
+  interface MyClass {
+    MyProperty: number;
+    MyOtherProperty: string;
+    MyNullableProperty?: number;
+  }
+  
+  namespace MyClass {
+    interface MySubclass {
+      MyListProperty: string[];
+      MyFunction(input1: string, input2: number): Promise;
+    }
+  }
 }
 ```
 
