@@ -25,6 +25,7 @@ namespace MyNamespace {
     
     public class MySubclass {
       public List<string> MyListProperty { get; set; }
+      public MyGenericType<SomeType, SomeOtherType> MyGenericProperty { get; set; }
       public Task MyFunction(string input1, int input2) { 
         //some code
       }
@@ -46,6 +47,7 @@ declare namespace MyNamespace {
   namespace MyClass {
     interface MySubclass {
       MyListProperty: string[];
+      MyGenericProperty: MyGenericType<SomeType, SomeOtherType>;
       MyFunction(input1: string, input2: number): Promise;
     }
   }
