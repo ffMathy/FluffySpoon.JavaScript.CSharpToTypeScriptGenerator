@@ -269,3 +269,31 @@ declare interface SomeInheritedClass {
 ```
 
 **Note: This can also be done for interfaces by using the `InterfaceEmitOptions` instead.**
+
+### Convert enums to string union types
+```typescript
+var typescriptCode = emitter.emitFile(<FileEmitOptions>{
+	enumEmitOptions: <EnumEmitOptions>{
+    strategy: "string-union"
+  }
+});
+```
+
+Given the following CSharp model code:
+
+```csharp
+public enum MyEnum {
+  FirstOption = -1
+  SecondOption = 3
+}
+```
+
+The following TypeScript code would be generated:
+
+```typescript
+declare type MyEnum =
+  'FirstOption' |
+  'SecondOption'
+```
+
+**Note: This can also be done for interfaces by using the `InterfaceEmitOptions` instead.**
