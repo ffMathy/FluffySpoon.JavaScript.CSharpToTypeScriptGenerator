@@ -21,12 +21,12 @@ export {
     CSharpStruct 
 } from 'fluffy-spoon.javascript.csharp-parser';
 
-export { ClassEmitter } from './ClassEmitter';
-export { EnumEmitter } from './EnumEmitter';
-export { FileEmitter } from './FileEmitter';
-export { TypeEmitter } from './TypeEmitter';
-export { MethodEmitter } from './MethodEmitter';
-export { NamespaceEmitter } from './NamespaceEmitter';
-export { FieldEmitter } from './FieldEmitter';
-export { StructEmitter } from './StructEmitter';
-export { InterfaceEmitter } from './InterfaceEmitter';
+export { ClassEmitter, ClassEmitOptions, PerClassEmitOptions, ClassEmitOptionsBase } from './ClassEmitter';
+export { EnumEmitter, EnumEmitOptions } from './EnumEmitter';
+export { FileEmitter, FileEmitOptions } from './FileEmitter';
+export { TypeEmitter, TypeEmitOptions } from './TypeEmitter';
+export { MethodEmitter, MethodEmitOptions, MethodEmitOptionsBase, PerMethodEmitOptions } from './MethodEmitter';
+export { NamespaceEmitter, NamespaceEmitOptions } from './NamespaceEmitter';
+export { FieldEmitter, FieldEmitOptions, FieldEmitOptionsBase, PerFieldEmitOptions } from './FieldEmitter';
+export { StructEmitter, PerStructEmitOptions, StructEmitOptions, StructEmitOptionsBase } from './StructEmitter';
+export { InterfaceEmitter, InterfaceEmitOptions, InterfaceEmitOptionsBase, PerInterfaceEmitOptions } from './InterfaceEmitter';
