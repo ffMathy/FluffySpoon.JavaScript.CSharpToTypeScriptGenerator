@@ -62,8 +62,8 @@ declare namespace MyNamespace {
 
 #### Ignoring methods
 ```typescript
-var typescriptCode = emitter.emitFile({
-  methodEmitOptions: {
+var typescriptCode = emitter.emitFile(<FileEmitOptions>{
+  methodEmitOptions: <MethodEmitOptions>{
     filter: (method: CSharpMethod) => false //returning false filters away all methods
   }
 });
@@ -90,8 +90,8 @@ declare interface MyClass {
 
 #### Wrapping all emitted code in a namespace
 ```typescript
-var typescriptCode = emitter.emitFile({
-  methodEmitOptions: {
+var typescriptCode = emitter.emitFile(<FileEmitOptions>{
+  methodEmitOptions: <MethodEmitOptions>{
     afterParsing: (file: CSharpFile) => {
       //we create a namespace, move all items of the file into that namespace, and remove the same items from the file. 
       //we then add the newly created namespace to the file.
@@ -133,6 +133,31 @@ declare namespace MyNamespace {
   interface MyClass {
     MyProperty: number;
   }
+}
+```
+
+#### Specify what TypeScript types specific CSharp types map to
+```typescript
+var typescriptCode = emitter.emitFile(<FileEmitOptions>{
+  typeEmitOptions: <TypeEmitOptions>{
+    mapper: (type: CSharpType, suggested: string) => type.name === "DateTime" ? "Date" : suggested
+  }
+});
+```
+
+Given the following CSharp model code:
+
+```csharp
+public class MyClass {
+  public DateTime MyProperty { get; set; }
+}
+```
+
+The following TypeScript code would be generated:
+
+```typescript
+interface MyClass {
+  MyProperty: Date;
 }
 ```
 
