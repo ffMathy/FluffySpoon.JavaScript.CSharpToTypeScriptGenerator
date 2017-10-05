@@ -2,7 +2,7 @@
 
 # Recipes
 
-## Generating DTO models from a source folder
+## Generating TypeScript DTO models from CSharp source code
 ```typescript
 import { FileEmitter } from 'fluffy-spoon.javascript.csharp-to-typescript-generator';
 
