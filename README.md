@@ -129,6 +129,7 @@ Given the following CSharp model code:
 
 ```csharp
 public class MyClass {
+  public int MyProperty { get; set; }
 }
 ```
 
