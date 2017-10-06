@@ -21,7 +21,7 @@ var typescriptCode = emitter.emitFile(options);
 
 **To see the definitions of each type such as `FileEmitOptions`, look here: https://github.com/ffMathy/FluffySpoon.JavaScript.CSharpParser/blob/master/src/Models.ts**
 
-## Vanilla TypeScript
+## Plain C#
 
 ### Default settings
 ```typescript
@@ -33,6 +33,9 @@ Given the following CSharp model code:
 ```csharp
 namespace MyNamespace {
   public class MyClass {
+    public int myField;
+    private int myPrivateField;
+  
     public int MyProperty { get; set; }
     public string MyOtherProperty { get; set; }
     public double? MyNullableProperty { get; set; }
@@ -53,6 +56,7 @@ The following TypeScript code would be generated:
 ```typescript
 declare namespace MyNamespace {
   interface MyClass {
+    myField: number;
     MyProperty: number;
     MyOtherProperty: string;
     MyNullableProperty?: number;
@@ -99,7 +103,7 @@ declare interface MyClass {
 ### Wrapping all emitted code in a namespace
 ```typescript
 var typescriptCode = emitter.emitFile(<FileEmitOptions>{
-  afterParsing: (file: CSharpFile) => {
+  afterParsing: (file: CSharpFile, fileEmitter: StringEmitter) => {
     //we create a namespace, move all items of the file into that namespace, and remove the same items from the file. 
     //we then add the newly created namespace to the file.
 
@@ -288,6 +292,42 @@ var typescriptCode = emitter.emitFile(<FileEmitOptions>{
   enumEmitOptions: <EnumEmitOptions>{
     strategy: "string-union"
   }
+});
+```
+
+Given the following CSharp model code:
+
+```csharp
+public enum MyEnum {
+  FirstOption,
+  SecondOption
+}
+```
+
+The following TypeScript code would be generated:
+
+```typescript
+declare type MyEnum =
+  'FirstOption' |
+  'SecondOption'
+```
+
+## ASP .NET Core
+
+### Generating AJAX clients for all controllers
+```typescript
+var typescriptCode = emitter.emitFile(<FileEmitOptions>{
+  classEmitOptions: <ClassEmitOptions>{
+    filter: (classObject: CSharpClass) => {
+      //we only want to process classes that inherit from Controller.
+      if(!classObject.inheritsFrom) return false;
+      return classObject.inheritsFrom.name === "Controller";
+    }
+  },
+  propertyEmitOptions: <PropertyEmitOptions>{
+    filter: (property: CSharpProperty) => false //we exclude all properties
+  },
+  fieldEmitOptions: <FieldEmitOptions>
 });
 ```
 
