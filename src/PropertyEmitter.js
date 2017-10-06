@@ -1,6 +1,8 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var TypeEmitter_1 = require("./TypeEmitter");
-var PropertyEmitter = (function () {
+var ts = require("typescript");
+var PropertyEmitter = /** @class */ (function () {
     function PropertyEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
         this.logger = logger;
@@ -14,17 +16,20 @@ var PropertyEmitter = (function () {
         }
     };
     PropertyEmitter.prototype.emitProperty = function (property, options) {
+        var node = this.createTypeScriptPropertyNode(property, options);
+        if (node)
+            this.stringEmitter.emitTypeScriptNode(node);
+    };
+    PropertyEmitter.prototype.createTypeScriptPropertyNode = function (property, options) {
         options = this.prepareOptions(options);
         options = Object.assign(options, options.perPropertyEmitOptions(property));
         if (!options.filter(property))
             return;
-        this.stringEmitter.writeIndentation();
+        var modifiers = new Array();
         if (options.readOnly)
-            this.stringEmitter.write("readonly ");
-        this.stringEmitter.write((options.name || property.name) + (property.type.isNullable ? "?" : "") + ": ");
-        this.typeEmitter.emitType(property.type, options.typeEmitOptions);
-        this.stringEmitter.write(";");
-        this.stringEmitter.writeLine();
+            modifiers.push(ts.createToken(ts.SyntaxKind.ReadonlyKeyword));
+        var node = ts.createPropertySignature(modifiers, options.name || property.name, property.type.isNullable ? ts.createToken(ts.SyntaxKind.QuestionToken) : null, null, null);
+        return node;
     };
     PropertyEmitter.prototype.prepareOptions = function (options) {
         if (!options) {

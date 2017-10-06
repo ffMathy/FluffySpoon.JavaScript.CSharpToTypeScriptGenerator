@@ -1,10 +1,12 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var EnumEmitter_1 = require("./EnumEmitter");
 var TypeEmitter_1 = require("./TypeEmitter");
 var PropertyEmitter_1 = require("./PropertyEmitter");
 var FieldEmitter_1 = require("./FieldEmitter");
 var MethodEmitter_1 = require("./MethodEmitter");
-var StructEmitter = (function () {
+var ts = require("typescript");
+var StructEmitter = /** @class */ (function () {
     function StructEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
         this.logger = logger;
@@ -20,16 +22,37 @@ var StructEmitter = (function () {
             var struct = structs_1[_i];
             this.emitStruct(struct, options);
         }
-        this.stringEmitter.removeLastNewLines();
         this.logger.log("Done emitting structs", structs);
     };
     StructEmitter.prototype.emitStruct = function (struct, options) {
         this.logger.log("Emitting struct", struct);
+        var node = this.createTypeScriptStructNode(struct, options);
+        if (node)
+            this.stringEmitter.emitTypeScriptNode(node);
+        this.logger.log("Done emitting struct", struct);
+    };
+    StructEmitter.prototype.createTypeScriptStructNode = function (struct, options) {
+        var _this = this;
         options = this.prepareOptions(options);
         options = Object.assign(options, options.perStructEmitOptions(struct));
-        this.emitStructInterface(struct, options);
-        this.stringEmitter.ensureNewParagraph();
-        this.logger.log("Done emitting struct", struct);
+        if (struct.properties.length === 0 && struct.methods.length === 0 && struct.fields.length === 0) {
+            this.logger.log("Skipping interface " + struct.name + " because it contains no properties, fields or methods");
+            return null;
+        }
+        if (!options.filter(struct))
+            return null;
+        var structName = options.name || struct.name;
+        this.logger.log("Emitting interface " + structName);
+        var modifiers = new Array();
+        if (options.declare)
+            modifiers.push(ts.createToken(ts.SyntaxKind.DeclareKeyword));
+        var properties = struct
+            .properties
+            .map(function (p) { return _this
+            .propertyEmitter
+            .createTypeScriptPropertyNode(p, options.propertyEmitOptions); });
+        var node = ts.createInterfaceDeclaration([], modifiers, structName, [], [], properties);
+        return node;
     };
     StructEmitter.prototype.prepareOptions = function (options) {
         if (!options) {
@@ -42,38 +65,6 @@ var StructEmitter = (function () {
             options.perStructEmitOptions = function () { return options; };
         }
         return options;
-    };
-    StructEmitter.prototype.emitStructInterface = function (struct, options) {
-        if (struct.properties.length === 0 && struct.methods.length === 0 && struct.fields.length === 0) {
-            this.logger.log("Skipping interface " + struct.name + " because it contains no properties, fields or methods");
-            return;
-        }
-        this.stringEmitter.writeIndentation();
-        if (options.declare)
-            this.stringEmitter.write("declare ");
-        var className = options.name || struct.name;
-        this.logger.log("Emitting interface " + className);
-        this.stringEmitter.write("interface " + className);
-        this.stringEmitter.write(" {");
-        this.stringEmitter.writeLine();
-        this.stringEmitter.increaseIndentation();
-        if (struct.fields.length > 0) {
-            this.fieldEmitter.emitFields(struct.fields, options.fieldEmitOptions);
-            this.stringEmitter.ensureNewParagraph();
-        }
-        if (struct.properties.length > 0) {
-            this.propertyEmitter.emitProperties(struct.properties, options.propertyEmitOptions);
-            this.stringEmitter.ensureNewParagraph();
-        }
-        if (struct.methods.length > 0) {
-            this.methodEmitter.emitMethods(struct.methods, options.methodEmitOptions);
-            this.stringEmitter.ensureNewParagraph();
-        }
-        this.stringEmitter.removeLastNewLines();
-        this.stringEmitter.decreaseIndentation();
-        this.stringEmitter.writeLine();
-        this.stringEmitter.writeLine("}");
-        this.stringEmitter.ensureNewParagraph();
     };
     return StructEmitter;
 }());

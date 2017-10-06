@@ -1,4 +1,5 @@
 import { Logger } from './Logger';
+import ts = require("typescript");
 export declare class StringEmitter {
     private logger;
     private _output;
@@ -11,6 +12,7 @@ export declare class StringEmitter {
     increaseIndentation(): void;
     decreaseIndentation(): void;
     removeLastNewLines(): void;
+    emitTypeScriptNode(node: ts.Node): void;
     ensureNewLine(): void;
     ensureNewParagraph(): void;
     removeLastCharacters(characters: string): boolean;

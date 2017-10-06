@@ -3,6 +3,8 @@ import { RegExHelper } from './RegExHelper';
 import { StringEmitter } from './StringEmitter';
 import { Logger } from './Logger';
 
+import ts = require("typescript");
+
 export interface TypeEmitOptions {
 	mapper?: (type: CSharpType, suggestedOutput: string) => string;
 	filter?: (type: CSharpType) => boolean;
@@ -65,6 +67,21 @@ export class TypeEmitter {
 	emitGenericParameters(genericParameters: CSharpType[], options?: TypeEmitOptions) {
 		options = this.prepareOptions(options);
 		this.stringEmitter.write(this.generateGenericParametersString(genericParameters, options));
+	}
+
+	createTypeScriptTypeNode(type: CSharpType, options?: TypeEmitOptions) {
+		options = this.prepareOptions(options);
+
+		if (!this.canEmitType(type, options))
+			return;
+
+		var node = ts.createTypeReferenceNode(
+			type.name,
+			property.type.isNullable ? ts.createToken(ts.SyntaxKind.QuestionToken) : null,
+			null,
+			null);
+
+		return node;
 	}
 
 	private prepareOptions(options?: TypeEmitOptions) {

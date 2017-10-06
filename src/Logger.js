@@ -1,5 +1,6 @@
 "use strict";
-var Logger = (function () {
+Object.defineProperty(exports, "__esModule", { value: true });
+var Logger = /** @class */ (function () {
     function Logger() {
     }
     Object.defineProperty(Logger, "debugMessageDisplayed", {

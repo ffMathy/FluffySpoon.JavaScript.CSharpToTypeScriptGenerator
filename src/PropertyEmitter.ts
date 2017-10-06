@@ -3,6 +3,8 @@ import { StringEmitter } from './StringEmitter';
 import { TypeEmitter, TypeEmitOptions } from './TypeEmitter';
 import { Logger } from './Logger';
 
+import ts = require("typescript");
+
 export interface PropertyEmitOptionsBase {
 	readOnly?: boolean;
 	filter?: (property: CSharpProperty) => boolean;
@@ -36,6 +38,12 @@ export class PropertyEmitter {
 	}
 
 	emitProperty(property: CSharpProperty, options?: PropertyEmitOptions & PerPropertyEmitOptions) {
+		var node = this.createTypeScriptPropertyNode(property, options);
+		if(node)
+			this.stringEmitter.emitTypeScriptNode(node);
+	}
+
+	createTypeScriptPropertyNode(property: CSharpProperty, options?: PropertyEmitOptions & PerPropertyEmitOptions) {
 		options = this.prepareOptions(options);
 		options = Object.assign(
 			options,
@@ -44,15 +52,18 @@ export class PropertyEmitter {
 		if (!options.filter(property))
 			return;
 
-		this.stringEmitter.writeIndentation();
-
+		var modifiers = new Array<ts.Modifier>();
 		if (options.readOnly)
-			this.stringEmitter.write("readonly ");
+			modifiers.push(ts.createToken(ts.SyntaxKind.ReadonlyKeyword));
 
-		this.stringEmitter.write((options.name || property.name) + (property.type.isNullable ? "?" : "") + ": ");
-		this.typeEmitter.emitType(property.type, options.typeEmitOptions);
-		this.stringEmitter.write(";");
-		this.stringEmitter.writeLine();
+		var node = ts.createPropertySignature(
+			modifiers,
+			options.name || property.name,
+			property.type.isNullable ? ts.createToken(ts.SyntaxKind.QuestionToken) : null,
+			null,
+			null);
+
+		return node;
 	}
 
 	private prepareOptions(options?: PropertyEmitOptions) {

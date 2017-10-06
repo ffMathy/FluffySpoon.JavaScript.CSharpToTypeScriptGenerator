@@ -1,5 +1,7 @@
 "use strict";
-var StringEmitter = (function () {
+Object.defineProperty(exports, "__esModule", { value: true });
+var ts = require("typescript");
+var StringEmitter = /** @class */ (function () {
     function StringEmitter(logger) {
         this.logger = logger;
         this._output = '';
@@ -40,6 +42,14 @@ var StringEmitter = (function () {
             ;
         while (this.removeLastCharacters("\r"))
             ;
+    };
+    StringEmitter.prototype.emitTypeScriptNode = function (node) {
+        var resultFile = ts.createSourceFile("Temporary.ts", "", ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
+        var printer = ts.createPrinter({
+            newLine: ts.NewLineKind.LineFeed
+        });
+        var result = printer.printNode(ts.EmitHint.Unspecified, node, resultFile);
+        this.write(result);
     };
     StringEmitter.prototype.ensureNewLine = function () {
         this.removeLastNewLines();

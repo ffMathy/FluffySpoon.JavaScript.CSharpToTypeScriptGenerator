@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var fs = require('fs');
 var FileEmitter_1 = require("../src/FileEmitter");
 function runCase(caseName, options) {

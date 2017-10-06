@@ -4,6 +4,7 @@ import { PropertyEmitOptions } from './PropertyEmitter';
 import { FieldEmitOptions } from './FieldEmitter';
 import { MethodEmitOptions } from './MethodEmitter';
 import { Logger } from './Logger';
+import ts = require("typescript");
 export interface StructEmitOptionsBase {
     declare?: boolean;
     filter?: (struct: CSharpStruct) => boolean;
@@ -28,6 +29,6 @@ export declare class StructEmitter {
     constructor(stringEmitter: StringEmitter, logger: Logger);
     emitStructs(structs: CSharpStruct[], options?: StructEmitOptions): void;
     emitStruct(struct: CSharpStruct, options?: StructEmitOptions): void;
+    createTypeScriptStructNode(struct: CSharpStruct, options?: StructEmitOptions & PerStructEmitOptions): ts.InterfaceDeclaration;
     private prepareOptions(options?);
-    private emitStructInterface(struct, options?);
 }

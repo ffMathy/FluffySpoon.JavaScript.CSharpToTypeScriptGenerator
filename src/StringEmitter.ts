@@ -1,5 +1,7 @@
 ﻿import { Logger } from './Logger';
 
+import ts = require("typescript");
+
 export class StringEmitter {
 	private _output: string;
 	private indentationLevel: number;
@@ -50,6 +52,21 @@ export class StringEmitter {
 		this.logger.log("Removing last lines.");
 		while (this.removeLastCharacters("\n"));
 		while (this.removeLastCharacters("\r"));
+	}
+
+	emitTypeScriptNode(node: ts.Node) {
+		const resultFile = ts.createSourceFile(
+			"Temporary.ts", "", ts.ScriptTarget.Latest, 
+			false, ts.ScriptKind.TS);
+		const printer = ts.createPrinter({
+			newLine: ts.NewLineKind.LineFeed
+		});
+		const result = printer.printNode(
+			ts.EmitHint.Unspecified, 
+			node, 
+			resultFile);
+
+		this.write(result);
 	}
 
 	ensureNewLine() {
