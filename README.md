@@ -174,6 +174,35 @@ declare interface MyClass {
 }
 ```
 
+### Including private properties
+```typescript
+var typescriptCode = emitter.emitFile(<FileEmitOptions>{
+  propertyEmitOptions: <PropertyEmitOptions>{
+    filter: (property: CSharpProperty) => true //the default filter is "property.isPublic === true"
+  }
+});
+```
+
+Given the following CSharp model code:
+
+```csharp
+public class MyClass {
+  private int MyProperty { get; set; }
+  public string MyOtherProperty { get; set; }
+}
+```
+
+The following TypeScript code would be generated:
+
+```typescript
+declare interface MyClass {
+  MyProperty: number;
+  MyOtherProperty: string;
+}
+```
+
+**Note:** This can also be done for classes, methods and fields by using the `ClassEmitOptions`, `MethodEmitOptions`, and `FieldEmitOptions` respectively.
+
 ### Camel-casing property names
 ```typescript
 var typescriptCode = emitter.emitFile(<FileEmitOptions>{
@@ -203,7 +232,7 @@ declare interface MyClass {
 }
 ```
 
-**Note:** This can also be done for classes, types, methods and properties by using the `ClassEmitOptions`, `TypeEmitOptions`, `MethodEmitOptions` and `PropertyEmitOptions` respectively.
+**Note:** This can also be done for classes, types, methods and fields by using the `ClassEmitOptions`, `TypeEmitOptions`, `MethodEmitOptions` and `FieldEmitOptions` respectively.
 
 ### Prefixing all class names with "I"
 ```typescript
@@ -316,18 +345,29 @@ declare type MyEnum =
 
 ### Generating AJAX clients for all controllers
 ```typescript
+var classFilter = (classObject: CSharpClass) => {
+  //we only want to process classes that inherit from Controller.
+  if(!classObject.inheritsFrom) return false;
+  return classObject.inheritsFrom.name === "Controller";
+};
+
 var typescriptCode = emitter.emitFile(<FileEmitOptions>{
   classEmitOptions: <ClassEmitOptions>{
-    filter: (classObject: CSharpClass) => {
-      //we only want to process classes that inherit from Controller.
-      if(!classObject.inheritsFrom) return false;
-      return classObject.inheritsFrom.name === "Controller";
-    }
+    filter: classFilter
   },
   propertyEmitOptions: <PropertyEmitOptions>{
     filter: (property: CSharpProperty) => false //we exclude all properties
   },
-  fieldEmitOptions: <FieldEmitOptions>
+  fieldEmitOptions: <FieldEmitOptions>{
+    filter: (field: CSharpField) => false //we exclude all fields
+  },
+  afterParsing: (file: CSharpFile, fileEmitter: StringEmitter) => {
+    var allControllerClasses = file
+      .getAllClassesRecursively()
+      .filter(classFilter);
+      
+    //TODO: not done yet.
+  }
 });
 ```
 
