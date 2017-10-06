@@ -174,7 +174,7 @@ declare interface MyClass {
 ```typescript
 var typescriptCode = emitter.emitFile(<FileEmitOptions>{
   propertyEmitOptions: <PropertyEmitOptions>{
-    perPropertyEmitOptions: (property: CSharpProperty) => {
+    perPropertyEmitOptions: (property: CSharpProperty) => <PerPropertyEmitOptions>{
       name: property.name[0].toLowerCase() + property.name.substring(1)
     }
   }
@@ -205,7 +205,7 @@ declare interface MyClass {
 ```typescript
 var typescriptCode = emitter.emitFile(<FileEmitOptions>{
   classEmitOptions: <ClassEmitOptions>{
-    perClassEmitOptions: (classObjcect: CSharpClass) => {
+    perClassEmitOptions: (classObjcect: CSharpClass) => <PerClassEmitOptions>{
       name: "I" + classObject.name,
       inheritedTypeEmitOptions: { 
         //this is needed to also change the name of the inherited class, if any
@@ -244,7 +244,7 @@ declare interface ISomeInheritedClass {
 ```typescript
 var typescriptCode = emitter.emitFile(<FileEmitOptions>{
   classEmitOptions: <ClassEmitOptions>{
-    perClassEmitOptions: (classObjcect: CSharpClass) => {
+    perClassEmitOptions: (classObjcect: CSharpClass) => <PerClassEmitOptions>{
       inheritedTypeEmitOptions: { 
         //by mapping the inherited type to "null", it is not emitted
         mapper: (type, suggested) => null
