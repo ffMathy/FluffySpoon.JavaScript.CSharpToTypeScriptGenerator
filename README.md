@@ -198,7 +198,7 @@ declare interface MyClass {
 }
 ```
 
-**Note: This can also be done for classes, types, methods and properties by using the `ClassEmitOptions`, `TypeEmitOptions`, `MethodEmitOptions` and `PropertyEmitOptions` respectively.**
+**Note:** This can also be done for classes, types, methods and properties by using the `ClassEmitOptions`, `TypeEmitOptions`, `MethodEmitOptions` and `PropertyEmitOptions` respectively.
 
 ### Prefixing all class names with "I"
 ```typescript
@@ -237,7 +237,7 @@ declare interface ISomeInheritedClass {
 }
 ```
 
-**Note: This can also be done for interfaces by using the `InterfaceEmitOptions` instead.**
+**Note:** This can also be done for interfaces by using the `InterfaceEmitOptions` instead.
 
 ### Removing inheritance
 ```typescript
@@ -275,7 +275,7 @@ declare interface SomeInheritedClass {
 }
 ```
 
-**Note: This can also be done for interfaces by using the `InterfaceEmitOptions` instead.**
+**Note:** This can also be done for interfaces by using the `InterfaceEmitOptions` instead.
 
 ### Convert enums to string union types
 ```typescript
