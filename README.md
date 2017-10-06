@@ -224,6 +224,7 @@ public class MyClass: SomeInheritedClass {
 }
 
 public class SomeInheritedClass {
+  public int MyBaseProperty { get; set; }
 }
 ```
 
@@ -235,6 +236,7 @@ declare interface IMyClass extends ISomeInheritedClass {
 }
 
 declare interface ISomeInheritedClass {
+  MyBaseProperty: number;
 }
 ```
 
@@ -262,6 +264,7 @@ public class MyClass: SomeInheritedClass {
 }
 
 public class SomeInheritedClass {
+  public int MyBaseProperty { get; set; }
 }
 ```
 
@@ -273,6 +276,7 @@ declare interface MyClass {
 }
 
 declare interface SomeInheritedClass {
+  MyBaseProperty: number;
 }
 ```
 
