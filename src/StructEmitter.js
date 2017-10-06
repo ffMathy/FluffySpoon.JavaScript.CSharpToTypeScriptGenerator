@@ -35,6 +35,9 @@ var StructEmitter = (function () {
         if (!options) {
             options = {};
         }
+        if (!options.filter) {
+            options.filter = function (struct) { return struct.isPublic; };
+        }
         if (!options.perStructEmitOptions) {
             options.perStructEmitOptions = function () { return options; };
         }

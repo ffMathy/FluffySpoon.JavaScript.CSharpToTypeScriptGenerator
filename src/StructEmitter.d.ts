@@ -6,6 +6,7 @@ import { MethodEmitOptions } from './MethodEmitter';
 import { Logger } from './Logger';
 export interface StructEmitOptionsBase {
     declare?: boolean;
+    filter?: (struct: CSharpStruct) => boolean;
     propertyEmitOptions?: PropertyEmitOptions;
     methodEmitOptions?: MethodEmitOptions;
     fieldEmitOptions?: FieldEmitOptions;

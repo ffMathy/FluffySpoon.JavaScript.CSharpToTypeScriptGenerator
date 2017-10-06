@@ -10,7 +10,7 @@ import { Logger } from './Logger';
 
 export interface ClassEmitOptionsBase {
 	declare?: boolean;
-	filter?: (method: CSharpClass) => boolean;
+	filter?: (classObject: CSharpClass) => boolean;
 
 	enumEmitOptions?: EnumEmitOptions;
 	propertyEmitOptions?: PropertyEmitOptions;
@@ -87,7 +87,7 @@ export class ClassEmitter {
 		}
 
 		if (!options.filter) {
-			options.filter = () => true;
+			options.filter = (classObject) => classObject.isPublic;
 		}
 
 		if (!options.perClassEmitOptions) {

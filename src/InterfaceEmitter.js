@@ -34,7 +34,7 @@ var InterfaceEmitter = (function () {
             options = {};
         }
         if (!options.filter) {
-            options.filter = function () { return true; };
+            options.filter = function (interfaceObject) { return interfaceObject.isPublic; };
         }
         if (!options.perInterfaceEmitOptions) {
             options.perInterfaceEmitOptions = function () { return options; };

@@ -6,9 +6,10 @@ var EnumEmitter = (function () {
     }
     EnumEmitter.prototype.prepareOptions = function (options) {
         if (!options) {
-            options = {
-                strategy: "default"
-            };
+            options = {};
+        }
+        if (!options.filter) {
+            options.filter = function (field) { return field.isPublic; };
         }
         if (!options.strategy) {
             options.strategy = "default";

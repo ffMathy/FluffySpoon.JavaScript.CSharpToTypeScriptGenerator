@@ -29,21 +29,21 @@ namespace Fuz
 
 class Foo
 {
-    enum StuffEnum
+    public enum StuffEnum
     {
         Lol,
         Bar
     }
 
-    enum OtherStuffEnum
+    public enum OtherStuffEnum
     {
         Hello,
         World
     }
 
-    class Blah
+    public class Blah
     {
-        enum MyThingy
+        public enum MyThingy
         {
             Lulz
         }

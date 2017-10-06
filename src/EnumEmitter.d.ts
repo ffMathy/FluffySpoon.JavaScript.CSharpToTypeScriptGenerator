@@ -4,6 +4,7 @@ import { Logger } from './Logger';
 export interface EnumEmitOptions {
     declare?: boolean;
     strategy?: "default" | "string-union";
+    filter?: (enumObject: CSharpEnum) => boolean;
 }
 export declare class EnumEmitter {
     private stringEmitter;

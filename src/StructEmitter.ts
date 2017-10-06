@@ -10,6 +10,7 @@ import { Logger } from './Logger';
 
 export interface StructEmitOptionsBase {
 	declare?: boolean;
+	filter?: (struct: CSharpStruct) => boolean;
     
 	propertyEmitOptions?: PropertyEmitOptions;
 	methodEmitOptions?: MethodEmitOptions;
@@ -71,6 +72,10 @@ export class StructEmitter {
 	private prepareOptions(options?: StructEmitOptions) {
 		if (!options) {
 			options = {};
+		}
+
+		if (!options.filter) {
+			options.filter = (struct) => struct.isPublic;
 		}
 
 		if (!options.perStructEmitOptions) {

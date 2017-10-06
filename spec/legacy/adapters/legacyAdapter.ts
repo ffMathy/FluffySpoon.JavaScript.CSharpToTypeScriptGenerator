@@ -92,7 +92,7 @@ function LegacyAdapter(contents: any, options: any) {
 			};
 
 			emitOptions.interfaceEmitOptions.perInterfaceEmitOptions =
-				emitOptions.classEmitOptions.perClassEmitOptions = perInterfaceOrClassOptions;
+				emitOptions.classEmitOptions.perClassEmitOptions = <any>perInterfaceOrClassOptions;
 		}
 
 		if (options.prefixWithI) {
@@ -106,7 +106,7 @@ function LegacyAdapter(contents: any, options: any) {
 			};
 
 			emitOptions.classEmitOptions.perClassEmitOptions =
-				emitOptions.interfaceEmitOptions.perInterfaceEmitOptions = perInterfaceOrClassOptions;
+				emitOptions.interfaceEmitOptions.perInterfaceEmitOptions = <any>perInterfaceOrClassOptions;
 		}
 
 		if (options.ignoreVirtual) {

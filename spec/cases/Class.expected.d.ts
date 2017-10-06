@@ -1,4 +1,6 @@
 ﻿declare interface BeforeClass {
+	foo: string;
+
 	MyProperty: string;
 }
 

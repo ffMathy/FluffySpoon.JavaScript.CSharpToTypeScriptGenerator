@@ -9,7 +9,7 @@ import { MethodEmitOptions } from './MethodEmitter';
 import { Logger } from './Logger';
 export interface ClassEmitOptionsBase {
     declare?: boolean;
-    filter?: (method: CSharpClass) => boolean;
+    filter?: (classObject: CSharpClass) => boolean;
     enumEmitOptions?: EnumEmitOptions;
     propertyEmitOptions?: PropertyEmitOptions;
     interfaceEmitOptions?: InterfaceEmitOptions;

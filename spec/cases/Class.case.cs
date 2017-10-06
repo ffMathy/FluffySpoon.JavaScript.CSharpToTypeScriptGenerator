@@ -1,6 +1,8 @@
 ﻿class BeforeClass
 {
 	public string MyProperty { get; set; }
+
+	public string foo;
 }
 
 class MainClass<Foo> where Foo : new()
@@ -11,7 +13,7 @@ class MainClass<Foo> where Foo : new()
 
 	public List<OtherStuff> OtherBlahProperty { get; set; }
 
-	class SubClass
+	public class SubClass
 	{
 		public string MyProperty { get; set; }
 	}

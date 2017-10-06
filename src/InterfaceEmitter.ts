@@ -75,7 +75,7 @@ export class InterfaceEmitter {
 		}
 
 		if (!options.filter) {
-			options.filter = () => true;
+			options.filter = (interfaceObject) => interfaceObject.isPublic;
 		}
 
 		if (!options.perInterfaceEmitOptions) {

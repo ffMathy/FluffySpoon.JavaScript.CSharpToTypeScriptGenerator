@@ -42,7 +42,7 @@ var ClassEmitter = (function () {
             options = {};
         }
         if (!options.filter) {
-            options.filter = function () { return true; };
+            options.filter = function (classObject) { return classObject.isPublic; };
         }
         if (!options.perClassEmitOptions) {
             options.perClassEmitOptions = function () { return ({}); };

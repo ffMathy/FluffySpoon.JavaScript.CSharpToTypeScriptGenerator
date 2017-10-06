@@ -10,6 +10,7 @@ import { InterfaceEmitter, InterfaceEmitOptions } from './InterfaceEmitter';
 import { NamespaceEmitter, NamespaceEmitOptions } from './NamespaceEmitter';
 import { MethodEmitOptions } from './MethodEmitter';
 import { PropertyEmitOptions } from './PropertyEmitter';
+import { FieldEmitOptions } from './FieldEmitter';
 import { Logger } from './Logger';
  
 export interface FileEmitOptions {
@@ -20,6 +21,7 @@ export interface FileEmitOptions {
 	interfaceEmitOptions?: InterfaceEmitOptions,
 	typeEmitOptions?: TypeEmitOptions,
 	propertyEmitOptions?: PropertyEmitOptions,
+	fieldEmitOptions?: FieldEmitOptions,
 	methodEmitOptions?: MethodEmitOptions,
 
 	afterParsing?: (file: CSharpFile, fileEmitter: StringEmitter) => void
@@ -146,6 +148,15 @@ export class FileEmitter {
 					this.optionsHelper.mergeOptions(
 						options.interfaceEmitOptions,
 						options.interfaceEmitOptions.propertyEmitOptions);
+			}
+		}
+
+		if(options.fieldEmitOptions) {
+			if(options.classEmitOptions) {
+				options.classEmitOptions.fieldEmitOptions = 
+					this.optionsHelper.mergeOptions(
+						options.classEmitOptions,
+						options.classEmitOptions.fieldEmitOptions);
 			}
 		}
 

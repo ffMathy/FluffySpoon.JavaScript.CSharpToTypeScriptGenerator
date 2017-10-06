@@ -33,7 +33,7 @@ var MethodEmitter = (function () {
             options = {};
         }
         if (!options.filter) {
-            options.filter = function () { return true; };
+            options.filter = function (method) { return method.isPublic; };
         }
         if (!options.perMethodEmitOptions) {
             options.perMethodEmitOptions = function () { return options; };

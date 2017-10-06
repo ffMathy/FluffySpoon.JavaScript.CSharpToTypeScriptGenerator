@@ -67,7 +67,7 @@ export class MethodEmitter {
 		}
 
 		if (!options.filter) {
-			options.filter = () => true;
+			options.filter = (method) => method.isPublic;
 		}
 
 		if (!options.perMethodEmitOptions) {

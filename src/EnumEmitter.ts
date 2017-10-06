@@ -5,6 +5,7 @@ import { Logger } from './Logger';
 export interface EnumEmitOptions {
 	declare?: boolean;
 	strategy?: "default" | "string-union";
+	filter?: (enumObject: CSharpEnum) => boolean;
 }
 
 export class EnumEmitter {
@@ -16,9 +17,11 @@ export class EnumEmitter {
 
 	private prepareOptions(options?: EnumEmitOptions) {
 		if (!options) {
-			options = {
-				strategy: "default"
-			}
+			options = {}
+		}
+
+		if (!options.filter) {
+			options.filter = (field) => field.isPublic;
 		}
 
 		if (!options.strategy) {

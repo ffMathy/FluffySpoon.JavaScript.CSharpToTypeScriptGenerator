@@ -8,6 +8,7 @@ import { InterfaceEmitOptions } from './InterfaceEmitter';
 import { NamespaceEmitOptions } from './NamespaceEmitter';
 import { MethodEmitOptions } from './MethodEmitter';
 import { PropertyEmitOptions } from './PropertyEmitter';
+import { FieldEmitOptions } from './FieldEmitter';
 import { Logger } from './Logger';
 export interface FileEmitOptions {
     classEmitOptions?: ClassEmitOptions;
@@ -17,6 +18,7 @@ export interface FileEmitOptions {
     interfaceEmitOptions?: InterfaceEmitOptions;
     typeEmitOptions?: TypeEmitOptions;
     propertyEmitOptions?: PropertyEmitOptions;
+    fieldEmitOptions?: FieldEmitOptions;
     methodEmitOptions?: MethodEmitOptions;
     afterParsing?: (file: CSharpFile, fileEmitter: StringEmitter) => void;
 }

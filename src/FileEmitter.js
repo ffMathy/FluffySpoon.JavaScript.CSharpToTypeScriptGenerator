@@ -93,6 +93,12 @@ var FileEmitter = (function () {
                     this.optionsHelper.mergeOptions(options.interfaceEmitOptions, options.interfaceEmitOptions.propertyEmitOptions);
             }
         }
+        if (options.fieldEmitOptions) {
+            if (options.classEmitOptions) {
+                options.classEmitOptions.fieldEmitOptions =
+                    this.optionsHelper.mergeOptions(options.classEmitOptions, options.classEmitOptions.fieldEmitOptions);
+            }
+        }
         if (options.typeEmitOptions) {
             if (options.classEmitOptions) {
                 options.classEmitOptions.genericParameterTypeEmitOptions =
