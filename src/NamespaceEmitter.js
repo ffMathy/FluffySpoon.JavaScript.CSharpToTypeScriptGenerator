@@ -4,6 +4,7 @@ var EnumEmitter_1 = require("./EnumEmitter");
 var ClassEmitter_1 = require("./ClassEmitter");
 var InterfaceEmitter_1 = require("./InterfaceEmitter");
 var StructEmitter_1 = require("./StructEmitter");
+var ts = require("typescript");
 var NamespaceEmitter = /** @class */ (function () {
     function NamespaceEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
@@ -97,6 +98,24 @@ var NamespaceEmitter = /** @class */ (function () {
         }
         this.stringEmitter.ensureNewParagraph();
         this.logger.log("Done emitting namespace", namespace);
+    };
+    NamespaceEmitter.prototype.createTypeScriptNamespaceNode = function (namespace, options) {
+        options = this.prepareOptions(options);
+        if (!options.filter(namespace))
+            return null;
+        this.logger.log("Emitting namespace", namespace);
+        var node = ts.createdeclaration([], [], ts.resolveModuleName(, null, null));
+        this.logger.log("Done emitting namespace", namespace);
+        return node;
+    };
+    NamespaceEmitter.prototype.prepareOptions = function (options) {
+        if (!options) {
+            options = {};
+        }
+        if (!options.filter) {
+            options.filter = function (namespace) { return true; };
+        }
+        return options;
     };
     return NamespaceEmitter;
 }());

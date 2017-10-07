@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var TypeEmitter_1 = require("./TypeEmitter");
+var ts = require("typescript");
 var MethodEmitter = /** @class */ (function () {
     function MethodEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
@@ -15,19 +16,21 @@ var MethodEmitter = /** @class */ (function () {
         }
     };
     MethodEmitter.prototype.emitMethod = function (method, options) {
+        var node = this.createTypeScriptMethodNode(method, options);
+        if (!node)
+            return;
+        this.stringEmitter.emitTypeScriptNode(node);
+    };
+    MethodEmitter.prototype.createTypeScriptMethodNode = function (method, options) {
         options = this.prepareOptions(options);
         options = Object.assign(options, options.perMethodEmitOptions(method));
         if (!options.filter(method))
-            return;
+            return null;
         if (method.isConstructor)
-            return;
-        this.stringEmitter.writeIndentation();
-        this.stringEmitter.write((options.name || method.name) + "(");
-        this.emitMethodParameters(method.parameters, options);
-        this.stringEmitter.write("): ");
-        this.typeEmitter.emitType(method.returnType, options.returnTypeEmitOptions);
-        this.stringEmitter.write(";");
-        this.stringEmitter.writeLine();
+            return null;
+        var modifiers = new Array();
+        var node = ts.createMethodSignature([], this.createTypeScriptMethodParameterNodes(method.parameters, options), this.typeEmitter.createTypeScriptTypeNode(method.returnType, options.returnTypeEmitOptions), options.name || method.name, null);
+        return node;
     };
     MethodEmitter.prototype.prepareOptions = function (options) {
         if (!options) {
@@ -41,17 +44,20 @@ var MethodEmitter = /** @class */ (function () {
         }
         return options;
     };
-    MethodEmitter.prototype.emitMethodParameters = function (parameters, options) {
+    MethodEmitter.prototype.createTypeScriptMethodParameterNodes = function (parameters, options) {
+        var nodes = new Array();
         for (var _i = 0, parameters_1 = parameters; _i < parameters_1.length; _i++) {
             var parameter = parameters_1[_i];
-            this.emitMethodParameter(parameter, options);
+            nodes.push(this.createTypeScriptMethodParameterNode(parameter, options));
         }
-        this.stringEmitter.removeLastCharacters(", ");
+        return nodes;
     };
-    MethodEmitter.prototype.emitMethodParameter = function (parameter, options) {
-        this.stringEmitter.write(parameter.name + ": ");
-        this.typeEmitter.emitType(parameter.type, options.argumentTypeEmitOptions);
-        this.stringEmitter.write(", ");
+    MethodEmitter.prototype.createTypeScriptMethodParameterNode = function (parameter, options) {
+        var initializer;
+        if (parameter.defaultValue)
+            initializer = ts.createLiteral(parameter.defaultValue);
+        var node = ts.createParameter([], [], null, options.name || parameter.name, null, this.typeEmitter.createTypeScriptTypeNode(parameter.type, options.returnTypeEmitOptions), initializer);
+        return node;
     };
     return MethodEmitter;
 }());

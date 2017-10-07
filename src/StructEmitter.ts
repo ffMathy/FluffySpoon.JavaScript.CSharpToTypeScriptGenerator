@@ -98,7 +98,7 @@ export class StructEmitter {
 			structName,
 			[],
 			[],
-			properties);
+			[...properties]);
 
 		return node;
 	}

@@ -28,7 +28,7 @@ var PropertyEmitter = /** @class */ (function () {
         var modifiers = new Array();
         if (options.readOnly)
             modifiers.push(ts.createToken(ts.SyntaxKind.ReadonlyKeyword));
-        var node = ts.createPropertySignature(modifiers, options.name || property.name, property.type.isNullable ? ts.createToken(ts.SyntaxKind.QuestionToken) : null, null, null);
+        var node = ts.createPropertySignature(modifiers, options.name || property.name, property.type.isNullable ? ts.createToken(ts.SyntaxKind.QuestionToken) : null, this.typeEmitter.createTypeScriptTypeNode(property.type, options.typeEmitOptions), null);
         return node;
     };
     PropertyEmitter.prototype.prepareOptions = function (options) {
@@ -39,7 +39,9 @@ var PropertyEmitter = /** @class */ (function () {
             options.filter = function (property) { return property.isPublic; };
         }
         if (!options.perPropertyEmitOptions) {
-            options.perPropertyEmitOptions = function () { return options; };
+            options.perPropertyEmitOptions = function (property) { return ({
+                name: property.name.charAt(0).toLowerCase() + property.name.substring(1)
+            }); };
         }
         return options;
     };

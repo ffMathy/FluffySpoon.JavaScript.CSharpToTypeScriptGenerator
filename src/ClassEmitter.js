@@ -6,6 +6,7 @@ var PropertyEmitter_1 = require("./PropertyEmitter");
 var InterfaceEmitter_1 = require("./InterfaceEmitter");
 var FieldEmitter_1 = require("./FieldEmitter");
 var MethodEmitter_1 = require("./MethodEmitter");
+var ts = require("typescript");
 var ClassEmitter = /** @class */ (function () {
     function ClassEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
@@ -27,16 +28,82 @@ var ClassEmitter = /** @class */ (function () {
         this.logger.log("Done emitting classes", classes);
     };
     ClassEmitter.prototype.emitClass = function (classObject, options) {
+        var node = this.createTypeScriptClassNode(classObject, options);
+        if (!node)
+            return;
+        this.stringEmitter.emitTypeScriptNode(node);
+    };
+    ClassEmitter.prototype.createTypeScriptClassNode = function (classObject, options) {
+        var _this = this;
         options = this.prepareOptions(options);
         options = Object.assign(options, options.perClassEmitOptions(classObject));
         if (!options.filter(classObject))
-            return;
+            return null;
+        if (classObject.properties.length === 0 && classObject.methods.length === 0 && classObject.fields.length === 0) {
+            this.logger.log("Skipping emitting body of class " + classObject.name + " because it contains no properties, fields or methods");
+            return null;
+        }
         this.logger.log("Emitting class", classObject);
         this.emitClassInterface(classObject, options);
         this.stringEmitter.ensureNewParagraph();
         this.emitSubElementsInClass(classObject, options);
         this.stringEmitter.ensureNewParagraph();
+        var modifiers = new Array();
+        if (options.declare)
+            modifiers.push(ts.createToken(ts.SyntaxKind.DeclareKeyword));
+        var heritageClause;
+        if (classObject.inheritsFrom && this.typeEmitter.canEmitType(classObject.inheritsFrom))
+            heritageClause = ts.createHeritageClause(ts.SyntaxKind.ImplementsKeyword, [this.typeEmitter.createTypeScriptExpressionWithTypeArguments(classObject.inheritsFrom, options.inheritedTypeEmitOptions)]);
+        var properties = classObject
+            .properties
+            .map(function (x) { return _this
+            .propertyEmitter
+            .createTypeScriptPropertyNode(x, options.propertyEmitOptions); });
+        var methods = classObject
+            .methods
+            .map(function (x) { return _this
+            .methodEmitter
+            .createTypeScriptMethodNode(x, options.methodEmitOptions); });
+        var genericParameters = classObject
+            .genericParameters
+            .map(function (x) { return _this
+            .typeEmitter
+            .createTypeScriptTypeParameterDeclaration(x, options.genericParameterTypeEmitOptions); });
+        var fields = classObject
+            .fields
+            .map(function (x) { return _this
+            .fieldEmitter
+            .createTypeScriptFieldNode(x, options.fieldEmitOptions); });
+        var classMembers = methods.concat(properties, fields);
+        if (classObject.classes.length > 0 ||
+            classObject.interfaces.length > 0 ||
+            classObject.enums.length > 0) {
+            if (classObject.enums.length > 0) {
+                var classEnumOptions = Object.assign(options.enumEmitOptions, {
+                    declare: false
+                });
+                this.enumEmitter.emitEnums(classObject.enums, classEnumOptions);
+                this.stringEmitter.ensureNewParagraph();
+            }
+            if (classObject.classes.length > 0) {
+                var optionsClone = Object.assign({}, options);
+                var subClassOptions = Object.assign(optionsClone, {
+                    declare: false
+                });
+                this.emitClasses(classObject.classes, subClassOptions);
+                this.stringEmitter.ensureNewParagraph();
+            }
+            if (classObject.interfaces.length > 0) {
+                var classInterfaceOptions = Object.assign(options, {
+                    declare: false
+                });
+                this.interfaceEmitter.emitInterfaces(classObject.interfaces, classInterfaceOptions);
+                this.stringEmitter.ensureNewParagraph();
+            }
+        }
+        var node = ts.createInterfaceDeclaration([], modifiers, options.name || classObject.name, genericParameters, [heritageClause], classMembers);
         this.logger.log("Done emitting class", classObject);
+        return node;
     };
     ClassEmitter.prototype.prepareOptions = function (options) {
         if (!options) {
@@ -49,43 +116,6 @@ var ClassEmitter = /** @class */ (function () {
             options.perClassEmitOptions = function () { return ({}); };
         }
         return options;
-    };
-    ClassEmitter.prototype.emitClassInterface = function (classObject, options) {
-        if (classObject.properties.length === 0 && classObject.methods.length === 0 && classObject.fields.length === 0) {
-            this.logger.log("Skipping emitting body of class " + classObject.name + " because it contains no properties, fields or methods");
-            return;
-        }
-        this.stringEmitter.writeIndentation();
-        if (options.declare)
-            this.stringEmitter.write("declare ");
-        var className = options.name || classObject.name;
-        this.logger.log("Emitting class " + className);
-        this.stringEmitter.write("interface " + className);
-        if (classObject.genericParameters)
-            this.typeEmitter.emitGenericParameters(classObject.genericParameters, options.genericParameterTypeEmitOptions);
-        if (classObject.inheritsFrom && this.typeEmitter.canEmitType(classObject.inheritsFrom, options.inheritedTypeEmitOptions)) {
-            this.stringEmitter.write(" extends ");
-            this.typeEmitter.emitType(classObject.inheritsFrom, options.inheritedTypeEmitOptions);
-        }
-        this.stringEmitter.write(" {");
-        this.stringEmitter.writeLine();
-        this.stringEmitter.increaseIndentation();
-        if (classObject.fields.length > 0) {
-            this.fieldEmitter.emitFields(classObject.fields, options.fieldEmitOptions);
-            this.stringEmitter.ensureNewParagraph();
-        }
-        if (classObject.properties.length > 0) {
-            this.propertyEmitter.emitProperties(classObject.properties, options.propertyEmitOptions);
-            this.stringEmitter.ensureNewParagraph();
-        }
-        if (classObject.methods.length > 0) {
-            this.methodEmitter.emitMethods(classObject.methods, options.methodEmitOptions);
-            this.stringEmitter.ensureNewParagraph();
-        }
-        this.stringEmitter.removeLastNewLines();
-        this.stringEmitter.decreaseIndentation();
-        this.stringEmitter.writeLine();
-        this.stringEmitter.writeLine("}");
     };
     ClassEmitter.prototype.emitSubElementsInClass = function (classObject, options) {
         if (classObject.enums.length === 0 && classObject.classes.length === 0 && classObject.interfaces.length === 0) {

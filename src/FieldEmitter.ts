@@ -3,6 +3,8 @@ import { StringEmitter } from './StringEmitter';
 import { TypeEmitter, TypeEmitOptions } from './TypeEmitter';
 import { Logger } from './Logger';
 
+import ts = require("typescript");
+
 export interface FieldEmitOptionsBase {
 	readOnly?: boolean;
 	typeEmitOptions?: TypeEmitOptions;
@@ -27,9 +29,7 @@ export class FieldEmitter {
 		this.typeEmitter = new TypeEmitter(stringEmitter, logger);
 	}
 
-	emitFields(fields: CSharpField[], options?: FieldEmitOptions & PerFieldEmitOptions) {
-		options = this.prepareOptions(options);
-
+	emitFields(fields: CSharpField[], options?: FieldEmitOptions) {
 		for (var property of fields) {
 			this.emitField(property, options);
 		}
@@ -38,6 +38,14 @@ export class FieldEmitter {
 	}
 
 	emitField(field: CSharpField, options?: FieldEmitOptions & PerFieldEmitOptions) {
+		var node = this.createTypeScriptFieldNode(field, options);
+		if(!node) 
+			return;
+
+		this.stringEmitter.emitTypeScriptNode(node);
+	}
+
+	createTypeScriptFieldNode(field: CSharpField, options?: FieldEmitOptions & PerFieldEmitOptions) {
 		options = Object.assign(
 			this.prepareOptions(options),
 			options.perFieldEmitOptions(field));
@@ -47,16 +55,18 @@ export class FieldEmitter {
 
 		this.logger.log("Emitting field " + field.name);
 
-		this.stringEmitter.writeIndentation();
-
+		var modifiers = new Array<ts.Modifier>();
 		if (options.readOnly)
-			this.stringEmitter.write("readonly ");
+			modifiers.push(ts.createToken(ts.SyntaxKind.ReadonlyKeyword));
 
-		this.stringEmitter.write((options.name || field.name) + ": ");
-		this.typeEmitter.emitType(field.type, options.typeEmitOptions);
-		this.stringEmitter.write(";");
+		var node = ts.createPropertySignature(
+			modifiers,
+			options.name || field.name,
+			field.type.isNullable ? ts.createToken(ts.SyntaxKind.QuestionToken) : null,
+			this.typeEmitter.createTypeScriptTypeReferenceNode(field.type, options.typeEmitOptions),
+			null);
 
-		this.stringEmitter.ensureNewLine();
+		return node;
 	}
 
 	private prepareOptions(options?: FieldEmitOptions) {

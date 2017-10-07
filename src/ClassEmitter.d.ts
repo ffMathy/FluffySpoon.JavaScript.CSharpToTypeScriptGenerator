@@ -7,6 +7,7 @@ import { InterfaceEmitOptions } from './InterfaceEmitter';
 import { FieldEmitOptions } from './FieldEmitter';
 import { MethodEmitOptions } from './MethodEmitter';
 import { Logger } from './Logger';
+import ts = require("typescript");
 export interface ClassEmitOptionsBase {
     declare?: boolean;
     filter?: (classObject: CSharpClass) => boolean;
@@ -36,7 +37,7 @@ export declare class ClassEmitter {
     constructor(stringEmitter: StringEmitter, logger: Logger);
     emitClasses(classes: CSharpClass[], options?: ClassEmitOptions): void;
     emitClass(classObject: CSharpClass, options?: ClassEmitOptions): void;
+    createTypeScriptClassNode(classObject: CSharpClass, options?: ClassEmitOptions & PerClassEmitOptions): ts.InterfaceDeclaration;
     private prepareOptions(options?);
-    private emitClassInterface(classObject, options?);
     private emitSubElementsInClass(classObject, options?);
 }

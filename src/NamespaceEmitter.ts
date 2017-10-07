@@ -8,9 +8,12 @@ import { InterfaceEmitter, InterfaceEmitOptions } from './InterfaceEmitter';
 import { StructEmitter, StructEmitOptions } from './StructEmitter';
 import { Logger } from './Logger';
 
+import ts = require("typescript");
+
 export interface NamespaceEmitOptions {
 	declare?: boolean;
 	skip?: boolean;
+	filter?: (namespace: CSharpNamespace) => boolean;
 
 	classEmitOptions?: ClassEmitOptions;
 	interfaceEmitOptions?: InterfaceEmitOptions;
@@ -147,5 +150,37 @@ export class NamespaceEmitter {
 		this.stringEmitter.ensureNewParagraph();
 
 		this.logger.log("Done emitting namespace", namespace);
+	}
+
+	createTypeScriptNamespaceNode(namespace: CSharpNamespace, options?: NamespaceEmitOptions) {
+		options = this.prepareOptions(options);
+
+		if (!options.filter(namespace))
+			return null;
+
+		this.logger.log("Emitting namespace", namespace);
+
+		var node = ts.createdeclaration(
+			[],
+			[],
+			ts.resolveModuleName(,
+			null,
+			null);
+
+		this.logger.log("Done emitting namespace", namespace);
+
+		return node;
+	}
+
+	private prepareOptions(options?: NamespaceEmitOptions) {
+		if (!options) {
+			options = {};
+		}
+
+		if (!options.filter) {
+			options.filter = (namespace) => true;
+		}
+
+		return options;
 	}
 }

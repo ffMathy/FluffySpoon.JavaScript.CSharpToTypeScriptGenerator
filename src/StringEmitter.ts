@@ -55,9 +55,12 @@ export class StringEmitter {
 	}
 
 	emitTypeScriptNode(node: ts.Node) {
+		var fileName = "Temporary.ts";
+		
 		const resultFile = ts.createSourceFile(
-			"Temporary.ts", "", ts.ScriptTarget.Latest, 
+			fileName, " ", ts.ScriptTarget.Latest,
 			false, ts.ScriptKind.TS);
+		
 		const printer = ts.createPrinter({
 			newLine: ts.NewLineKind.LineFeed
 		});
@@ -65,7 +68,7 @@ export class StringEmitter {
 			ts.EmitHint.Unspecified, 
 			node, 
 			resultFile);
-
+			
 		this.write(result);
 	}
 

@@ -2,6 +2,7 @@ import { CSharpField } from 'fluffy-spoon.javascript.csharp-parser';
 import { StringEmitter } from './StringEmitter';
 import { TypeEmitOptions } from './TypeEmitter';
 import { Logger } from './Logger';
+import ts = require("typescript");
 export interface FieldEmitOptionsBase {
     readOnly?: boolean;
     typeEmitOptions?: TypeEmitOptions;
@@ -18,7 +19,8 @@ export declare class FieldEmitter {
     private logger;
     private typeEmitter;
     constructor(stringEmitter: StringEmitter, logger: Logger);
-    emitFields(fields: CSharpField[], options?: FieldEmitOptions & PerFieldEmitOptions): void;
+    emitFields(fields: CSharpField[], options?: FieldEmitOptions): void;
     emitField(field: CSharpField, options?: FieldEmitOptions & PerFieldEmitOptions): void;
+    createTypeScriptFieldNode(field: CSharpField, options?: FieldEmitOptions & PerFieldEmitOptions): ts.PropertySignature;
     private prepareOptions(options?);
 }

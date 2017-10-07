@@ -1,4 +1,5 @@
 ﻿import { FileParser, CSharpClass } from 'fluffy-spoon.javascript.csharp-parser';
+
 import { StringEmitter } from './StringEmitter';
 import { EnumEmitter, EnumEmitOptions } from './EnumEmitter';
 import { TypeEmitter, TypeEmitOptions } from './TypeEmitter';
@@ -7,6 +8,8 @@ import { InterfaceEmitter, InterfaceEmitOptions } from './InterfaceEmitter';
 import { FieldEmitter, FieldEmitOptions } from './FieldEmitter';
 import { MethodEmitter, MethodEmitOptions } from './MethodEmitter';
 import { Logger } from './Logger';
+
+import ts = require("typescript");
 
 export interface ClassEmitOptionsBase {
 	declare?: boolean;
@@ -62,13 +65,26 @@ export class ClassEmitter {
 	}
 
 	emitClass(classObject: CSharpClass, options?: ClassEmitOptions) {
+		var node = this.createTypeScriptClassNode(classObject, options);
+		if(!node)
+			return;
+
+		this.stringEmitter.emitTypeScriptNode(node);
+	}
+
+	createTypeScriptClassNode(classObject: CSharpClass, options?: ClassEmitOptions&PerClassEmitOptions) {
 		options = this.prepareOptions(options);
 		options = Object.assign(
 			options,
 			options.perClassEmitOptions(classObject));
 
 		if (!options.filter(classObject))
-			return;
+			return null;
+
+		if (classObject.properties.length === 0 && classObject.methods.length === 0 && classObject.fields.length === 0) {
+			this.logger.log("Skipping emitting body of class " + classObject.name + " because it contains no properties, fields or methods");
+			return null;
+		}
 			
 		this.logger.log("Emitting class", classObject);
 
@@ -78,7 +94,95 @@ export class ClassEmitter {
 		this.emitSubElementsInClass(classObject, options);
 		this.stringEmitter.ensureNewParagraph();
 
+		var modifiers = new Array<ts.Modifier>();
+
+		if (options.declare)
+			modifiers.push(ts.createToken(ts.SyntaxKind.DeclareKeyword));
+
+		var heritageClause: ts.HeritageClause;
+		if(classObject.inheritsFrom && this.typeEmitter.canEmitType(classObject.inheritsFrom)) 
+			heritageClause = ts.createHeritageClause(
+				ts.SyntaxKind.ImplementsKeyword,
+				[this.typeEmitter.createTypeScriptExpressionWithTypeArguments(
+					classObject.inheritsFrom,
+					options.inheritedTypeEmitOptions)]);
+
+		var properties = classObject
+			.properties
+			.map(x => this
+				.propertyEmitter
+				.createTypeScriptPropertyNode(x, options.propertyEmitOptions));
+
+		var methods = classObject
+			.methods
+			.map(x => this
+				.methodEmitter
+				.createTypeScriptMethodNode(x, options.methodEmitOptions));
+
+		var genericParameters = classObject
+			.genericParameters
+			.map(x => this
+				.typeEmitter
+				.createTypeScriptTypeParameterDeclaration(x, options.genericParameterTypeEmitOptions));
+
+		var fields = classObject
+			.fields
+			.map(x => this
+				.fieldEmitter
+				.createTypeScriptFieldNode(x, options.fieldEmitOptions));
+
+		var classMembers = [...methods, ...properties, ...fields];
+		if(classObject.classes.length > 0 || 
+			classObject.interfaces.length > 0 || 
+			classObject.enums.length > 0) {
+
+			
+
+			if(classObject.enums.length > 0) {
+				var classEnumOptions = Object.assign(
+					options.enumEmitOptions,
+					<EnumEmitOptions>{
+						declare: false
+					});
+				this.enumEmitter.emitEnums(
+					classObject.enums,
+					classEnumOptions);
+				this.stringEmitter.ensureNewParagraph();
+			}
+
+			if(classObject.classes.length > 0) {
+				var optionsClone = Object.assign({}, options);
+				var subClassOptions = Object.assign(optionsClone, <ClassEmitOptions>{
+					declare: false
+				});
+				this.emitClasses(
+					classObject.classes,
+					subClassOptions);
+				this.stringEmitter.ensureNewParagraph();
+			}
+
+			if(classObject.interfaces.length > 0) {
+				var classInterfaceOptions = Object.assign(options, <InterfaceEmitOptions>{
+					declare: false
+				});
+				this.interfaceEmitter.emitInterfaces(
+					classObject.interfaces,
+					classInterfaceOptions);
+				this.stringEmitter.ensureNewParagraph();
+			}
+		}
+
+		var node = ts.createInterfaceDeclaration(
+			[],
+			modifiers,
+			options.name || classObject.name,
+			genericParameters,
+			[heritageClause],
+			classMembers);
+
 		this.logger.log("Done emitting class", classObject);
+
+		return node;
 	}
 
 	private prepareOptions(options?: ClassEmitOptions) {
@@ -95,61 +199,6 @@ export class ClassEmitter {
 		}
 
 		return options;
-	}
-
-	private emitClassInterface(classObject: CSharpClass, options?: ClassEmitOptions & PerClassEmitOptions) {
-		if (classObject.properties.length === 0 && classObject.methods.length === 0 && classObject.fields.length === 0) {
-			this.logger.log("Skipping emitting body of class " + classObject.name + " because it contains no properties, fields or methods");
-			return;
-		}
-
-		this.stringEmitter.writeIndentation();
-
-		if (options.declare)
-			this.stringEmitter.write("declare ");
-
-		var className = options.name || classObject.name;
-		this.logger.log("Emitting class " + className);
-
-		this.stringEmitter.write("interface " + className);
-		if(classObject.genericParameters)
-			this.typeEmitter.emitGenericParameters(
-				classObject.genericParameters,
-				options.genericParameterTypeEmitOptions);
-
-		if (classObject.inheritsFrom && this.typeEmitter.canEmitType(classObject.inheritsFrom, options.inheritedTypeEmitOptions)) {
-			this.stringEmitter.write(" extends ");
-			this.typeEmitter.emitType(
-				classObject.inheritsFrom,
-				options.inheritedTypeEmitOptions);
-		}
-
-		this.stringEmitter.write(" {");
-		this.stringEmitter.writeLine();
-
-		this.stringEmitter.increaseIndentation();
-
-		if (classObject.fields.length > 0) {
-			this.fieldEmitter.emitFields(classObject.fields, options.fieldEmitOptions);
-			this.stringEmitter.ensureNewParagraph();
-		}
-
-		if (classObject.properties.length > 0) {
-			this.propertyEmitter.emitProperties(classObject.properties, options.propertyEmitOptions);
-			this.stringEmitter.ensureNewParagraph();
-		}
-
-		if (classObject.methods.length > 0) {
-			this.methodEmitter.emitMethods(classObject.methods, options.methodEmitOptions);
-			this.stringEmitter.ensureNewParagraph();
-		}
-
-		this.stringEmitter.removeLastNewLines();
-
-		this.stringEmitter.decreaseIndentation();
-
-		this.stringEmitter.writeLine();
-		this.stringEmitter.writeLine("}");
 	}
 
 	private emitSubElementsInClass(classObject: CSharpClass, options?: ClassEmitOptions) {

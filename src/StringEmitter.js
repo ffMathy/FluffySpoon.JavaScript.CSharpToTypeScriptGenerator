@@ -44,7 +44,8 @@ var StringEmitter = /** @class */ (function () {
             ;
     };
     StringEmitter.prototype.emitTypeScriptNode = function (node) {
-        var resultFile = ts.createSourceFile("Temporary.ts", "", ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
+        var fileName = "Temporary.ts";
+        var resultFile = ts.createSourceFile(fileName, " ", ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
         var printer = ts.createPrinter({
             newLine: ts.NewLineKind.LineFeed
         });

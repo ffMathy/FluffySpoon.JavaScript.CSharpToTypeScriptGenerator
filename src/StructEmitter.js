@@ -51,7 +51,7 @@ var StructEmitter = /** @class */ (function () {
             .map(function (p) { return _this
             .propertyEmitter
             .createTypeScriptPropertyNode(p, options.propertyEmitOptions); });
-        var node = ts.createInterfaceDeclaration([], modifiers, structName, [], [], properties);
+        var node = ts.createInterfaceDeclaration([], modifiers, structName, [], [], properties.slice());
         return node;
     };
     StructEmitter.prototype.prepareOptions = function (options) {

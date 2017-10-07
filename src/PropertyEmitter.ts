@@ -60,7 +60,7 @@ export class PropertyEmitter {
 			modifiers,
 			options.name || property.name,
 			property.type.isNullable ? ts.createToken(ts.SyntaxKind.QuestionToken) : null,
-			null,
+			this.typeEmitter.createTypeScriptTypeNode(property.type, options.typeEmitOptions),
 			null);
 
 		return node;
@@ -76,7 +76,9 @@ export class PropertyEmitter {
 		}
 
 		if (!options.perPropertyEmitOptions) {
-			options.perPropertyEmitOptions = () => options;
+			options.perPropertyEmitOptions = (property) => <PerPropertyEmitOptions>{
+				name: property.name.charAt(0).toLowerCase() + property.name.substring(1)
+			};
 		}
 
 		return options;

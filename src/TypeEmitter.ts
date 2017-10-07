@@ -53,35 +53,68 @@ export class TypeEmitter {
 	}
 
 	emitType(type: CSharpType, options?: TypeEmitOptions) {
-		options = this.prepareOptions(options);
-
-		if (!this.canEmitType(type, options))
+		var node = this.createTypeScriptTypeReferenceNode(type, options);
+		if(!node)
 			return;
 
-		var mapping = this.getMatchingTypeMapping(type, options);
-
-		this.logger.log("Emitting type " + type.fullName);
-		this.stringEmitter.write(mapping);
+		this.stringEmitter.emitTypeScriptNode(node);
 	}
 
 	emitGenericParameters(genericParameters: CSharpType[], options?: TypeEmitOptions) {
 		options = this.prepareOptions(options);
+
 		this.stringEmitter.write(this.generateGenericParametersString(genericParameters, options));
 	}
 
-	createTypeScriptTypeNode(type: CSharpType, options?: TypeEmitOptions) {
+	createTypeScriptExpressionWithTypeArguments(type: CSharpType, options?: TypeEmitOptions) {
+		options = this.prepareOptions(options);
+
+		var typeName = this.getNonGenericMatchingTypeMappingAsString(type, options);
+		return ts.createExpressionWithTypeArguments(
+			this.createTypeScriptTypeReferenceNodes(
+				type.genericParameters,
+				options),
+			ts.createIdentifier(typeName));
+	}
+
+	createTypeScriptTypeReferenceNode(type: CSharpType, options?: TypeEmitOptions) {
 		options = this.prepareOptions(options);
 
 		if (!this.canEmitType(type, options))
-			return;
+			return null;
 
-		var node = ts.createTypeReferenceNode(
-			type.name,
-			property.type.isNullable ? ts.createToken(ts.SyntaxKind.QuestionToken) : null,
-			null,
-			null);
+		this.logger.log("Emitting type", type);
+
+		var type = this.getMatchingTypeMappingAsType(type, options);
+		var node = this.createTypeScriptTypeReferenceNodes([type])[0];
+
+		this.logger.log("Done emitting type", type);
 
 		return node;
+	}
+	
+	createTypeScriptTypeParameterDeclaration(type: CSharpType, options?: TypeEmitOptions) {
+		options = this.prepareOptions(options);
+
+		return ts.createTypeParameterDeclaration(
+			this.getNonGenericMatchingTypeMappingAsString(type, options));
+	}
+
+	createTypeScriptTypeReferenceNodes(types: CSharpType[], options?: TypeEmitOptions) {
+		options = this.prepareOptions(options);
+
+		var nodes = new Array<ts.TypeReferenceNode>();
+		if(!types)
+			return nodes;
+
+		for(var type of types) {
+			var node = ts.createTypeReferenceNode(
+				this.getNonGenericTypeName(type),
+				this.createTypeScriptTypeReferenceNodes(type.genericParameters, options));
+			nodes.push(node);
+		}
+
+		return nodes;
 	}
 
 	private prepareOptions(options?: TypeEmitOptions) {
@@ -106,12 +139,30 @@ export class TypeEmitter {
 		return typeName;
 	}
 
-	private getMatchingTypeMapping(
+	private getNonGenericMatchingTypeMappingAsString(
+		type: CSharpType,
+		options?: TypeEmitOptions) {
+
+		var mapping = this.getMatchingTypeMappingAsType(type, options);
+		var typeName = this.getNonGenericTypeName(mapping);
+		return typeName;
+	}
+
+	private getMatchingTypeMappingAsType(
+		type: CSharpType,
+		options?: TypeEmitOptions) {
+
+		var mapping = this.getMatchingTypeMappingAsString(type, options);
+		var type = this.typeParser.parseType(mapping);
+		return type;
+	}
+
+	private getMatchingTypeMappingAsString(
 		type: CSharpType,
 		options?: TypeEmitOptions) {
 
 		if (options && options.mapper) {
-			let mappedValue: string = options.mapper(type, this.getMatchingTypeMapping(type));
+			let mappedValue: string = options.mapper(type, this.getMatchingTypeMappingAsString(type));
 			if(mappedValue)
 				return mappedValue;
 		}
@@ -147,7 +198,7 @@ export class TypeEmitter {
 	private generateGenericParametersString(genericParameters: CSharpType[], options: TypeEmitOptions) {
 		var mapping = "<";
 		for(var genericParameter of genericParameters) {
-			mapping += this.getMatchingTypeMapping(genericParameter, options);
+			mapping += this.getMatchingTypeMappingAsString(genericParameter, options);
 			if(genericParameter !== genericParameters[genericParameters.length-1])
 				mapping += ", ";
 		}
@@ -189,7 +240,7 @@ export class TypeEmitter {
 		mapping: string,
 		options: TypeEmitOptions) {
         
-		var realTypeMapping = this.getMatchingTypeMapping(realType, options);
+		var realTypeMapping = this.getMatchingTypeMappingAsString(realType, options);
 		var referenceNameInput = this.regexHelper.escape(referenceType.name);
 
 		var pattern = new RegExp("((?:[^\\w]|^)+)(" + referenceNameInput + ")((?:[^\\w]|$)+)", "g");
