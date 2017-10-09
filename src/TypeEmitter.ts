@@ -71,9 +71,9 @@ export class TypeEmitter {
 
 		var typeName = this.getNonGenericMatchingTypeMappingAsString(type, options);
 		return ts.createExpressionWithTypeArguments(
-			this.createTypeScriptTypeReferenceNodes(
+			/*this.createTypeScriptTypeReferenceNodes(
 				type.genericParameters,
-				options),
+				options)*/ null,
 			ts.createIdentifier(typeName));
 	}
 

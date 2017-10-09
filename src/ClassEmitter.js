@@ -52,9 +52,9 @@ var ClassEmitter = (function () {
         var modifiers = new Array();
         if (options.declare)
             modifiers.push(ts.createToken(ts.SyntaxKind.DeclareKeyword));
-        var heritageClause;
+        var heritageClauses = new Array();
         if (classObject.inheritsFrom && this.typeEmitter.canEmitType(classObject.inheritsFrom))
-            heritageClause = ts.createHeritageClause(ts.SyntaxKind.ImplementsKeyword, [this.typeEmitter.createTypeScriptExpressionWithTypeArguments(classObject.inheritsFrom, options.inheritedTypeEmitOptions)]);
+            heritageClauses.push(ts.createHeritageClause(ts.SyntaxKind.ImplementsKeyword, [this.typeEmitter.createTypeScriptExpressionWithTypeArguments(classObject.inheritsFrom, options.inheritedTypeEmitOptions)]));
         var properties = classObject
             .properties
             .map(function (x) { return _this
@@ -78,7 +78,7 @@ var ClassEmitter = (function () {
             .fieldEmitter
             .createTypeScriptFieldNode(x, options.fieldEmitOptions); });
         var classMembers = methods.concat(properties, fields);
-        var node = ts.createInterfaceDeclaration([], modifiers, options.name || classObject.name, genericParameters, [heritageClause], classMembers);
+        var node = ts.createInterfaceDeclaration([], modifiers, options.name || classObject.name, genericParameters, heritageClauses, classMembers);
         nodes.push(node);
         if (classObject.classes.length > 0 ||
             classObject.interfaces.length > 0 ||

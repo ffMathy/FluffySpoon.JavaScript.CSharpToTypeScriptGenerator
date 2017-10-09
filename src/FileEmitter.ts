@@ -12,6 +12,8 @@ import { MethodEmitOptions } from './MethodEmitter';
 import { PropertyEmitOptions } from './PropertyEmitter';
 import { FieldEmitOptions } from './FieldEmitter';
 import { Logger } from './Logger';
+
+import ts = require("typescript");
  
 export interface FileEmitOptions {
 	classEmitOptions?: ClassEmitOptions,
@@ -237,7 +239,27 @@ export class FileEmitter {
 		if(options.afterParsing)
 			options.afterParsing(file, this.stringEmitter);
 
-		if (file.enums.length > 0) {
+		var nodes = new Array<ts.Node>();
+
+		for(let namespace of file.namespaces)
+			nodes.push(this.namespaceEmitter.createTypeScriptNamespaceNode(
+				namespace, 
+				Object.assign(
+					{ declare: true }, 
+					options.namespaceEmitOptions)));
+					
+		for(let classObject of file.classes) {
+			let classNodes = this.classEmitter.createTypeScriptClassNodes(
+				classObject, 
+				Object.assign(
+					{ declare: true }, 
+					options.classEmitOptions));
+			for(let classNode of classNodes) {
+				nodes.push(classNode);
+			}
+		}
+
+		/*if (file.enums.length > 0) {
 			this.enumEmitter.emitEnums(file.enums, Object.assign({ declare: true }, options.enumEmitOptions));
 			this.stringEmitter.ensureNewParagraph();
 		}
@@ -268,9 +290,9 @@ export class FileEmitter {
 				file.structs, 
 				Object.assign({ declare: true }, options.structEmitOptions));
             this.stringEmitter.ensureNewParagraph();
-        }
-
-		this.stringEmitter.removeLastNewLines();
+		}*/
+		
+		this.stringEmitter.emitTypeScriptNodes(nodes);
 
         return this.stringEmitter.output;
     }

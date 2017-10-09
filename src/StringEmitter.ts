@@ -53,23 +53,28 @@ export class StringEmitter {
 		while (this.removeLastCharacters("\n"));
 		while (this.removeLastCharacters("\r"));
 	}
-
-	emitTypeScriptNode(node: ts.Node) {
-		var fileName = "Temporary.ts";
-		
+	
+	emitTypeScriptNodes(nodes: ts.Node[]) {
 		const resultFile = ts.createSourceFile(
-			fileName, " ", ts.ScriptTarget.Latest,
+			"", "", ts.ScriptTarget.Latest,
 			false, ts.ScriptKind.TS);
 		
 		const printer = ts.createPrinter({
 			newLine: ts.NewLineKind.LineFeed
 		});
-		const result = printer.printNode(
-			ts.EmitHint.Unspecified, 
-			node, 
-			resultFile);
-			
-		this.write(result);
+
+		for(var node of nodes) {
+			const result = printer.printNode(
+				ts.EmitHint.Unspecified, 
+				node, 
+				resultFile);
+				
+			this.write(result);
+		}
+	}
+
+	emitTypeScriptNode(node: ts.Node) {
+		this.emitTypeScriptNodes([node]);
 	}
 
 	ensureNewLine() {

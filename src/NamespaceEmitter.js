@@ -107,12 +107,11 @@ var NamespaceEmitter = (function () {
         var modifiers = new Array();
         if (options.declare)
             modifiers.push(ts.createToken(ts.SyntaxKind.DeclareKeyword));
-        var node = ts.createNode(ts.SyntaxKind.ModuleDeclaration);
+        var node = ts.createNode(ts.SyntaxKind.NamespaceKeyword);
         node.flags = ts.NodeFlags.Synthesized & (ts.NodeFlags.Namespace | ts.NodeFlags.NestedNamespace | ts.NodeFlags.GlobalAugmentation);
         node.decorators = ts.createNodeArray([]);
         node.modifiers = ts.createNodeArray(modifiers);
-        node.name = ts.createLiteral(namespace.name);
-        node.body = ts.createModuleBlock([]);
+        node.name = ts.createIdentifier(namespace.name);
         this.logger.log("Done emitting namespace", namespace);
         return node;
     };

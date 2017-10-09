@@ -142,27 +142,52 @@ var FileEmitter = (function () {
         var file = this.fileParser.parseFile();
         if (options.afterParsing)
             options.afterParsing(file, this.stringEmitter);
-        if (file.enums.length > 0) {
+        var nodes = new Array();
+        for (var _i = 0, _a = file.namespaces; _i < _a.length; _i++) {
+            var namespace = _a[_i];
+            nodes.push(this.namespaceEmitter.createTypeScriptNamespaceNode(namespace, Object.assign({ declare: true }, options.namespaceEmitOptions)));
+        }
+        for (var _b = 0, _c = file.classes; _b < _c.length; _b++) {
+            var classObject = _c[_b];
+            var classNodes = this.classEmitter.createTypeScriptClassNodes(classObject, Object.assign({ declare: true }, options.classEmitOptions));
+            for (var _d = 0, classNodes_1 = classNodes; _d < classNodes_1.length; _d++) {
+                var classNode = classNodes_1[_d];
+                nodes.push(classNode);
+            }
+        }
+        /*if (file.enums.length > 0) {
             this.enumEmitter.emitEnums(file.enums, Object.assign({ declare: true }, options.enumEmitOptions));
             this.stringEmitter.ensureNewParagraph();
         }
+
         if (file.namespaces.length > 0) {
-            this.namespaceEmitter.emitNamespaces(file.namespaces, Object.assign({ declare: true }, options.namespaceEmitOptions));
+            this.namespaceEmitter.emitNamespaces(
+                file.namespaces,
+                Object.assign({ declare: true }, options.namespaceEmitOptions));
             this.stringEmitter.ensureNewParagraph();
         }
+
         if (file.interfaces.length > 0) {
-            this.interfaceEmitter.emitInterfaces(file.interfaces, Object.assign({ declare: true }, options.interfaceEmitOptions));
+            this.interfaceEmitter.emitInterfaces(
+                file.interfaces,
+                Object.assign({ declare: true }, options.interfaceEmitOptions));
             this.stringEmitter.ensureNewParagraph();
         }
+
         if (file.classes.length > 0) {
-            this.classEmitter.emitClasses(file.classes, Object.assign({ declare: true }, options.classEmitOptions));
+            this.classEmitter.emitClasses(
+                file.classes,
+                Object.assign({ declare: true }, options.classEmitOptions));
             this.stringEmitter.ensureNewParagraph();
         }
+
         if (file.structs.length > 0) {
-            this.structEmitter.emitStructs(file.structs, Object.assign({ declare: true }, options.structEmitOptions));
+            this.structEmitter.emitStructs(
+                file.structs,
+                Object.assign({ declare: true }, options.structEmitOptions));
             this.stringEmitter.ensureNewParagraph();
-        }
-        this.stringEmitter.removeLastNewLines();
+        }*/
+        this.stringEmitter.emitTypeScriptNodes(nodes);
         return this.stringEmitter.output;
     };
     return FileEmitter;

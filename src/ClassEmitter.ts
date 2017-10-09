@@ -99,13 +99,13 @@ export class ClassEmitter {
 		if (options.declare)
 			modifiers.push(ts.createToken(ts.SyntaxKind.DeclareKeyword));
 
-		var heritageClause: ts.HeritageClause;
+		var heritageClauses = new Array<ts.HeritageClause>(); 
 		if(classObject.inheritsFrom && this.typeEmitter.canEmitType(classObject.inheritsFrom)) 
-			heritageClause = ts.createHeritageClause(
+			heritageClauses.push(ts.createHeritageClause(
 				ts.SyntaxKind.ImplementsKeyword,
 				[this.typeEmitter.createTypeScriptExpressionWithTypeArguments(
 					classObject.inheritsFrom,
-					options.inheritedTypeEmitOptions)]);
+					options.inheritedTypeEmitOptions)]));
 
 		var properties = classObject
 			.properties
@@ -134,13 +134,12 @@ export class ClassEmitter {
 				.createTypeScriptFieldNode(x, options.fieldEmitOptions));
 
 		var classMembers = [...methods, ...properties, ...fields];
-
 		var node = ts.createInterfaceDeclaration(
 			[],
 			modifiers,
 			options.name || classObject.name,
 			genericParameters,
-			[heritageClause],
+			heritageClauses,
 			classMembers);
 		nodes.push(node);
 

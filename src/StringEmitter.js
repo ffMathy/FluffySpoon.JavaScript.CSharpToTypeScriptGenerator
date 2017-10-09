@@ -43,14 +43,19 @@ var StringEmitter = (function () {
         while (this.removeLastCharacters("\r"))
             ;
     };
-    StringEmitter.prototype.emitTypeScriptNode = function (node) {
-        var fileName = "Temporary.ts";
-        var resultFile = ts.createSourceFile(fileName, " ", ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
+    StringEmitter.prototype.emitTypeScriptNodes = function (nodes) {
+        var resultFile = ts.createSourceFile("", "", ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
         var printer = ts.createPrinter({
             newLine: ts.NewLineKind.LineFeed
         });
-        var result = printer.printNode(ts.EmitHint.Unspecified, node, resultFile);
-        this.write(result);
+        for (var _i = 0, nodes_1 = nodes; _i < nodes_1.length; _i++) {
+            var node = nodes_1[_i];
+            var result = printer.printNode(ts.EmitHint.Unspecified, node, resultFile);
+            this.write(result);
+        }
+    };
+    StringEmitter.prototype.emitTypeScriptNode = function (node) {
+        this.emitTypeScriptNodes([node]);
     };
     StringEmitter.prototype.ensureNewLine = function () {
         this.removeLastNewLines();

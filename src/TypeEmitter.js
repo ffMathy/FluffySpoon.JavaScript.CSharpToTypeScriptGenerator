@@ -50,7 +50,10 @@ var TypeEmitter = (function () {
     TypeEmitter.prototype.createTypeScriptExpressionWithTypeArguments = function (type, options) {
         options = this.prepareOptions(options);
         var typeName = this.getNonGenericMatchingTypeMappingAsString(type, options);
-        return ts.createExpressionWithTypeArguments(this.createTypeScriptTypeReferenceNodes(type.genericParameters, options), ts.createIdentifier(typeName));
+        return ts.createExpressionWithTypeArguments(
+        /*this.createTypeScriptTypeReferenceNodes(
+            type.genericParameters,
+            options)*/ null, ts.createIdentifier(typeName));
     };
     TypeEmitter.prototype.createTypeScriptTypeReferenceNode = function (type, options) {
         options = this.prepareOptions(options);

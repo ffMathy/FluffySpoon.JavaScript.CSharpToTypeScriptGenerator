@@ -24,7 +24,7 @@ public class MyPoco\n\
 }\n";
 
             var expectedOutput = "declare interface MyPoco {\n\
-    Foo: " + destinationType + ";\n\
+    foo: " + destinationType + ";\n\
 }";
 
             var result = LegacyAdapter(sampleFile);

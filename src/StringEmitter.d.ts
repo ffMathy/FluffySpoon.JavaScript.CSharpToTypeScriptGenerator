@@ -12,6 +12,7 @@ export declare class StringEmitter {
     increaseIndentation(): void;
     decreaseIndentation(): void;
     removeLastNewLines(): void;
+    emitTypeScriptNodes(nodes: ts.Node[]): void;
     emitTypeScriptNode(node: ts.Node): void;
     ensureNewLine(): void;
     ensureNewParagraph(): void;
