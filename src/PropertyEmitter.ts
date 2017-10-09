@@ -60,7 +60,7 @@ export class PropertyEmitter {
 			modifiers,
 			options.name || property.name,
 			property.type.isNullable ? ts.createToken(ts.SyntaxKind.QuestionToken) : null,
-			this.typeEmitter.createTypeScriptTypeNode(property.type, options.typeEmitOptions),
+			this.typeEmitter.createTypeScriptTypeReferenceNode(property.type, options.typeEmitOptions),
 			null);
 
 		return node;

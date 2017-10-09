@@ -5,7 +5,7 @@ var ClassEmitter_1 = require("./ClassEmitter");
 var InterfaceEmitter_1 = require("./InterfaceEmitter");
 var StructEmitter_1 = require("./StructEmitter");
 var ts = require("typescript");
-var NamespaceEmitter = /** @class */ (function () {
+var NamespaceEmitter = (function () {
     function NamespaceEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
         this.logger = logger;
@@ -104,7 +104,15 @@ var NamespaceEmitter = /** @class */ (function () {
         if (!options.filter(namespace))
             return null;
         this.logger.log("Emitting namespace", namespace);
-        var node = ts.createdeclaration([], [], ts.resolveModuleName(, null, null));
+        var modifiers = new Array();
+        if (options.declare)
+            modifiers.push(ts.createToken(ts.SyntaxKind.DeclareKeyword));
+        var node = ts.createNode(ts.SyntaxKind.ModuleDeclaration);
+        node.flags = ts.NodeFlags.Synthesized & (ts.NodeFlags.Namespace | ts.NodeFlags.NestedNamespace | ts.NodeFlags.GlobalAugmentation);
+        node.decorators = ts.createNodeArray([]);
+        node.modifiers = ts.createNodeArray(modifiers);
+        node.name = ts.createLiteral(namespace.name);
+        node.body = ts.createModuleBlock([]);
         this.logger.log("Done emitting namespace", namespace);
         return node;
     };

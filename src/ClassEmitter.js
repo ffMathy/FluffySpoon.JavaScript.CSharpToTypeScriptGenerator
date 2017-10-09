@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var fluffy_spoon_javascript_csharp_parser_1 = require("fluffy-spoon.javascript.csharp-parser");
 var EnumEmitter_1 = require("./EnumEmitter");
 var TypeEmitter_1 = require("./TypeEmitter");
 var PropertyEmitter_1 = require("./PropertyEmitter");
@@ -7,7 +8,7 @@ var InterfaceEmitter_1 = require("./InterfaceEmitter");
 var FieldEmitter_1 = require("./FieldEmitter");
 var MethodEmitter_1 = require("./MethodEmitter");
 var ts = require("typescript");
-var ClassEmitter = /** @class */ (function () {
+var ClassEmitter = (function () {
     function ClassEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
         this.logger = logger;
@@ -28,12 +29,15 @@ var ClassEmitter = /** @class */ (function () {
         this.logger.log("Done emitting classes", classes);
     };
     ClassEmitter.prototype.emitClass = function (classObject, options) {
-        var node = this.createTypeScriptClassNode(classObject, options);
-        if (!node)
+        var nodes = this.createTypeScriptClassNodes(classObject, options);
+        if (!nodes)
             return;
-        this.stringEmitter.emitTypeScriptNode(node);
+        for (var _i = 0, nodes_1 = nodes; _i < nodes_1.length; _i++) {
+            var node = nodes_1[_i];
+            this.stringEmitter.emitTypeScriptNode(node);
+        }
     };
-    ClassEmitter.prototype.createTypeScriptClassNode = function (classObject, options) {
+    ClassEmitter.prototype.createTypeScriptClassNodes = function (classObject, options) {
         var _this = this;
         options = this.prepareOptions(options);
         options = Object.assign(options, options.perClassEmitOptions(classObject));
@@ -44,10 +48,7 @@ var ClassEmitter = /** @class */ (function () {
             return null;
         }
         this.logger.log("Emitting class", classObject);
-        this.emitClassInterface(classObject, options);
-        this.stringEmitter.ensureNewParagraph();
-        this.emitSubElementsInClass(classObject, options);
-        this.stringEmitter.ensureNewParagraph();
+        var nodes = new Array();
         var modifiers = new Array();
         if (options.declare)
             modifiers.push(ts.createToken(ts.SyntaxKind.DeclareKeyword));
@@ -64,46 +65,45 @@ var ClassEmitter = /** @class */ (function () {
             .map(function (x) { return _this
             .methodEmitter
             .createTypeScriptMethodNode(x, options.methodEmitOptions); });
-        var genericParameters = classObject
-            .genericParameters
-            .map(function (x) { return _this
-            .typeEmitter
-            .createTypeScriptTypeParameterDeclaration(x, options.genericParameterTypeEmitOptions); });
+        var genericParameters = new Array();
+        if (classObject.genericParameters)
+            genericParameters = genericParameters.concat(classObject
+                .genericParameters
+                .map(function (x) { return _this
+                .typeEmitter
+                .createTypeScriptTypeParameterDeclaration(x, options.genericParameterTypeEmitOptions); }));
         var fields = classObject
             .fields
             .map(function (x) { return _this
             .fieldEmitter
             .createTypeScriptFieldNode(x, options.fieldEmitOptions); });
         var classMembers = methods.concat(properties, fields);
+        var node = ts.createInterfaceDeclaration([], modifiers, options.name || classObject.name, genericParameters, [heritageClause], classMembers);
+        nodes.push(node);
         if (classObject.classes.length > 0 ||
             classObject.interfaces.length > 0 ||
-            classObject.enums.length > 0) {
-            if (classObject.enums.length > 0) {
-                var classEnumOptions = Object.assign(options.enumEmitOptions, {
-                    declare: false
-                });
-                this.enumEmitter.emitEnums(classObject.enums, classEnumOptions);
-                this.stringEmitter.ensureNewParagraph();
-            }
-            if (classObject.classes.length > 0) {
-                var optionsClone = Object.assign({}, options);
-                var subClassOptions = Object.assign(optionsClone, {
-                    declare: false
-                });
-                this.emitClasses(classObject.classes, subClassOptions);
-                this.stringEmitter.ensureNewParagraph();
-            }
-            if (classObject.interfaces.length > 0) {
-                var classInterfaceOptions = Object.assign(options, {
-                    declare: false
-                });
-                this.interfaceEmitter.emitInterfaces(classObject.interfaces, classInterfaceOptions);
-                this.stringEmitter.ensureNewParagraph();
-            }
+            classObject.enums.length > 0 ||
+            classObject.structs.length > 0) {
+            var wrappedNamespace = new fluffy_spoon_javascript_csharp_parser_1.CSharpNamespace(options.name || classObject.name);
+            wrappedNamespace.classes = classObject.classes;
+            wrappedNamespace.enums = classObject.enums;
+            wrappedNamespace.interfaces = classObject.interfaces;
+            wrappedNamespace.structs = classObject.structs;
+            classObject.classes = [];
+            classObject.enums = [];
+            classObject.interfaces = [];
+            classObject.structs = [];
+            nodes.push(this.namespaceEmitter.createTypeScriptNamespaceNode(wrappedNamespace, {
+                classEmitOptions: options,
+                declare: options.declare,
+                enumEmitOptions: options.enumEmitOptions,
+                interfaceEmitOptions: options.interfaceEmitOptions,
+                structEmitOptions: options.structEmitOptions,
+                skip: false
+            }));
         }
-        var node = ts.createInterfaceDeclaration([], modifiers, options.name || classObject.name, genericParameters, [heritageClause], classMembers);
         this.logger.log("Done emitting class", classObject);
-        return node;
+        return nodes;
     };
     ClassEmitter.prototype.prepareOptions = function (options) {
         if (!options) {
@@ -116,44 +116,6 @@ var ClassEmitter = /** @class */ (function () {
             options.perClassEmitOptions = function () { return ({}); };
         }
         return options;
-    };
-    ClassEmitter.prototype.emitSubElementsInClass = function (classObject, options) {
-        if (classObject.enums.length === 0 && classObject.classes.length === 0 && classObject.interfaces.length === 0) {
-            this.logger.log("Skipping sub elements of class " + classObject.name + " because it contains no enums, classes or interfaces");
-            return;
-        }
-        this.stringEmitter.writeIndentation();
-        if (options.declare)
-            this.stringEmitter.write("declare ");
-        this.stringEmitter.write("namespace " + classObject.name + " {");
-        this.stringEmitter.writeLine();
-        this.stringEmitter.increaseIndentation();
-        if (classObject.enums.length > 0) {
-            var classEnumOptions = Object.assign(options.enumEmitOptions, {
-                declare: false
-            });
-            this.enumEmitter.emitEnums(classObject.enums, classEnumOptions);
-            this.stringEmitter.ensureNewParagraph();
-        }
-        if (classObject.classes.length > 0) {
-            var optionsClone = Object.assign({}, options);
-            var subClassOptions = Object.assign(optionsClone, {
-                declare: false
-            });
-            this.emitClasses(classObject.classes, subClassOptions);
-            this.stringEmitter.ensureNewParagraph();
-        }
-        if (classObject.interfaces.length > 0) {
-            var classInterfaceOptions = Object.assign(options, {
-                declare: false
-            });
-            this.interfaceEmitter.emitInterfaces(classObject.interfaces, classInterfaceOptions);
-            this.stringEmitter.ensureNewParagraph();
-        }
-        this.stringEmitter.removeLastNewLines();
-        this.stringEmitter.decreaseIndentation();
-        this.stringEmitter.writeLine();
-        this.stringEmitter.writeLine("}");
     };
     return ClassEmitter;
 }());

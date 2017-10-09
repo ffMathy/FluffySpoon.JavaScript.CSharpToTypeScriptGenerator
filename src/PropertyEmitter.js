@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var TypeEmitter_1 = require("./TypeEmitter");
 var ts = require("typescript");
-var PropertyEmitter = /** @class */ (function () {
+var PropertyEmitter = (function () {
     function PropertyEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
         this.logger = logger;
@@ -28,7 +28,7 @@ var PropertyEmitter = /** @class */ (function () {
         var modifiers = new Array();
         if (options.readOnly)
             modifiers.push(ts.createToken(ts.SyntaxKind.ReadonlyKeyword));
-        var node = ts.createPropertySignature(modifiers, options.name || property.name, property.type.isNullable ? ts.createToken(ts.SyntaxKind.QuestionToken) : null, this.typeEmitter.createTypeScriptTypeNode(property.type, options.typeEmitOptions), null);
+        var node = ts.createPropertySignature(modifiers, options.name || property.name, property.type.isNullable ? ts.createToken(ts.SyntaxKind.QuestionToken) : null, this.typeEmitter.createTypeScriptTypeReferenceNode(property.type, options.typeEmitOptions), null);
         return node;
     };
     PropertyEmitter.prototype.prepareOptions = function (options) {

@@ -160,12 +160,16 @@ export class NamespaceEmitter {
 
 		this.logger.log("Emitting namespace", namespace);
 
-		var node = ts.createdeclaration(
-			[],
-			[],
-			ts.resolveModuleName(,
-			null,
-			null);
+		var modifiers = new Array<ts.Modifier>();
+		if(options.declare)
+			modifiers.push(ts.createToken(ts.SyntaxKind.DeclareKeyword));
+
+		var node = <ts.ModuleDeclaration>ts.createNode(ts.SyntaxKind.ModuleDeclaration);
+		node.flags = ts.NodeFlags.Synthesized & (ts.NodeFlags.Namespace | ts.NodeFlags.NestedNamespace | ts.NodeFlags.GlobalAugmentation);
+		node.decorators = ts.createNodeArray([]);
+		node.modifiers = ts.createNodeArray(modifiers);
+		node.name = ts.createLiteral(namespace.name);
+		node.body = ts.createModuleBlock([]);
 
 		this.logger.log("Done emitting namespace", namespace);
 

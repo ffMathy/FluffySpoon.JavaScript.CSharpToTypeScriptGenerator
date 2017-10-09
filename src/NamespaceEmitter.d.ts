@@ -5,6 +5,7 @@ import { ClassEmitOptions } from './ClassEmitter';
 import { InterfaceEmitOptions } from './InterfaceEmitter';
 import { StructEmitOptions } from './StructEmitter';
 import { Logger } from './Logger';
+import ts = require("typescript");
 export interface NamespaceEmitOptions {
     declare?: boolean;
     skip?: boolean;
@@ -24,6 +25,6 @@ export declare class NamespaceEmitter {
     constructor(stringEmitter: StringEmitter, logger: Logger);
     emitNamespaces(namespaces: CSharpNamespace[], options?: NamespaceEmitOptions): void;
     emitNamespace(namespace: CSharpNamespace, options?: NamespaceEmitOptions): void;
-    createTypeScriptNamespaceNode(namespace: CSharpNamespace, options?: NamespaceEmitOptions): any;
+    createTypeScriptNamespaceNode(namespace: CSharpNamespace, options?: NamespaceEmitOptions): ts.ModuleDeclaration;
     private prepareOptions(options?);
 }

@@ -6,6 +6,7 @@ import { PropertyEmitOptions } from './PropertyEmitter';
 import { InterfaceEmitOptions } from './InterfaceEmitter';
 import { FieldEmitOptions } from './FieldEmitter';
 import { MethodEmitOptions } from './MethodEmitter';
+import { StructEmitOptions } from './StructEmitter';
 import { Logger } from './Logger';
 import ts = require("typescript");
 export interface ClassEmitOptionsBase {
@@ -16,6 +17,7 @@ export interface ClassEmitOptionsBase {
     interfaceEmitOptions?: InterfaceEmitOptions;
     methodEmitOptions?: MethodEmitOptions;
     fieldEmitOptions?: FieldEmitOptions;
+    structEmitOptions?: StructEmitOptions;
     genericParameterTypeEmitOptions?: TypeEmitOptions;
     inheritedTypeEmitOptions?: TypeEmitOptions;
 }
@@ -34,10 +36,10 @@ export declare class ClassEmitter {
     private methodEmitter;
     private interfaceEmitter;
     private typeEmitter;
+    private namespaceEmitter;
     constructor(stringEmitter: StringEmitter, logger: Logger);
     emitClasses(classes: CSharpClass[], options?: ClassEmitOptions): void;
     emitClass(classObject: CSharpClass, options?: ClassEmitOptions): void;
-    createTypeScriptClassNode(classObject: CSharpClass, options?: ClassEmitOptions & PerClassEmitOptions): ts.InterfaceDeclaration;
+    createTypeScriptClassNodes(classObject: CSharpClass, options?: ClassEmitOptions & PerClassEmitOptions): ts.Node[];
     private prepareOptions(options?);
-    private emitSubElementsInClass(classObject, options?);
 }

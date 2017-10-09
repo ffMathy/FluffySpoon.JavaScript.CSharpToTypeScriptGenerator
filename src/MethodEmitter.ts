@@ -67,7 +67,7 @@ export class MethodEmitter {
 		var node = ts.createMethodSignature(
 			[],
 			this.createTypeScriptMethodParameterNodes(method.parameters, options),
-			this.typeEmitter.createTypeScriptTypeNode(method.returnType, options.returnTypeEmitOptions),
+			this.typeEmitter.createTypeScriptTypeReferenceNode(method.returnType, options.returnTypeEmitOptions),
 			options.name || method.name,
 			null);
 
@@ -110,7 +110,7 @@ export class MethodEmitter {
 			null,
 			options.name || parameter.name,
 			null,
-			this.typeEmitter.createTypeScriptTypeNode(
+			this.typeEmitter.createTypeScriptTypeReferenceNode(
 				parameter.type,
 				options.returnTypeEmitOptions),
 			initializer);

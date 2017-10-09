@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var TypeEmitter_1 = require("./TypeEmitter");
 var ts = require("typescript");
-var MethodEmitter = /** @class */ (function () {
+var MethodEmitter = (function () {
     function MethodEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
         this.logger = logger;
@@ -29,7 +29,7 @@ var MethodEmitter = /** @class */ (function () {
         if (method.isConstructor)
             return null;
         var modifiers = new Array();
-        var node = ts.createMethodSignature([], this.createTypeScriptMethodParameterNodes(method.parameters, options), this.typeEmitter.createTypeScriptTypeNode(method.returnType, options.returnTypeEmitOptions), options.name || method.name, null);
+        var node = ts.createMethodSignature([], this.createTypeScriptMethodParameterNodes(method.parameters, options), this.typeEmitter.createTypeScriptTypeReferenceNode(method.returnType, options.returnTypeEmitOptions), options.name || method.name, null);
         return node;
     };
     MethodEmitter.prototype.prepareOptions = function (options) {
@@ -56,7 +56,7 @@ var MethodEmitter = /** @class */ (function () {
         var initializer;
         if (parameter.defaultValue)
             initializer = ts.createLiteral(parameter.defaultValue);
-        var node = ts.createParameter([], [], null, options.name || parameter.name, null, this.typeEmitter.createTypeScriptTypeNode(parameter.type, options.returnTypeEmitOptions), initializer);
+        var node = ts.createParameter([], [], null, options.name || parameter.name, null, this.typeEmitter.createTypeScriptTypeReferenceNode(parameter.type, options.returnTypeEmitOptions), initializer);
         return node;
     };
     return MethodEmitter;

@@ -9,7 +9,7 @@ var ClassEmitter_1 = require("./ClassEmitter");
 var InterfaceEmitter_1 = require("./InterfaceEmitter");
 var NamespaceEmitter_1 = require("./NamespaceEmitter");
 var Logger_1 = require("./Logger");
-var FileEmitter = /** @class */ (function () {
+var FileEmitter = (function () {
     function FileEmitter(content) {
         this.fileParser = new fluffy_spoon_javascript_csharp_parser_1.FileParser(content);
         this.logger = new Logger_1.Logger();
