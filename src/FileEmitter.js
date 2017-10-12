@@ -9,7 +9,7 @@ var ClassEmitter_1 = require("./ClassEmitter");
 var InterfaceEmitter_1 = require("./InterfaceEmitter");
 var NamespaceEmitter_1 = require("./NamespaceEmitter");
 var Logger_1 = require("./Logger");
-var FileEmitter = (function () {
+var FileEmitter = /** @class */ (function () {
     function FileEmitter(content) {
         this.fileParser = new fluffy_spoon_javascript_csharp_parser_1.FileParser(content);
         this.logger = new Logger_1.Logger();
@@ -145,13 +145,17 @@ var FileEmitter = (function () {
         var nodes = new Array();
         for (var _i = 0, _a = file.namespaces; _i < _a.length; _i++) {
             var namespace = _a[_i];
-            nodes.push(this.namespaceEmitter.createTypeScriptNamespaceNode(namespace, Object.assign({ declare: true }, options.namespaceEmitOptions)));
+            var namespaceNodes = this.namespaceEmitter.createTypeScriptNamespaceNodes(namespace, options.namespaceEmitOptions);
+            for (var _b = 0, namespaceNodes_1 = namespaceNodes; _b < namespaceNodes_1.length; _b++) {
+                var namespaceNode = namespaceNodes_1[_b];
+                nodes.push(namespaceNode);
+            }
         }
-        for (var _b = 0, _c = file.classes; _b < _c.length; _b++) {
-            var classObject = _c[_b];
+        for (var _c = 0, _d = file.classes; _c < _d.length; _c++) {
+            var classObject = _d[_c];
             var classNodes = this.classEmitter.createTypeScriptClassNodes(classObject, Object.assign({ declare: true }, options.classEmitOptions));
-            for (var _d = 0, classNodes_1 = classNodes; _d < classNodes_1.length; _d++) {
-                var classNode = classNodes_1[_d];
+            for (var _e = 0, classNodes_1 = classNodes; _e < classNodes_1.length; _e++) {
+                var classNode = classNodes_1[_e];
                 nodes.push(classNode);
             }
         }

@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var fluffy_spoon_javascript_csharp_parser_1 = require("fluffy-spoon.javascript.csharp-parser");
 var RegExHelper_1 = require("./RegExHelper");
 var ts = require("typescript");
-var TypeEmitter = (function () {
+var TypeEmitter = /** @class */ (function () {
     function TypeEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
         this.logger = logger;

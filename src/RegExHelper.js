@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var RegExHelper = (function () {
+var RegExHelper = /** @class */ (function () {
     function RegExHelper() {
     }
     RegExHelper.prototype.escape = function (input) {

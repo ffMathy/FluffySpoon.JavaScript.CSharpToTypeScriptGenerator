@@ -1,4 +1,4 @@
-﻿import { FileParser, CSharpClass, CSharpNamespace } from 'fluffy-spoon.javascript.csharp-parser';
+import { FileParser, CSharpClass, CSharpNamespace } from 'fluffy-spoon.javascript.csharp-parser';
 
 import { StringEmitter } from './StringEmitter';
 import { EnumEmitter, EnumEmitOptions } from './EnumEmitter';
@@ -70,14 +70,14 @@ export class ClassEmitter {
 
 	emitClass(classObject: CSharpClass, options?: ClassEmitOptions) {
 		var nodes = this.createTypeScriptClassNodes(classObject, options);
-		if(!nodes)
+		if (!nodes)
 			return;
 
-		for(var node of nodes)
+		for (var node of nodes)
 			this.stringEmitter.emitTypeScriptNode(node);
 	}
 
-	createTypeScriptClassNodes(classObject: CSharpClass, options?: ClassEmitOptions&PerClassEmitOptions) {
+	createTypeScriptClassNodes(classObject: CSharpClass, options?: ClassEmitOptions & PerClassEmitOptions) {
 		options = this.prepareOptions(options);
 		options = Object.assign(
 			options,
@@ -90,7 +90,7 @@ export class ClassEmitter {
 			this.logger.log("Skipping emitting body of class " + classObject.name + " because it contains no properties, fields or methods");
 			return null;
 		}
-			
+
 		this.logger.log("Emitting class", classObject);
 
 		var nodes = new Array<ts.Node>();
@@ -99,8 +99,8 @@ export class ClassEmitter {
 		if (options.declare)
 			modifiers.push(ts.createToken(ts.SyntaxKind.DeclareKeyword));
 
-		var heritageClauses = new Array<ts.HeritageClause>(); 
-		if(classObject.inheritsFrom && this.typeEmitter.canEmitType(classObject.inheritsFrom)) 
+		var heritageClauses = new Array<ts.HeritageClause>();
+		if (classObject.inheritsFrom && this.typeEmitter.canEmitType(classObject.inheritsFrom))
 			heritageClauses.push(ts.createHeritageClause(
 				ts.SyntaxKind.ImplementsKeyword,
 				[this.typeEmitter.createTypeScriptExpressionWithTypeArguments(
@@ -120,7 +120,7 @@ export class ClassEmitter {
 				.createTypeScriptMethodNode(x, options.methodEmitOptions));
 
 		var genericParameters = new Array<ts.TypeParameterDeclaration>();
-		if(classObject.genericParameters)
+		if (classObject.genericParameters)
 			genericParameters = genericParameters.concat(classObject
 				.genericParameters
 				.map(x => this
@@ -143,8 +143,8 @@ export class ClassEmitter {
 			classMembers);
 		nodes.push(node);
 
-		if(classObject.classes.length > 0 || 
-			classObject.interfaces.length > 0 || 
+		if (classObject.classes.length > 0 ||
+			classObject.interfaces.length > 0 ||
 			classObject.enums.length > 0 ||
 			classObject.structs.length > 0) {
 
@@ -159,8 +159,7 @@ export class ClassEmitter {
 			classObject.interfaces = [];
 			classObject.structs = [];
 
-			nodes.push(this.namespaceEmitter.createTypeScriptNamespaceNode(
-				wrappedNamespace,
+			var namespaceNodes = this.namespaceEmitter.createTypeScriptNamespaceNodes(wrappedNamespace,
 				{
 					classEmitOptions: options,
 					declare: options.declare,
@@ -168,7 +167,9 @@ export class ClassEmitter {
 					interfaceEmitOptions: options.interfaceEmitOptions,
 					structEmitOptions: options.structEmitOptions,
 					skip: false
-				}));
+				});
+			for (var namespaceNode of namespaceNodes)
+				nodes.push(namespaceNode);
 		}
 
 		this.logger.log("Done emitting class", classObject);

@@ -29,7 +29,7 @@ export class NamespaceEmitter {
 
 	constructor(
 		private stringEmitter: StringEmitter,
-        private logger: Logger
+		private logger: Logger
 	) {
 		this.enumEmitter = new EnumEmitter(stringEmitter, logger);
 		this.classEmitter = new ClassEmitter(stringEmitter, logger);
@@ -73,8 +73,8 @@ export class NamespaceEmitter {
 		}
 
 		if (namespace.enums.length > 0) {
-			var declare = typeof options.enumEmitOptions.declare !== "undefined" 
-				? options.enumEmitOptions.declare 
+			var declare = typeof options.enumEmitOptions.declare !== "undefined"
+				? options.enumEmitOptions.declare
 				: options.skip;
 
 			var namespaceEnumOptions = Object.assign(options.enumEmitOptions, <EnumEmitOptions>{
@@ -87,8 +87,8 @@ export class NamespaceEmitter {
 		}
 
 		if (namespace.interfaces.length > 0) {
-			var declare = typeof options.interfaceEmitOptions.declare !== "undefined" ? 
-				options.interfaceEmitOptions.declare : 
+			var declare = typeof options.interfaceEmitOptions.declare !== "undefined" ?
+				options.interfaceEmitOptions.declare :
 				(options.skip || !options.declare);
 			var interfaceOptions = Object.assign(options.interfaceEmitOptions, <InterfaceEmitOptions>{
 				declare
@@ -100,8 +100,8 @@ export class NamespaceEmitter {
 		}
 
 		if (namespace.classes.length > 0) {
-			var declare = typeof options.classEmitOptions.declare !== "undefined" ? 
-				options.classEmitOptions.declare : 
+			var declare = typeof options.classEmitOptions.declare !== "undefined" ?
+				options.classEmitOptions.declare :
 				(options.skip || !options.declare);
 			var classOptions = Object.assign(options.classEmitOptions, <ClassEmitOptions>{
 				declare
@@ -113,8 +113,8 @@ export class NamespaceEmitter {
 		}
 
 		if (namespace.structs.length > 0) {
-			var declare = typeof options.structEmitOptions.declare !== "undefined" ? 
-				options.structEmitOptions.declare : 
+			var declare = typeof options.structEmitOptions.declare !== "undefined" ?
+				options.structEmitOptions.declare :
 				(options.skip || !options.declare);
 			var structEmitOptions = Object.assign(options.structEmitOptions, <StructEmitOptions>{
 				declare
@@ -126,8 +126,8 @@ export class NamespaceEmitter {
 		}
 
 		if (namespace.namespaces.length > 0) {
-			var declare = typeof options.declare !== "undefined" ? 
-				options.skip : 
+			var declare = typeof options.declare !== "undefined" ?
+				options.skip :
 				(options.skip || !options.declare);
 			var subNamespaceOptions = Object.assign(options, <NamespaceEmitOptions>{
 				declare
@@ -152,7 +152,7 @@ export class NamespaceEmitter {
 		this.logger.log("Done emitting namespace", namespace);
 	}
 
-	createTypeScriptNamespaceNode(namespace: CSharpNamespace, options?: NamespaceEmitOptions) {
+	createTypeScriptNamespaceNodes(namespace: CSharpNamespace, options?: NamespaceEmitOptions) {
 		options = this.prepareOptions(options);
 
 		if (!options.filter(namespace))
@@ -161,18 +161,24 @@ export class NamespaceEmitter {
 		this.logger.log("Emitting namespace", namespace);
 
 		var modifiers = new Array<ts.Modifier>();
-		if(options.declare)
+		if (options.declare)
 			modifiers.push(ts.createToken(ts.SyntaxKind.DeclareKeyword));
 
-		var node = <ts.InterfaceDeclaration>ts.createNode(ts.SyntaxKind.namespace);
-		node.flags = ts.NodeFlags.Synthesized & (ts.NodeFlags.Namespace | ts.NodeFlags.NestedNamespace | ts.NodeFlags.GlobalAugmentation);
-		node.decorators = ts.createNodeArray([]);
-		node.modifiers = ts.createNodeArray(modifiers);
-		node.name = ts.createIdentifier(namespace.name);
+   
+
+		var nodes = new Array<ts.Node>();
+		if (!options.skip) {
+			nodes.push(ts.createModuleDeclaration(
+				[],
+				modifiers,
+				ts.createIdentifier(namespace.name),
+				ts.createModuleBlock([]),
+				ts.NodeFlags.Namespace | ts.NodeFlags.NestedNamespace));
+		}
 
 		this.logger.log("Done emitting namespace", namespace);
 
-		return node;
+		return nodes;
 	}
 
 	private prepareOptions(options?: NamespaceEmitOptions) {

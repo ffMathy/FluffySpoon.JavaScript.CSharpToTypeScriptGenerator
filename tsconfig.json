@@ -1,4 +1,4 @@
-﻿{
+{
   "compileOnSave": true,
   "exclude": [ "./spec/cases/", "./node_modules" ],
   "compilerOptions": {

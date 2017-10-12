@@ -8,7 +8,7 @@ var InterfaceEmitter_1 = require("./InterfaceEmitter");
 var FieldEmitter_1 = require("./FieldEmitter");
 var MethodEmitter_1 = require("./MethodEmitter");
 var ts = require("typescript");
-var ClassEmitter = (function () {
+var ClassEmitter = /** @class */ (function () {
     function ClassEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
         this.logger = logger;
@@ -93,14 +93,18 @@ var ClassEmitter = (function () {
             classObject.enums = [];
             classObject.interfaces = [];
             classObject.structs = [];
-            nodes.push(this.namespaceEmitter.createTypeScriptNamespaceNode(wrappedNamespace, {
+            var namespaceNodes = this.namespaceEmitter.createTypeScriptNamespaceNodes(wrappedNamespace, {
                 classEmitOptions: options,
                 declare: options.declare,
                 enumEmitOptions: options.enumEmitOptions,
                 interfaceEmitOptions: options.interfaceEmitOptions,
                 structEmitOptions: options.structEmitOptions,
                 skip: false
-            }));
+            });
+            for (var _i = 0, namespaceNodes_1 = namespaceNodes; _i < namespaceNodes_1.length; _i++) {
+                var namespaceNode = namespaceNodes_1[_i];
+                nodes.push(namespaceNode);
+            }
         }
         this.logger.log("Done emitting class", classObject);
         return nodes;

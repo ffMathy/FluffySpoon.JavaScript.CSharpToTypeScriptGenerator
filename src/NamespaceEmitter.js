@@ -5,7 +5,7 @@ var ClassEmitter_1 = require("./ClassEmitter");
 var InterfaceEmitter_1 = require("./InterfaceEmitter");
 var StructEmitter_1 = require("./StructEmitter");
 var ts = require("typescript");
-var NamespaceEmitter = (function () {
+var NamespaceEmitter = /** @class */ (function () {
     function NamespaceEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
         this.logger = logger;
@@ -99,7 +99,7 @@ var NamespaceEmitter = (function () {
         this.stringEmitter.ensureNewParagraph();
         this.logger.log("Done emitting namespace", namespace);
     };
-    NamespaceEmitter.prototype.createTypeScriptNamespaceNode = function (namespace, options) {
+    NamespaceEmitter.prototype.createTypeScriptNamespaceNodes = function (namespace, options) {
         options = this.prepareOptions(options);
         if (!options.filter(namespace))
             return null;
@@ -107,13 +107,12 @@ var NamespaceEmitter = (function () {
         var modifiers = new Array();
         if (options.declare)
             modifiers.push(ts.createToken(ts.SyntaxKind.DeclareKeyword));
-        var node = ts.createNode(ts.SyntaxKind.NamespaceKeyword);
-        node.flags = ts.NodeFlags.Synthesized & (ts.NodeFlags.Namespace | ts.NodeFlags.NestedNamespace | ts.NodeFlags.GlobalAugmentation);
-        node.decorators = ts.createNodeArray([]);
-        node.modifiers = ts.createNodeArray(modifiers);
-        node.name = ts.createIdentifier(namespace.name);
+        var nodes = new Array();
+        if (!options.skip) {
+            nodes.push(ts.createModuleDeclaration([], modifiers, ts.createIdentifier(namespace.name), ts.createModuleBlock([]), ts.NodeFlags.Namespace | ts.NodeFlags.NestedNamespace));
+        }
         this.logger.log("Done emitting namespace", namespace);
-        return node;
+        return nodes;
     };
     NamespaceEmitter.prototype.prepareOptions = function (options) {
         if (!options) {

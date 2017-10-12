@@ -1,4 +1,4 @@
-﻿import { FileParser, CSharpEnum, CSharpEnumOption, CSharpFile } from 'fluffy-spoon.javascript.csharp-parser';
+import { FileParser, CSharpEnum, CSharpEnumOption, CSharpFile } from 'fluffy-spoon.javascript.csharp-parser';
 
 import { StringEmitter } from './StringEmitter';
 import { OptionsHelper } from './OptionsHelper';
@@ -14,12 +14,12 @@ import { FieldEmitOptions } from './FieldEmitter';
 import { Logger } from './Logger';
 
 import ts = require("typescript");
- 
+
 export interface FileEmitOptions {
 	classEmitOptions?: ClassEmitOptions,
 	namespaceEmitOptions?: NamespaceEmitOptions,
-    enumEmitOptions?: EnumEmitOptions,
-    structEmitOptions?: StructEmitOptions,
+	enumEmitOptions?: EnumEmitOptions,
+	structEmitOptions?: StructEmitOptions,
 	interfaceEmitOptions?: InterfaceEmitOptions,
 	typeEmitOptions?: TypeEmitOptions,
 	propertyEmitOptions?: PropertyEmitOptions,
@@ -33,15 +33,15 @@ export class FileEmitter {
 	public readonly stringEmitter: StringEmitter;
 	public readonly logger: Logger;
 
-    private fileParser: FileParser;
-    private enumEmitter: EnumEmitter;
-    private classEmitter: ClassEmitter;
-    private interfaceEmitter: InterfaceEmitter;
-    private namespaceEmitter: NamespaceEmitter;
-    private structEmitter: StructEmitter;
+	private fileParser: FileParser;
+	private enumEmitter: EnumEmitter;
+	private classEmitter: ClassEmitter;
+	private interfaceEmitter: InterfaceEmitter;
+	private namespaceEmitter: NamespaceEmitter;
+	private structEmitter: StructEmitter;
 	private optionsHelper: OptionsHelper;
 
-    constructor(content: string) {
+	constructor(content: string) {
 		this.fileParser = new FileParser(content);
 
 		this.logger = new Logger();
@@ -49,12 +49,12 @@ export class FileEmitter {
 
 		this.stringEmitter = new StringEmitter(this.logger);
 
-        this.enumEmitter = new EnumEmitter(this.stringEmitter, this.logger);
-        this.classEmitter = new ClassEmitter(this.stringEmitter, this.logger);
-        this.interfaceEmitter = new InterfaceEmitter(this.stringEmitter, this.logger);
-        this.namespaceEmitter = new NamespaceEmitter(this.stringEmitter, this.logger);
-        this.structEmitter = new StructEmitter(this.stringEmitter, this.logger);
-    }
+		this.enumEmitter = new EnumEmitter(this.stringEmitter, this.logger);
+		this.classEmitter = new ClassEmitter(this.stringEmitter, this.logger);
+		this.interfaceEmitter = new InterfaceEmitter(this.stringEmitter, this.logger);
+		this.namespaceEmitter = new NamespaceEmitter(this.stringEmitter, this.logger);
+		this.structEmitter = new StructEmitter(this.stringEmitter, this.logger);
+	}
 
 	emitFile(options?: FileEmitOptions) {
 
@@ -64,18 +64,18 @@ export class FileEmitter {
 			options = {};
 		}
 
-		if(!options.classEmitOptions) options.classEmitOptions = {};
-		if(!options.enumEmitOptions) options.enumEmitOptions = {};
-		if(!options.interfaceEmitOptions) options.interfaceEmitOptions = {};
-		if(!options.namespaceEmitOptions) options.namespaceEmitOptions = {};
-		if(!options.structEmitOptions) options.structEmitOptions = {};
-		if(!options.typeEmitOptions) options.typeEmitOptions = {};
-		if(!options.methodEmitOptions) options.methodEmitOptions = {};
-		if(!options.propertyEmitOptions) options.propertyEmitOptions = {};
+		if (!options.classEmitOptions) options.classEmitOptions = {};
+		if (!options.enumEmitOptions) options.enumEmitOptions = {};
+		if (!options.interfaceEmitOptions) options.interfaceEmitOptions = {};
+		if (!options.namespaceEmitOptions) options.namespaceEmitOptions = {};
+		if (!options.structEmitOptions) options.structEmitOptions = {};
+		if (!options.typeEmitOptions) options.typeEmitOptions = {};
+		if (!options.methodEmitOptions) options.methodEmitOptions = {};
+		if (!options.propertyEmitOptions) options.propertyEmitOptions = {};
 
 		if (options.classEmitOptions) {
-			if(options.namespaceEmitOptions) {
-				options.namespaceEmitOptions.classEmitOptions = 
+			if (options.namespaceEmitOptions) {
+				options.namespaceEmitOptions.classEmitOptions =
 					this.optionsHelper.mergeOptions(
 						options.classEmitOptions,
 						options.namespaceEmitOptions.classEmitOptions);
@@ -83,14 +83,14 @@ export class FileEmitter {
 		}
 
 		if (options.interfaceEmitOptions) {
-			if(options.namespaceEmitOptions) {
-				options.namespaceEmitOptions.interfaceEmitOptions = 
+			if (options.namespaceEmitOptions) {
+				options.namespaceEmitOptions.interfaceEmitOptions =
 					this.optionsHelper.mergeOptions(
 						options.interfaceEmitOptions,
 						options.namespaceEmitOptions.interfaceEmitOptions);
 			}
 			if (options.classEmitOptions) {
-				options.classEmitOptions.interfaceEmitOptions = 
+				options.classEmitOptions.interfaceEmitOptions =
 					this.optionsHelper.mergeOptions(
 						options.interfaceEmitOptions,
 						options.classEmitOptions.interfaceEmitOptions);
@@ -99,133 +99,133 @@ export class FileEmitter {
 
 		if (options.enumEmitOptions) {
 			if (options.classEmitOptions) {
-				options.classEmitOptions.enumEmitOptions = 
+				options.classEmitOptions.enumEmitOptions =
 					this.optionsHelper.mergeOptions(
 						options.enumEmitOptions,
 						options.classEmitOptions.enumEmitOptions);
 			}
 			if (options.namespaceEmitOptions) {
-				options.namespaceEmitOptions.enumEmitOptions = 
+				options.namespaceEmitOptions.enumEmitOptions =
 					this.optionsHelper.mergeOptions(
 						options.enumEmitOptions,
 						options.namespaceEmitOptions.enumEmitOptions);
 			}
 		}
 
-		if(options.structEmitOptions) {
-			if(options.namespaceEmitOptions) {
-				options.namespaceEmitOptions.structEmitOptions = 
+		if (options.structEmitOptions) {
+			if (options.namespaceEmitOptions) {
+				options.namespaceEmitOptions.structEmitOptions =
 					this.optionsHelper.mergeOptions(
 						options.structEmitOptions,
 						options.namespaceEmitOptions.structEmitOptions);
 			}
 		}
 
-		if(options.methodEmitOptions) {
-			if(options.classEmitOptions) {
-				options.classEmitOptions.methodEmitOptions = 
+		if (options.methodEmitOptions) {
+			if (options.classEmitOptions) {
+				options.classEmitOptions.methodEmitOptions =
 					this.optionsHelper.mergeOptions(
 						options.classEmitOptions,
 						options.classEmitOptions.methodEmitOptions);
 			}
 
-			if(options.interfaceEmitOptions) {
-				options.interfaceEmitOptions.methodEmitOptions =  
+			if (options.interfaceEmitOptions) {
+				options.interfaceEmitOptions.methodEmitOptions =
 					this.optionsHelper.mergeOptions(
 						options.interfaceEmitOptions,
 						options.interfaceEmitOptions.methodEmitOptions);
 			}
 		}
 
-		if(options.propertyEmitOptions) {
-			if(options.classEmitOptions) {
-				options.classEmitOptions.propertyEmitOptions = 
+		if (options.propertyEmitOptions) {
+			if (options.classEmitOptions) {
+				options.classEmitOptions.propertyEmitOptions =
 					this.optionsHelper.mergeOptions(
 						options.classEmitOptions,
 						options.classEmitOptions.propertyEmitOptions);
 			}
 
-			if(options.interfaceEmitOptions) {
-				options.interfaceEmitOptions.propertyEmitOptions =  
+			if (options.interfaceEmitOptions) {
+				options.interfaceEmitOptions.propertyEmitOptions =
 					this.optionsHelper.mergeOptions(
 						options.interfaceEmitOptions,
 						options.interfaceEmitOptions.propertyEmitOptions);
 			}
 		}
 
-		if(options.fieldEmitOptions) {
-			if(options.classEmitOptions) {
-				options.classEmitOptions.fieldEmitOptions = 
+		if (options.fieldEmitOptions) {
+			if (options.classEmitOptions) {
+				options.classEmitOptions.fieldEmitOptions =
 					this.optionsHelper.mergeOptions(
 						options.classEmitOptions,
 						options.classEmitOptions.fieldEmitOptions);
 			}
 		}
 
-		if(options.typeEmitOptions) {
-			if(options.classEmitOptions) {
-				options.classEmitOptions.genericParameterTypeEmitOptions = 
+		if (options.typeEmitOptions) {
+			if (options.classEmitOptions) {
+				options.classEmitOptions.genericParameterTypeEmitOptions =
 					this.optionsHelper.mergeOptions(
 						options.typeEmitOptions,
 						options.classEmitOptions.genericParameterTypeEmitOptions);
-						
-				options.classEmitOptions.inheritedTypeEmitOptions = 
+
+				options.classEmitOptions.inheritedTypeEmitOptions =
 					this.optionsHelper.mergeOptions(
 						options.typeEmitOptions,
 						options.classEmitOptions.inheritedTypeEmitOptions);
 
-				if(options.classEmitOptions.fieldEmitOptions) {
-					options.classEmitOptions.fieldEmitOptions.typeEmitOptions = 
+				if (options.classEmitOptions.fieldEmitOptions) {
+					options.classEmitOptions.fieldEmitOptions.typeEmitOptions =
 						this.optionsHelper.mergeOptions(
 							options.typeEmitOptions,
 							options.classEmitOptions.fieldEmitOptions.typeEmitOptions);
 				}
 
-				if(options.classEmitOptions.methodEmitOptions) {
-					options.classEmitOptions.methodEmitOptions.argumentTypeEmitOptions = 
+				if (options.classEmitOptions.methodEmitOptions) {
+					options.classEmitOptions.methodEmitOptions.argumentTypeEmitOptions =
 						this.optionsHelper.mergeOptions(
 							options.typeEmitOptions,
 							options.classEmitOptions.methodEmitOptions.argumentTypeEmitOptions);
-							
-					options.classEmitOptions.methodEmitOptions.returnTypeEmitOptions = 
+
+					options.classEmitOptions.methodEmitOptions.returnTypeEmitOptions =
 						this.optionsHelper.mergeOptions(
 							options.typeEmitOptions,
 							options.classEmitOptions.methodEmitOptions.returnTypeEmitOptions);
 				}
 
-				if(options.classEmitOptions.propertyEmitOptions) {
-					options.classEmitOptions.propertyEmitOptions.typeEmitOptions = 
+				if (options.classEmitOptions.propertyEmitOptions) {
+					options.classEmitOptions.propertyEmitOptions.typeEmitOptions =
 						this.optionsHelper.mergeOptions(
 							options.typeEmitOptions,
 							options.classEmitOptions.propertyEmitOptions.typeEmitOptions);
 				}
 			}
-			
-			if(options.interfaceEmitOptions) {
-				options.interfaceEmitOptions.genericParameterTypeEmitOptions = 
+
+			if (options.interfaceEmitOptions) {
+				options.interfaceEmitOptions.genericParameterTypeEmitOptions =
 					this.optionsHelper.mergeOptions(
 						options.typeEmitOptions,
 						options.interfaceEmitOptions.genericParameterTypeEmitOptions);
-						
-				options.interfaceEmitOptions.inheritedTypeEmitOptions = 
+
+				options.interfaceEmitOptions.inheritedTypeEmitOptions =
 					this.optionsHelper.mergeOptions(
 						options.typeEmitOptions,
 						options.interfaceEmitOptions.inheritedTypeEmitOptions);
 
-				if(options.interfaceEmitOptions.methodEmitOptions) {
-					options.interfaceEmitOptions.methodEmitOptions.argumentTypeEmitOptions = 
+				if (options.interfaceEmitOptions.methodEmitOptions) {
+					options.interfaceEmitOptions.methodEmitOptions.argumentTypeEmitOptions =
 						this.optionsHelper.mergeOptions(
 							options.typeEmitOptions,
 							options.interfaceEmitOptions.methodEmitOptions.argumentTypeEmitOptions);
-							
-					options.interfaceEmitOptions.methodEmitOptions.returnTypeEmitOptions = 
+
+					options.interfaceEmitOptions.methodEmitOptions.returnTypeEmitOptions =
 						this.optionsHelper.mergeOptions(
 							options.typeEmitOptions,
 							options.interfaceEmitOptions.methodEmitOptions.returnTypeEmitOptions);
 				}
 
-				if(options.interfaceEmitOptions.propertyEmitOptions) {
-					options.interfaceEmitOptions.propertyEmitOptions.typeEmitOptions = 
+				if (options.interfaceEmitOptions.propertyEmitOptions) {
+					options.interfaceEmitOptions.propertyEmitOptions.typeEmitOptions =
 						this.optionsHelper.mergeOptions(
 							options.typeEmitOptions,
 							options.interfaceEmitOptions.propertyEmitOptions.typeEmitOptions);
@@ -236,25 +236,26 @@ export class FileEmitter {
 		this.logger.log("Using options", options);
 
 		var file = this.fileParser.parseFile();
-		if(options.afterParsing)
+		if (options.afterParsing)
 			options.afterParsing(file, this.stringEmitter);
 
 		var nodes = new Array<ts.Node>();
 
-		for(let namespace of file.namespaces)
-			nodes.push(this.namespaceEmitter.createTypeScriptNamespaceNode(
-				namespace, 
-				Object.assign(
-					{ declare: true }, 
-					options.namespaceEmitOptions)));
-					
-		for(let classObject of file.classes) {
+		for (let namespace of file.namespaces) {
+			var namespaceNodes = this.namespaceEmitter.createTypeScriptNamespaceNodes(
+				namespace,
+				options.namespaceEmitOptions);
+			for (var namespaceNode of namespaceNodes)
+				nodes.push(namespaceNode);
+		}
+
+		for (let classObject of file.classes) {
 			let classNodes = this.classEmitter.createTypeScriptClassNodes(
-				classObject, 
+				classObject,
 				Object.assign(
-					{ declare: true }, 
+					{ declare: true },
 					options.classEmitOptions));
-			for(let classNode of classNodes) {
+			for (let classNode of classNodes) {
 				nodes.push(classNode);
 			}
 		}
@@ -291,9 +292,9 @@ export class FileEmitter {
 				Object.assign({ declare: true }, options.structEmitOptions));
             this.stringEmitter.ensureNewParagraph();
 		}*/
-		
+
 		this.stringEmitter.emitTypeScriptNodes(nodes);
 
-        return this.stringEmitter.output;
-    }
+		return this.stringEmitter.output;
+	}
 }
