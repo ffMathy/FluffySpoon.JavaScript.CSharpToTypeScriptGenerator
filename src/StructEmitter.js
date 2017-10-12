@@ -46,12 +46,17 @@ var StructEmitter = /** @class */ (function () {
         var modifiers = new Array();
         if (options.declare)
             modifiers.push(ts.createToken(ts.SyntaxKind.DeclareKeyword));
+        var fields = struct
+            .fields
+            .map(function (p) { return _this
+            .fieldEmitter
+            .createTypeScriptFieldNode(p, options.fieldEmitOptions); });
         var properties = struct
             .properties
             .map(function (p) { return _this
             .propertyEmitter
             .createTypeScriptPropertyNode(p, options.propertyEmitOptions); });
-        var node = ts.createInterfaceDeclaration([], modifiers, structName, [], [], properties.slice());
+        var node = ts.createInterfaceDeclaration([], modifiers, structName, [], [], properties.concat(fields));
         return node;
     };
     StructEmitter.prototype.prepareOptions = function (options) {

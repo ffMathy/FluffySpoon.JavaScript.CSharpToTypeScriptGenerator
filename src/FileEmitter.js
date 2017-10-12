@@ -73,6 +73,10 @@ var FileEmitter = /** @class */ (function () {
                 options.namespaceEmitOptions.structEmitOptions =
                     this.optionsHelper.mergeOptions(options.structEmitOptions, options.namespaceEmitOptions.structEmitOptions);
             }
+            if (options.classEmitOptions) {
+                options.classEmitOptions.structEmitOptions =
+                    this.optionsHelper.mergeOptions(options.structEmitOptions, options.classEmitOptions.structEmitOptions);
+            }
         }
         if (options.methodEmitOptions) {
             if (options.classEmitOptions) {
@@ -82,6 +86,10 @@ var FileEmitter = /** @class */ (function () {
             if (options.interfaceEmitOptions) {
                 options.interfaceEmitOptions.methodEmitOptions =
                     this.optionsHelper.mergeOptions(options.interfaceEmitOptions, options.interfaceEmitOptions.methodEmitOptions);
+            }
+            if (options.structEmitOptions) {
+                options.structEmitOptions.methodEmitOptions =
+                    this.optionsHelper.mergeOptions(options.structEmitOptions, options.structEmitOptions.methodEmitOptions);
             }
         }
         if (options.propertyEmitOptions) {
@@ -93,11 +101,19 @@ var FileEmitter = /** @class */ (function () {
                 options.interfaceEmitOptions.propertyEmitOptions =
                     this.optionsHelper.mergeOptions(options.interfaceEmitOptions, options.interfaceEmitOptions.propertyEmitOptions);
             }
+            if (options.structEmitOptions) {
+                options.structEmitOptions.propertyEmitOptions =
+                    this.optionsHelper.mergeOptions(options.structEmitOptions, options.structEmitOptions.propertyEmitOptions);
+            }
         }
         if (options.fieldEmitOptions) {
             if (options.classEmitOptions) {
                 options.classEmitOptions.fieldEmitOptions =
                     this.optionsHelper.mergeOptions(options.classEmitOptions, options.classEmitOptions.fieldEmitOptions);
+            }
+            if (options.structEmitOptions) {
+                options.structEmitOptions.fieldEmitOptions =
+                    this.optionsHelper.mergeOptions(options.structEmitOptions, options.structEmitOptions.fieldEmitOptions);
             }
         }
         if (options.typeEmitOptions) {
@@ -168,6 +184,11 @@ var FileEmitter = /** @class */ (function () {
             var enumObject = _g[_f];
             var enumNode = this.enumEmitter.createTypeScriptEnumNode(enumObject, Object.assign({ declare: true }, options.enumEmitOptions));
             nodes.push(enumNode);
+        }
+        for (var _h = 0, _j = file.structs; _h < _j.length; _h++) {
+            var structObject = _j[_h];
+            var structNode = this.structEmitter.createTypeScriptStructNode(structObject, Object.assign({ declare: true }, options.structEmitOptions));
+            nodes.push(structNode);
         }
         /*if (file.enums.length > 0) {
             this.enumEmitter.emitEnums(file.enums, Object.assign({ declare: true }, options.enumEmitOptions));

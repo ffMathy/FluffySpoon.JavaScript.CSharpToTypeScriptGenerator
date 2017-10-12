@@ -89,6 +89,7 @@ export class FileEmitter {
 						options.interfaceEmitOptions,
 						options.namespaceEmitOptions.interfaceEmitOptions);
 			}
+
 			if (options.classEmitOptions) {
 				options.classEmitOptions.interfaceEmitOptions =
 					this.optionsHelper.mergeOptions(
@@ -104,6 +105,7 @@ export class FileEmitter {
 						options.enumEmitOptions,
 						options.classEmitOptions.enumEmitOptions);
 			}
+			
 			if (options.namespaceEmitOptions) {
 				options.namespaceEmitOptions.enumEmitOptions =
 					this.optionsHelper.mergeOptions(
@@ -118,6 +120,13 @@ export class FileEmitter {
 					this.optionsHelper.mergeOptions(
 						options.structEmitOptions,
 						options.namespaceEmitOptions.structEmitOptions);
+			}
+			
+			if (options.classEmitOptions) {
+				options.classEmitOptions.structEmitOptions =
+					this.optionsHelper.mergeOptions(
+						options.structEmitOptions,
+						options.classEmitOptions.structEmitOptions);
 			}
 		}
 
@@ -135,6 +144,13 @@ export class FileEmitter {
 						options.interfaceEmitOptions,
 						options.interfaceEmitOptions.methodEmitOptions);
 			}
+
+			if (options.structEmitOptions) {
+				options.structEmitOptions.methodEmitOptions =
+					this.optionsHelper.mergeOptions(
+						options.structEmitOptions,
+						options.structEmitOptions.methodEmitOptions);
+			}
 		}
 
 		if (options.propertyEmitOptions) {
@@ -151,6 +167,13 @@ export class FileEmitter {
 						options.interfaceEmitOptions,
 						options.interfaceEmitOptions.propertyEmitOptions);
 			}
+
+			if (options.structEmitOptions) {
+				options.structEmitOptions.propertyEmitOptions =
+					this.optionsHelper.mergeOptions(
+						options.structEmitOptions,
+						options.structEmitOptions.propertyEmitOptions);
+			}
 		}
 
 		if (options.fieldEmitOptions) {
@@ -159,6 +182,13 @@ export class FileEmitter {
 					this.optionsHelper.mergeOptions(
 						options.classEmitOptions,
 						options.classEmitOptions.fieldEmitOptions);
+			}
+			
+			if (options.structEmitOptions) {
+				options.structEmitOptions.fieldEmitOptions =
+					this.optionsHelper.mergeOptions(
+						options.structEmitOptions,
+						options.structEmitOptions.fieldEmitOptions);
 			}
 		}
 
@@ -273,6 +303,15 @@ export class FileEmitter {
 					{ declare: true },
 					options.enumEmitOptions));
 			nodes.push(enumNode);
+		}
+
+		for (let structObject of file.structs) {
+			let structNode = this.structEmitter.createTypeScriptStructNode(
+				structObject,
+				Object.assign(
+					{ declare: true },
+					options.structEmitOptions));
+			nodes.push(structNode);
 		}
 
 		/*if (file.enums.length > 0) {

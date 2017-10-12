@@ -97,6 +97,15 @@ export class NamespaceEmitter {
 					  options.enumEmitOptions)));
 		}
 
+		for (let structObject of namespace.structs) {
+			content.push(
+				this.structEmitter.createTypeScriptStructNode(
+				  structObject,
+				  Object.assign(
+					  { declare: options.skip },
+					  options.structEmitOptions)));
+		}
+
 		var nodes = new Array<ts.Statement>();
 		if (!options.skip) {
 			nodes.push(ts.createModuleDeclaration(

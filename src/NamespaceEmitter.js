@@ -55,6 +55,10 @@ var NamespaceEmitter = /** @class */ (function () {
             var enumObject = _g[_f];
             content.push(this.enumEmitter.createTypeScriptEnumNode(enumObject, Object.assign({ declare: options.skip }, options.enumEmitOptions)));
         }
+        for (var _h = 0, _j = namespace.structs; _h < _j.length; _h++) {
+            var structObject = _j[_h];
+            content.push(this.structEmitter.createTypeScriptStructNode(structObject, Object.assign({ declare: options.skip }, options.structEmitOptions)));
+        }
         var nodes = new Array();
         if (!options.skip) {
             nodes.push(ts.createModuleDeclaration([], modifiers, ts.createIdentifier(namespace.name), ts.createModuleBlock(content), ts.NodeFlags.Namespace | ts.NodeFlags.NestedNamespace));

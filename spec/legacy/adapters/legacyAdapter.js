@@ -35,7 +35,11 @@ function LegacyAdapter(contents, options) {
                 typeEmitOptions: {}
             }
         },
-        structEmitOptions: {}
+        structEmitOptions: {
+            perStructEmitOptions: function (struct) { return ({
+                name: struct.name
+            }); }
+        }
     };
     emitter.logger.setLogMethod(function (message) {
         var parameters = [];

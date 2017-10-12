@@ -86,6 +86,12 @@ export class StructEmitter {
 		if (options.declare)
 			modifiers.push(ts.createToken(ts.SyntaxKind.DeclareKeyword));
 
+		var fields = struct
+			.fields
+			.map(p => this
+				.fieldEmitter
+				.createTypeScriptFieldNode(p, options.fieldEmitOptions));
+
 		var properties = struct
 			.properties
 			.map(p => this
@@ -98,7 +104,7 @@ export class StructEmitter {
 			structName,
 			[],
 			[],
-			[...properties]);
+			[...properties, ...fields]);
 
 		return node;
 	}

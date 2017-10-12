@@ -4,6 +4,7 @@ import { PerPropertyEmitOptions } from '../../../src/PropertyEmitter';
 import { PerClassEmitOptions } from '../../../src/ClassEmitter';
 import { PerInterfaceEmitOptions } from '../../../src/InterfaceEmitter';
 import { PerMethodEmitOptions } from '../../../src/MethodEmitter';
+import { PerStructEmitOptions } from '../../../src/StructEmitter';
 import { TypeEmitOptions } from '../../../src/TypeEmitter';
 
 import {
@@ -49,6 +50,9 @@ function LegacyAdapter(contents: any, options: any) {
 			}
 		},
 		structEmitOptions: {
+			perStructEmitOptions: (struct) => <PerStructEmitOptions>{
+				name: struct.name
+			}
 		}
 	};
 
