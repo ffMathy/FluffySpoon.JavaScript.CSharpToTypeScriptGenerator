@@ -55,9 +55,11 @@ export class StringEmitter {
 	}
 	
 	emitTypeScriptNodes(nodes: ts.Node[]) {
+		nodes = nodes.filter(n => n);
+
 		const resultFile = ts.createSourceFile(
 			"", "", ts.ScriptTarget.Latest,
-			false, ts.ScriptKind.TS);
+			true, ts.ScriptKind.TS);
 		
 		const printer = ts.createPrinter({
 			newLine: ts.NewLineKind.LineFeed
@@ -70,7 +72,10 @@ export class StringEmitter {
 				resultFile);
 				
 			this.write(result);
+			this.ensureNewParagraph();
 		}
+
+		this.removeLastNewLines();
 	}
 
 	emitTypeScriptNode(node: ts.Node) {

@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var fs = require('fs');
 var FileEmitter_1 = require("../src/FileEmitter");
+Error.stackTraceLimit = 100;
 function runCase(caseName, options) {
     it("should be able to handle case " + caseName, function (done) {
         var localCaseName = caseName;

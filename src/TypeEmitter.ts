@@ -71,9 +71,9 @@ export class TypeEmitter {
 
 		var typeName = this.getNonGenericMatchingTypeMappingAsString(type, options);
 		return ts.createExpressionWithTypeArguments(
-			/*this.createTypeScriptTypeReferenceNodes(
-				type.genericParameters,
-				options)*/ null,
+			this.createTypeScriptTypeReferenceNodes(
+				[],
+				options),
 			ts.createIdentifier(typeName));
 	}
 
@@ -163,6 +163,7 @@ export class TypeEmitter {
 
 		if (options && options.mapper) {
 			let mappedValue: string = options.mapper(type, this.getMatchingTypeMappingAsString(type));
+			this.logger.log("mapping", type, mappedValue);
 			if(mappedValue)
 				return mappedValue;
 		}

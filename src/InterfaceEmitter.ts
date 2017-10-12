@@ -1,4 +1,5 @@
 ﻿import { FileParser, CSharpClass, CSharpInterface } from 'fluffy-spoon.javascript.csharp-parser';
+
 import { StringEmitter } from './StringEmitter';
 import { EnumEmitter, EnumEmitOptions } from './EnumEmitter';
 import { TypeEmitter, TypeEmitOptions } from './TypeEmitter';
@@ -6,6 +7,8 @@ import { PropertyEmitter, PropertyEmitOptions } from './PropertyEmitter';
 import { FieldEmitter, FieldEmitOptions } from './FieldEmitter';
 import { MethodEmitter, MethodEmitOptions } from './MethodEmitter';
 import { Logger } from './Logger';
+
+import ts = require("typescript");
 
 export interface InterfaceEmitOptionsBase {
 	declare?: boolean;
@@ -52,21 +55,74 @@ export class InterfaceEmitter {
 	}
 
 	emitInterface(interfaceObject: CSharpInterface, options?: InterfaceEmitOptions) {
+		var nodes = this.createTypeScriptInterfaceNodes(interfaceObject, options);
+		for (var node of nodes)
+			this.stringEmitter.emitTypeScriptNode(node);
+	}
+
+	createTypeScriptInterfaceNodes(interfaceObject: CSharpInterface, options?: InterfaceEmitOptions & PerInterfaceEmitOptions) {
 		options = this.prepareOptions(options);
 		options = Object.assign(
 			options,
 			options.perInterfaceEmitOptions(interfaceObject));
-			
+
 		if (!options.filter(interfaceObject))
-			return;
-			
+			return [];
+
+		if (interfaceObject.properties.length === 0 && interfaceObject.methods.length === 0) {
+			this.logger.log("Skipping emitting body of interface " + interfaceObject.name + " because it contains no properties or methods");
+			return [];
+		}
+
 		this.logger.log("Emitting interface", interfaceObject);
 
-		this.emitClassInterface(interfaceObject, options);
+		var nodes = new Array<ts.Statement>();
+		var modifiers = new Array<ts.Modifier>();
 
-		this.stringEmitter.ensureNewParagraph();
+		if (options.declare)
+			modifiers.push(ts.createToken(ts.SyntaxKind.DeclareKeyword));
+
+		var heritageClauses = new Array<ts.HeritageClause>();
+		if (interfaceObject.inheritsFrom && this.typeEmitter.canEmitType(interfaceObject.inheritsFrom))
+			heritageClauses.push(ts.createHeritageClause(
+				ts.SyntaxKind.ExtendsKeyword,
+				[this.typeEmitter.createTypeScriptExpressionWithTypeArguments(
+					interfaceObject.inheritsFrom,
+					options.inheritedTypeEmitOptions)]));
+
+		var properties = interfaceObject
+			.properties
+			.map(x => this
+				.propertyEmitter
+				.createTypeScriptPropertyNode(x, options.propertyEmitOptions));
+
+		var methods = interfaceObject
+			.methods
+			.map(x => this
+				.methodEmitter
+				.createTypeScriptMethodNode(x, options.methodEmitOptions));
+
+		var genericParameters = new Array<ts.TypeParameterDeclaration>();
+		if (interfaceObject.genericParameters)
+			genericParameters = genericParameters.concat(interfaceObject
+				.genericParameters
+				.map(x => this
+					.typeEmitter
+					.createTypeScriptTypeParameterDeclaration(x, options.genericParameterTypeEmitOptions)));
+
+		var members = [...properties, ...methods];
+		var node = ts.createInterfaceDeclaration(
+			[],
+			modifiers,
+			options.name || interfaceObject.name,
+			genericParameters,
+			heritageClauses,
+			members);
+		nodes.push(node);
 
 		this.logger.log("Done emitting interface", interfaceObject);
+
+		return nodes;
 	}
 
 	private prepareOptions(options?: InterfaceEmitOptions) {
@@ -83,57 +139,5 @@ export class InterfaceEmitter {
 		}
 
 		return options;
-	}
-
-	private emitClassInterface(interfaceObject: CSharpInterface, options?: InterfaceEmitOptions & PerInterfaceEmitOptions) {
-		if (interfaceObject.properties.length === 0 && interfaceObject.methods.length === 0) {
-			this.logger.log("Skipping interface " + interfaceObject.name + " because it contains no properties or methods");
-			return;
-		}
-
-		this.stringEmitter.writeIndentation();
-
-		if (options.declare)
-			this.stringEmitter.write("declare ");
-
-		var className = options.name || interfaceObject.name;
-		this.logger.log("Emitting interface " + className);
-
-		this.stringEmitter.write("interface " + className);
-		if(interfaceObject.genericParameters)
-			this.typeEmitter.emitGenericParameters(
-				interfaceObject.genericParameters,
-				options.genericParameterTypeEmitOptions);
-
-		if (interfaceObject.inheritsFrom && this.typeEmitter.canEmitType(interfaceObject.inheritsFrom, options.inheritedTypeEmitOptions)) {
-			this.stringEmitter.write(" extends ");
-			this.typeEmitter.emitType(
-				interfaceObject.inheritsFrom,
-				options.inheritedTypeEmitOptions);
-		}
-
-		this.stringEmitter.write(" {");
-		this.stringEmitter.writeLine();
-
-		this.stringEmitter.increaseIndentation();
-
-		if (interfaceObject.properties.length > 0) {
-			this.propertyEmitter.emitProperties(interfaceObject.properties, options.propertyEmitOptions);
-			this.stringEmitter.ensureNewParagraph();
-		}
-
-		if (interfaceObject.methods.length > 0) {
-			this.methodEmitter.emitMethods(interfaceObject.methods, options.methodEmitOptions);
-			this.stringEmitter.ensureNewParagraph();
-		}
-
-		this.stringEmitter.removeLastNewLines();
-
-		this.stringEmitter.decreaseIndentation();
-
-		this.stringEmitter.writeLine();
-		this.stringEmitter.writeLine("}");
-
-		this.stringEmitter.ensureNewParagraph();
 	}
 }

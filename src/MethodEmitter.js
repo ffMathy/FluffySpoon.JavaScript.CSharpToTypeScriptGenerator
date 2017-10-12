@@ -53,10 +53,10 @@ var MethodEmitter = /** @class */ (function () {
         return nodes;
     };
     MethodEmitter.prototype.createTypeScriptMethodParameterNode = function (parameter, options) {
-        var initializer;
+        var initializer = null;
         if (parameter.defaultValue)
             initializer = ts.createLiteral(parameter.defaultValue);
-        var node = ts.createParameter([], [], null, options.name || parameter.name, null, this.typeEmitter.createTypeScriptTypeReferenceNode(parameter.type, options.returnTypeEmitOptions), initializer);
+        var node = ts.createParameter([], [], null, options.name || parameter.name, null, this.typeEmitter.createTypeScriptTypeReferenceNode(parameter.type, options.argumentTypeEmitOptions), initializer);
         return node;
     };
     return MethodEmitter;

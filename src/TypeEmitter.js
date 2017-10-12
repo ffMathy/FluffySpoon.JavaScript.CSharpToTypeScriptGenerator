@@ -50,10 +50,7 @@ var TypeEmitter = /** @class */ (function () {
     TypeEmitter.prototype.createTypeScriptExpressionWithTypeArguments = function (type, options) {
         options = this.prepareOptions(options);
         var typeName = this.getNonGenericMatchingTypeMappingAsString(type, options);
-        return ts.createExpressionWithTypeArguments(
-        /*this.createTypeScriptTypeReferenceNodes(
-            type.genericParameters,
-            options)*/ null, ts.createIdentifier(typeName));
+        return ts.createExpressionWithTypeArguments(this.createTypeScriptTypeReferenceNodes([], options), ts.createIdentifier(typeName));
     };
     TypeEmitter.prototype.createTypeScriptTypeReferenceNode = function (type, options) {
         options = this.prepareOptions(options);
@@ -111,6 +108,7 @@ var TypeEmitter = /** @class */ (function () {
     TypeEmitter.prototype.getMatchingTypeMappingAsString = function (type, options) {
         if (options && options.mapper) {
             var mappedValue_1 = options.mapper(type, this.getMatchingTypeMappingAsString(type));
+            this.logger.log("mapping", type, mappedValue_1);
             if (mappedValue_1)
                 return mappedValue_1;
         }

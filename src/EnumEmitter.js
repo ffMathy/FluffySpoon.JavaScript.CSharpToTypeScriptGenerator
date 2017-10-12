@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var ts = require("typescript");
 var EnumEmitter = /** @class */ (function () {
     function EnumEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
@@ -24,59 +25,35 @@ var EnumEmitter = /** @class */ (function () {
             var enumObject = enums_1[_i];
             this.emitEnum(enumObject, options);
         }
-        this.stringEmitter.removeLastNewLines();
         this.logger.log("Done emitting enums", enums);
     };
     EnumEmitter.prototype.emitEnum = function (enumObject, options) {
-        this.logger.log("Emitting enum", enumObject);
-        options = this.prepareOptions(options);
-        this.stringEmitter.writeIndentation();
-        if (options.declare)
-            this.stringEmitter.write("declare ");
-        if (options.strategy === "default") {
-            this.stringEmitter.write("enum");
-        }
-        else if (options.strategy === "string-union") {
-            this.stringEmitter.write("type");
-        }
-        this.stringEmitter.write(" " + enumObject.name + " ");
-        if (options.strategy === "default") {
-            this.stringEmitter.write("{");
-        }
-        else if (options.strategy === "string-union") {
-            this.stringEmitter.write("=");
-        }
-        this.stringEmitter.writeLine();
-        this.stringEmitter.increaseIndentation();
-        for (var _i = 0, _a = enumObject.options; _i < _a.length; _i++) {
-            var option = _a[_i];
-            var isLastOption = option === enumObject.options[enumObject.options.length - 1];
-            this.emitEnumOption(option, isLastOption, options);
-        }
-        if (options.strategy === "default") {
-            this.stringEmitter.removeLastCharacters(',');
-        }
-        else if (options.strategy === "string-union") {
-            this.stringEmitter.removeLastCharacters(' |\n');
-        }
-        this.stringEmitter.decreaseIndentation();
-        if (options.strategy === "default") {
-            this.stringEmitter.writeLine("}");
-        }
-        this.stringEmitter.ensureNewParagraph();
-        this.logger.log("Done emitting enum", enumObject);
+        var node = this.createTypeScriptEnumNode(enumObject, options);
+        if (!node)
+            return;
+        this.stringEmitter.emitTypeScriptNode(node);
     };
-    EnumEmitter.prototype.emitEnumOption = function (option, isLast, options) {
-        this.logger.log("Emitting enum option", option);
-        if (options.strategy === "default") {
-            this.stringEmitter.write(this.stringEmitter.currentIndentation + option.name + " = " + option.value);
-            if (!isLast)
-                this.stringEmitter.write(",");
-            this.stringEmitter.writeLine();
+    EnumEmitter.prototype.createTypeScriptEnumNode = function (enumObject, options) {
+        options = this.prepareOptions(options);
+        if (!options.filter(enumObject))
+            return null;
+        this.logger.log("Emitting enum", enumObject);
+        var modifiers = new Array();
+        if (options.declare)
+            modifiers.push(ts.createToken(ts.SyntaxKind.DeclareKeyword));
+        var node;
+        if (options.strategy === "string-union") {
+            node = ts.createTypeAliasDeclaration([], modifiers, enumObject.name, [], ts.createUnionOrIntersectionTypeNode(ts.SyntaxKind.UnionType, enumObject
+                .options
+                .map(function (v) { return ts.createTypeReferenceNode(ts.createIdentifier("'" + v.name + "'"), []); })));
         }
-        else if (options.strategy === "string-union") {
-            this.stringEmitter.writeLine("'" + option.name + "' |");
+        else {
+            node = ts.createEnumDeclaration([], modifiers, enumObject.name, enumObject
+                .options
+                .map(function (v) { return ts.createEnumMember(v.name, v.value ? ts.createNumericLiteral(v.value.toString()) : null); }));
         }
+        this.logger.log("Done emitting enum", enumObject);
+        return node;
     };
     return EnumEmitter;
 }());

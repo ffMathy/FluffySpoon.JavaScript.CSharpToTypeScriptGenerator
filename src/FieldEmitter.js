@@ -24,12 +24,13 @@ var FieldEmitter = /** @class */ (function () {
     FieldEmitter.prototype.createTypeScriptFieldNode = function (field, options) {
         options = Object.assign(this.prepareOptions(options), options.perFieldEmitOptions(field));
         if (!options.filter(field))
-            return;
-        this.logger.log("Emitting field " + field.name);
+            return null;
+        this.logger.log("Emitting field", field);
         var modifiers = new Array();
         if (options.readOnly)
             modifiers.push(ts.createToken(ts.SyntaxKind.ReadonlyKeyword));
         var node = ts.createPropertySignature(modifiers, options.name || field.name, field.type.isNullable ? ts.createToken(ts.SyntaxKind.QuestionToken) : null, this.typeEmitter.createTypeScriptTypeReferenceNode(field.type, options.typeEmitOptions), null);
+        this.logger.log("Done emitting field", field);
         return node;
     };
     FieldEmitter.prototype.prepareOptions = function (options) {

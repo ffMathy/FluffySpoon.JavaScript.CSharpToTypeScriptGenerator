@@ -1,4 +1,4 @@
-import { FileParser, CSharpClass, CSharpNamespace } from 'fluffy-spoon.javascript.csharp-parser';
+import { FileParser, CSharpClass, CSharpNamespace, CSharpFile } from 'fluffy-spoon.javascript.csharp-parser';
 
 import { StringEmitter } from './StringEmitter';
 import { EnumEmitter, EnumEmitOptions } from './EnumEmitter';
@@ -63,16 +63,11 @@ export class ClassEmitter {
 			this.emitClass(classObject, options);
 		}
 
-		this.stringEmitter.removeLastNewLines();
-
 		this.logger.log("Done emitting classes", classes);
 	}
 
 	emitClass(classObject: CSharpClass, options?: ClassEmitOptions) {
 		var nodes = this.createTypeScriptClassNodes(classObject, options);
-		if (!nodes)
-			return;
-
 		for (var node of nodes)
 			this.stringEmitter.emitTypeScriptNode(node);
 	}
@@ -84,16 +79,16 @@ export class ClassEmitter {
 			options.perClassEmitOptions(classObject));
 
 		if (!options.filter(classObject))
-			return null;
+			return [];
 
 		if (classObject.properties.length === 0 && classObject.methods.length === 0 && classObject.fields.length === 0) {
 			this.logger.log("Skipping emitting body of class " + classObject.name + " because it contains no properties, fields or methods");
-			return null;
+			return [];
 		}
 
 		this.logger.log("Emitting class", classObject);
 
-		var nodes = new Array<ts.Node>();
+		var nodes = new Array<ts.Statement>();
 		var modifiers = new Array<ts.Modifier>();
 
 		if (options.declare)
@@ -102,7 +97,7 @@ export class ClassEmitter {
 		var heritageClauses = new Array<ts.HeritageClause>();
 		if (classObject.inheritsFrom && this.typeEmitter.canEmitType(classObject.inheritsFrom))
 			heritageClauses.push(ts.createHeritageClause(
-				ts.SyntaxKind.ImplementsKeyword,
+				ts.SyntaxKind.ExtendsKeyword,
 				[this.typeEmitter.createTypeScriptExpressionWithTypeArguments(
 					classObject.inheritsFrom,
 					options.inheritedTypeEmitOptions)]));
@@ -112,7 +107,7 @@ export class ClassEmitter {
 			.map(x => this
 				.propertyEmitter
 				.createTypeScriptPropertyNode(x, options.propertyEmitOptions));
-
+				
 		var methods = classObject
 			.methods
 			.map(x => this
@@ -133,7 +128,7 @@ export class ClassEmitter {
 				.fieldEmitter
 				.createTypeScriptFieldNode(x, options.fieldEmitOptions));
 
-		var classMembers = [...methods, ...properties, ...fields];
+		var classMembers = [...fields, ...properties, ...methods];
 		var node = ts.createInterfaceDeclaration(
 			[],
 			modifiers,
@@ -149,15 +144,20 @@ export class ClassEmitter {
 			classObject.structs.length > 0) {
 
 			var wrappedNamespace = new CSharpNamespace(options.name || classObject.name);
-			wrappedNamespace.classes = classObject.classes;
+			wrappedNamespace.classes = classObject.classes.concat([classObject]);
 			wrappedNamespace.enums = classObject.enums;
 			wrappedNamespace.interfaces = classObject.interfaces;
 			wrappedNamespace.structs = classObject.structs;
+
+			if(classObject.parent instanceof CSharpFile || classObject.parent instanceof CSharpNamespace)
+				wrappedNamespace.parent = classObject.parent;
 
 			classObject.classes = [];
 			classObject.enums = [];
 			classObject.interfaces = [];
 			classObject.structs = [];
+
+			classObject.parent = wrappedNamespace;
 
 			var namespaceNodes = this.namespaceEmitter.createTypeScriptNamespaceNodes(wrappedNamespace,
 				{

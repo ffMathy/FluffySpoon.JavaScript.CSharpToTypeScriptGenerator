@@ -100,7 +100,7 @@ export class MethodEmitter {
 	}
 
 	private createTypeScriptMethodParameterNode(parameter: CSharpMethodParameter, options: MethodEmitOptions & PerMethodEmitOptions) {
-		var initializer: ts.Expression;
+		var initializer: ts.Expression = null;
 		if(parameter.defaultValue) 
 			initializer = ts.createLiteral(parameter.defaultValue as any);
 
@@ -112,7 +112,7 @@ export class MethodEmitter {
 			null,
 			this.typeEmitter.createTypeScriptTypeReferenceNode(
 				parameter.type,
-				options.returnTypeEmitOptions),
+				options.argumentTypeEmitOptions),
 			initializer);
 		return node;
 	}

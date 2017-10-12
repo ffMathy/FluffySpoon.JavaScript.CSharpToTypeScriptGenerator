@@ -1,6 +1,7 @@
 "use strict";
 var FileEmitter_1 = require("../../../src/FileEmitter");
 var fluffy_spoon_javascript_csharp_parser_1 = require("fluffy-spoon.javascript.csharp-parser");
+Error.stackTraceLimit = 100;
 function LegacyAdapter(contents, options) {
     var emitter = new FileEmitter_1.FileEmitter(contents);
     var emitOptions = {
@@ -9,7 +10,10 @@ function LegacyAdapter(contents, options) {
         },
         classEmitOptions: {
             propertyEmitOptions: {
-                typeEmitOptions: {}
+                typeEmitOptions: {},
+                perPropertyEmitOptions: function (property) { return ({
+                    name: property.name
+                }); }
             },
             methodEmitOptions: {
                 argumentTypeEmitOptions: {},

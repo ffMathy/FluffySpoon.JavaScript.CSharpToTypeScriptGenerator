@@ -239,7 +239,14 @@ export class FileEmitter {
 		if (options.afterParsing)
 			options.afterParsing(file, this.stringEmitter);
 
-		var nodes = new Array<ts.Node>();
+		console.log("File parsed as", JSON.stringify(file, (key, value) => {
+			if(key === "parent")
+				return;
+			
+			return value;
+		}, 2));
+
+		var nodes = new Array<ts.Statement>();
 
 		for (let namespace of file.namespaces) {
 			var namespaceNodes = this.namespaceEmitter.createTypeScriptNamespaceNodes(
@@ -255,9 +262,17 @@ export class FileEmitter {
 				Object.assign(
 					{ declare: true },
 					options.classEmitOptions));
-			for (let classNode of classNodes) {
+			for (let classNode of classNodes)
 				nodes.push(classNode);
-			}
+		}
+
+		for (let enumObject of file.enums) {
+			let enumNode = this.enumEmitter.createTypeScriptEnumNode(
+				enumObject,
+				Object.assign(
+					{ declare: true },
+					options.enumEmitOptions));
+			nodes.push(enumNode);
 		}
 
 		/*if (file.enums.length > 0) {

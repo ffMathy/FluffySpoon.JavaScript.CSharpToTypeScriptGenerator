@@ -16,11 +16,11 @@ namespace MyNamespace.Domain\n\
     }\n\
 }\n";
 
-var expectedOutput = "declare type MyEnum =\n\
-    'Unknown' |\n\
-    'Green' |\n\
-    'Red' |\n\
-    'Blue'";
+var expectedOutput = "declare type MyEnum = \
+'Unknown' | \
+'Green' | \
+'Red' | \
+'Blue';";
 
 var LegacyAdapter = require('./adapters/legacyAdapter.js');
 

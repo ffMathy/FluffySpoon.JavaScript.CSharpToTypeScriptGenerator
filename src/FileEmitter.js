@@ -142,6 +142,11 @@ var FileEmitter = /** @class */ (function () {
         var file = this.fileParser.parseFile();
         if (options.afterParsing)
             options.afterParsing(file, this.stringEmitter);
+        console.log("File parsed as", JSON.stringify(file, function (key, value) {
+            if (key === "parent")
+                return;
+            return value;
+        }, 2));
         var nodes = new Array();
         for (var _i = 0, _a = file.namespaces; _i < _a.length; _i++) {
             var namespace = _a[_i];
@@ -158,6 +163,11 @@ var FileEmitter = /** @class */ (function () {
                 var classNode = classNodes_1[_e];
                 nodes.push(classNode);
             }
+        }
+        for (var _f = 0, _g = file.enums; _f < _g.length; _f++) {
+            var enumObject = _g[_f];
+            var enumNode = this.enumEmitter.createTypeScriptEnumNode(enumObject, Object.assign({ declare: true }, options.enumEmitOptions));
+            nodes.push(enumNode);
         }
         /*if (file.enums.length > 0) {
             this.enumEmitter.emitEnums(file.enums, Object.assign({ declare: true }, options.enumEmitOptions));

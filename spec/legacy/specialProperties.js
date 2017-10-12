@@ -20,8 +20,8 @@ namespace MyNamespace.Domain\n\
 }\n";
 
 var expectedOutput = "declare interface MyPoco {\n\
-    OtherPocos: MyOtherPoco[];\n\
-    NonVirtualPocos: MyOtherPoco[];\n\
+    OtherPocos: Array<MyOtherPoco>;\n\
+    NonVirtualPocos: Array<MyOtherPoco>;\n\
 }\n\
 \n\
 declare interface MyOtherPoco {\n\
@@ -29,7 +29,7 @@ declare interface MyOtherPoco {\n\
 }";
 
 var expectedWithoutVirtuals = "declare interface MyPoco {\n\
-    NonVirtualPocos: MyOtherPoco[];\n\
+    NonVirtualPocos: Array<MyOtherPoco>;\n\
 }\n\
 \n\
 declare interface MyOtherPoco {\n\

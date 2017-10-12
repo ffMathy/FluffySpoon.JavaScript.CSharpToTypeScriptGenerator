@@ -3,6 +3,8 @@
 import { FileEmitter, FileEmitOptions } from '../src/FileEmitter';
 import { Logger } from '../src/Logger';
 
+Error.stackTraceLimit = 100;
+
 function runCase(caseName: string, options?: FileEmitOptions) {
 	it("should be able to handle case " + caseName, function (done) {
 		let localCaseName = caseName;

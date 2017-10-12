@@ -25,6 +25,6 @@ export declare class NamespaceEmitter {
     constructor(stringEmitter: StringEmitter, logger: Logger);
     emitNamespaces(namespaces: CSharpNamespace[], options?: NamespaceEmitOptions): void;
     emitNamespace(namespace: CSharpNamespace, options?: NamespaceEmitOptions): void;
-    createTypeScriptNamespaceNodes(namespace: CSharpNamespace, options?: NamespaceEmitOptions): ts.Node[];
+    createTypeScriptNamespaceNodes(namespace: CSharpNamespace, options?: NamespaceEmitOptions): ts.Statement[];
     private prepareOptions(options?);
 }

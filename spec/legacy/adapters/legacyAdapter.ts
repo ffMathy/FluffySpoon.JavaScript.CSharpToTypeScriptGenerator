@@ -12,6 +12,8 @@ import {
 	CSharpNamespace
 } from 'fluffy-spoon.javascript.csharp-parser';
 
+Error.stackTraceLimit = 100;
+
 function LegacyAdapter(contents: any, options: any) {
 	var emitter = new FileEmitter(contents);
 	var emitOptions = <FileEmitOptions>{
@@ -20,7 +22,10 @@ function LegacyAdapter(contents: any, options: any) {
 		},
 		classEmitOptions: {
 			propertyEmitOptions: {
-				typeEmitOptions: {}
+				typeEmitOptions: {},
+				perPropertyEmitOptions: (property) => <PerPropertyEmitOptions>{
+					name: property.name
+				}
 			},
 			methodEmitOptions: {
 				argumentTypeEmitOptions: {},

@@ -44,7 +44,8 @@ var StringEmitter = /** @class */ (function () {
             ;
     };
     StringEmitter.prototype.emitTypeScriptNodes = function (nodes) {
-        var resultFile = ts.createSourceFile("", "", ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
+        nodes = nodes.filter(function (n) { return n; });
+        var resultFile = ts.createSourceFile("", "", ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
         var printer = ts.createPrinter({
             newLine: ts.NewLineKind.LineFeed
         });
@@ -52,7 +53,9 @@ var StringEmitter = /** @class */ (function () {
             var node = nodes_1[_i];
             var result = printer.printNode(ts.EmitHint.Unspecified, node, resultFile);
             this.write(result);
+            this.ensureNewParagraph();
         }
+        this.removeLastNewLines();
     };
     StringEmitter.prototype.emitTypeScriptNode = function (node) {
         this.emitTypeScriptNodes([node]);

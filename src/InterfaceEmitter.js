@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var TypeEmitter_1 = require("./TypeEmitter");
 var PropertyEmitter_1 = require("./PropertyEmitter");
 var MethodEmitter_1 = require("./MethodEmitter");
+var ts = require("typescript");
 var InterfaceEmitter = /** @class */ (function () {
     function InterfaceEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
@@ -21,14 +22,52 @@ var InterfaceEmitter = /** @class */ (function () {
         this.logger.log("Done emitting interfaces", interfaces);
     };
     InterfaceEmitter.prototype.emitInterface = function (interfaceObject, options) {
+        var nodes = this.createTypeScriptInterfaceNodes(interfaceObject, options);
+        for (var _i = 0, nodes_1 = nodes; _i < nodes_1.length; _i++) {
+            var node = nodes_1[_i];
+            this.stringEmitter.emitTypeScriptNode(node);
+        }
+    };
+    InterfaceEmitter.prototype.createTypeScriptInterfaceNodes = function (interfaceObject, options) {
+        var _this = this;
         options = this.prepareOptions(options);
         options = Object.assign(options, options.perInterfaceEmitOptions(interfaceObject));
         if (!options.filter(interfaceObject))
-            return;
+            return [];
+        if (interfaceObject.properties.length === 0 && interfaceObject.methods.length === 0) {
+            this.logger.log("Skipping emitting body of interface " + interfaceObject.name + " because it contains no properties or methods");
+            return [];
+        }
         this.logger.log("Emitting interface", interfaceObject);
-        this.emitClassInterface(interfaceObject, options);
-        this.stringEmitter.ensureNewParagraph();
+        var nodes = new Array();
+        var modifiers = new Array();
+        if (options.declare)
+            modifiers.push(ts.createToken(ts.SyntaxKind.DeclareKeyword));
+        var heritageClauses = new Array();
+        if (interfaceObject.inheritsFrom && this.typeEmitter.canEmitType(interfaceObject.inheritsFrom))
+            heritageClauses.push(ts.createHeritageClause(ts.SyntaxKind.ExtendsKeyword, [this.typeEmitter.createTypeScriptExpressionWithTypeArguments(interfaceObject.inheritsFrom, options.inheritedTypeEmitOptions)]));
+        var properties = interfaceObject
+            .properties
+            .map(function (x) { return _this
+            .propertyEmitter
+            .createTypeScriptPropertyNode(x, options.propertyEmitOptions); });
+        var methods = interfaceObject
+            .methods
+            .map(function (x) { return _this
+            .methodEmitter
+            .createTypeScriptMethodNode(x, options.methodEmitOptions); });
+        var genericParameters = new Array();
+        if (interfaceObject.genericParameters)
+            genericParameters = genericParameters.concat(interfaceObject
+                .genericParameters
+                .map(function (x) { return _this
+                .typeEmitter
+                .createTypeScriptTypeParameterDeclaration(x, options.genericParameterTypeEmitOptions); }));
+        var members = properties.concat(methods);
+        var node = ts.createInterfaceDeclaration([], modifiers, options.name || interfaceObject.name, genericParameters, heritageClauses, members);
+        nodes.push(node);
         this.logger.log("Done emitting interface", interfaceObject);
+        return nodes;
     };
     InterfaceEmitter.prototype.prepareOptions = function (options) {
         if (!options) {
@@ -41,40 +80,6 @@ var InterfaceEmitter = /** @class */ (function () {
             options.perInterfaceEmitOptions = function () { return options; };
         }
         return options;
-    };
-    InterfaceEmitter.prototype.emitClassInterface = function (interfaceObject, options) {
-        if (interfaceObject.properties.length === 0 && interfaceObject.methods.length === 0) {
-            this.logger.log("Skipping interface " + interfaceObject.name + " because it contains no properties or methods");
-            return;
-        }
-        this.stringEmitter.writeIndentation();
-        if (options.declare)
-            this.stringEmitter.write("declare ");
-        var className = options.name || interfaceObject.name;
-        this.logger.log("Emitting interface " + className);
-        this.stringEmitter.write("interface " + className);
-        if (interfaceObject.genericParameters)
-            this.typeEmitter.emitGenericParameters(interfaceObject.genericParameters, options.genericParameterTypeEmitOptions);
-        if (interfaceObject.inheritsFrom && this.typeEmitter.canEmitType(interfaceObject.inheritsFrom, options.inheritedTypeEmitOptions)) {
-            this.stringEmitter.write(" extends ");
-            this.typeEmitter.emitType(interfaceObject.inheritsFrom, options.inheritedTypeEmitOptions);
-        }
-        this.stringEmitter.write(" {");
-        this.stringEmitter.writeLine();
-        this.stringEmitter.increaseIndentation();
-        if (interfaceObject.properties.length > 0) {
-            this.propertyEmitter.emitProperties(interfaceObject.properties, options.propertyEmitOptions);
-            this.stringEmitter.ensureNewParagraph();
-        }
-        if (interfaceObject.methods.length > 0) {
-            this.methodEmitter.emitMethods(interfaceObject.methods, options.methodEmitOptions);
-            this.stringEmitter.ensureNewParagraph();
-        }
-        this.stringEmitter.removeLastNewLines();
-        this.stringEmitter.decreaseIndentation();
-        this.stringEmitter.writeLine();
-        this.stringEmitter.writeLine("}");
-        this.stringEmitter.ensureNewParagraph();
     };
     return InterfaceEmitter;
 }());

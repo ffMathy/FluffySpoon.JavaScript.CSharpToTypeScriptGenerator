@@ -1,4 +1,4 @@
-﻿import { CSharpField, FieldParser } from 'fluffy-spoon.javascript.csharp-parser';
+import { CSharpField, FieldParser } from 'fluffy-spoon.javascript.csharp-parser';
 import { StringEmitter } from './StringEmitter';
 import { TypeEmitter, TypeEmitOptions } from './TypeEmitter';
 import { Logger } from './Logger';
@@ -51,9 +51,9 @@ export class FieldEmitter {
 			options.perFieldEmitOptions(field));
 
 		if (!options.filter(field))
-			return;
+			return null;
 
-		this.logger.log("Emitting field " + field.name);
+		this.logger.log("Emitting field", field);
 
 		var modifiers = new Array<ts.Modifier>();
 		if (options.readOnly)
@@ -65,6 +65,8 @@ export class FieldEmitter {
 			field.type.isNullable ? ts.createToken(ts.SyntaxKind.QuestionToken) : null,
 			this.typeEmitter.createTypeScriptTypeReferenceNode(field.type, options.typeEmitOptions),
 			null);
+
+		this.logger.log("Done emitting field", field);
 
 		return node;
 	}

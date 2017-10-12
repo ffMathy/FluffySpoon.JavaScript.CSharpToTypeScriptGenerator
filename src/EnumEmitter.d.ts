@@ -1,6 +1,7 @@
 import { CSharpEnum } from 'fluffy-spoon.javascript.csharp-parser';
 import { StringEmitter } from './StringEmitter';
 import { Logger } from './Logger';
+import ts = require("typescript");
 export interface EnumEmitOptions {
     declare?: boolean;
     strategy?: "default" | "string-union";
@@ -13,5 +14,5 @@ export declare class EnumEmitter {
     private prepareOptions(options?);
     emitEnums(enums: CSharpEnum[], options?: EnumEmitOptions): void;
     emitEnum(enumObject: CSharpEnum, options?: EnumEmitOptions): void;
-    private emitEnumOption(option, isLast, options);
+    createTypeScriptEnumNode(enumObject: CSharpEnum, options?: EnumEmitOptions): ts.Statement;
 }

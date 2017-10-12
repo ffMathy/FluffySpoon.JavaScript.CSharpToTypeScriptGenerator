@@ -25,13 +25,10 @@ var ClassEmitter = /** @class */ (function () {
             var classObject = classes_1[_i];
             this.emitClass(classObject, options);
         }
-        this.stringEmitter.removeLastNewLines();
         this.logger.log("Done emitting classes", classes);
     };
     ClassEmitter.prototype.emitClass = function (classObject, options) {
         var nodes = this.createTypeScriptClassNodes(classObject, options);
-        if (!nodes)
-            return;
         for (var _i = 0, nodes_1 = nodes; _i < nodes_1.length; _i++) {
             var node = nodes_1[_i];
             this.stringEmitter.emitTypeScriptNode(node);
@@ -42,10 +39,10 @@ var ClassEmitter = /** @class */ (function () {
         options = this.prepareOptions(options);
         options = Object.assign(options, options.perClassEmitOptions(classObject));
         if (!options.filter(classObject))
-            return null;
+            return [];
         if (classObject.properties.length === 0 && classObject.methods.length === 0 && classObject.fields.length === 0) {
             this.logger.log("Skipping emitting body of class " + classObject.name + " because it contains no properties, fields or methods");
-            return null;
+            return [];
         }
         this.logger.log("Emitting class", classObject);
         var nodes = new Array();
@@ -54,7 +51,7 @@ var ClassEmitter = /** @class */ (function () {
             modifiers.push(ts.createToken(ts.SyntaxKind.DeclareKeyword));
         var heritageClauses = new Array();
         if (classObject.inheritsFrom && this.typeEmitter.canEmitType(classObject.inheritsFrom))
-            heritageClauses.push(ts.createHeritageClause(ts.SyntaxKind.ImplementsKeyword, [this.typeEmitter.createTypeScriptExpressionWithTypeArguments(classObject.inheritsFrom, options.inheritedTypeEmitOptions)]));
+            heritageClauses.push(ts.createHeritageClause(ts.SyntaxKind.ExtendsKeyword, [this.typeEmitter.createTypeScriptExpressionWithTypeArguments(classObject.inheritsFrom, options.inheritedTypeEmitOptions)]));
         var properties = classObject
             .properties
             .map(function (x) { return _this
@@ -77,7 +74,7 @@ var ClassEmitter = /** @class */ (function () {
             .map(function (x) { return _this
             .fieldEmitter
             .createTypeScriptFieldNode(x, options.fieldEmitOptions); });
-        var classMembers = methods.concat(properties, fields);
+        var classMembers = fields.concat(properties, methods);
         var node = ts.createInterfaceDeclaration([], modifiers, options.name || classObject.name, genericParameters, heritageClauses, classMembers);
         nodes.push(node);
         if (classObject.classes.length > 0 ||
@@ -85,14 +82,17 @@ var ClassEmitter = /** @class */ (function () {
             classObject.enums.length > 0 ||
             classObject.structs.length > 0) {
             var wrappedNamespace = new fluffy_spoon_javascript_csharp_parser_1.CSharpNamespace(options.name || classObject.name);
-            wrappedNamespace.classes = classObject.classes;
+            wrappedNamespace.classes = classObject.classes.concat([classObject]);
             wrappedNamespace.enums = classObject.enums;
             wrappedNamespace.interfaces = classObject.interfaces;
             wrappedNamespace.structs = classObject.structs;
+            if (classObject.parent instanceof fluffy_spoon_javascript_csharp_parser_1.CSharpFile || classObject.parent instanceof fluffy_spoon_javascript_csharp_parser_1.CSharpNamespace)
+                wrappedNamespace.parent = classObject.parent;
             classObject.classes = [];
             classObject.enums = [];
             classObject.interfaces = [];
             classObject.structs = [];
+            classObject.parent = wrappedNamespace;
             var namespaceNodes = this.namespaceEmitter.createTypeScriptNamespaceNodes(wrappedNamespace, {
                 classEmitOptions: options,
                 declare: options.declare,
