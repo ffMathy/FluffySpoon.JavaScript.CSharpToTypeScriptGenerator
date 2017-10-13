@@ -9,35 +9,15 @@ function LegacyAdapter(contents, options) {
             skip: true
         },
         classEmitOptions: {
-            propertyEmitOptions: {
-                typeEmitOptions: {},
-                perPropertyEmitOptions: function (property) { return ({
-                    name: property.name
-                }); }
-            },
-            methodEmitOptions: {
-                argumentTypeEmitOptions: {},
-                returnTypeEmitOptions: {}
-            },
             fieldEmitOptions: {
                 perFieldEmitOptions: function (field) { return ({
                     readOnly: field.isReadOnly
                 }); }
             }
         },
-        enumEmitOptions: {},
-        interfaceEmitOptions: {
-            methodEmitOptions: {
-                argumentTypeEmitOptions: {},
-                returnTypeEmitOptions: {}
-            },
-            propertyEmitOptions: {
-                typeEmitOptions: {}
-            }
-        },
-        structEmitOptions: {
-            perStructEmitOptions: function (struct) { return ({
-                name: struct.name
+        propertyEmitOptions: {
+            perPropertyEmitOptions: function (property) { return ({
+                name: property.name
             }); }
         }
     };

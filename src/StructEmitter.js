@@ -6,7 +6,7 @@ var PropertyEmitter_1 = require("./PropertyEmitter");
 var FieldEmitter_1 = require("./FieldEmitter");
 var MethodEmitter_1 = require("./MethodEmitter");
 var ts = require("typescript");
-var StructEmitter = /** @class */ (function () {
+var StructEmitter = (function () {
     function StructEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
         this.logger = logger;

@@ -5,7 +5,7 @@ var ClassEmitter_1 = require("./ClassEmitter");
 var InterfaceEmitter_1 = require("./InterfaceEmitter");
 var StructEmitter_1 = require("./StructEmitter");
 var ts = require("typescript");
-var NamespaceEmitter = /** @class */ (function () {
+var NamespaceEmitter = (function () {
     function NamespaceEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
         this.logger = logger;

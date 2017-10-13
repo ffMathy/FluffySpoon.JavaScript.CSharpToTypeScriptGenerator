@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var TypeEmitter_1 = require("./TypeEmitter");
 var ts = require("typescript");
-var MethodEmitter = /** @class */ (function () {
+var MethodEmitter = (function () {
     function MethodEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
         this.logger = logger;

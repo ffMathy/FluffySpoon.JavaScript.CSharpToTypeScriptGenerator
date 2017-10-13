@@ -21,9 +21,6 @@ export interface PerMethodEmitOptions extends MethodEmitOptionsBase {
 	name?: string;
 }
 
-export interface MethodEmitOptions {
-}
-
 export class MethodEmitter {
 	private typeEmitter: TypeEmitter;
 

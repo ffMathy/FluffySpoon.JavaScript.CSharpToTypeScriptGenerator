@@ -8,7 +8,7 @@ var InterfaceEmitter_1 = require("./InterfaceEmitter");
 var FieldEmitter_1 = require("./FieldEmitter");
 var MethodEmitter_1 = require("./MethodEmitter");
 var ts = require("typescript");
-var ClassEmitter = /** @class */ (function () {
+var ClassEmitter = (function () {
     function ClassEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
         this.logger = logger;

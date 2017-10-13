@@ -22,36 +22,15 @@ function LegacyAdapter(contents: any, options: any) {
 			skip: true
 		},
 		classEmitOptions: {
-			propertyEmitOptions: {
-				typeEmitOptions: {},
-				perPropertyEmitOptions: (property) => <PerPropertyEmitOptions>{
-					name: property.name
-				}
-			},
-			methodEmitOptions: {
-				argumentTypeEmitOptions: {},
-				returnTypeEmitOptions: {}
-			},
 			fieldEmitOptions: {
 				perFieldEmitOptions: (field) => <PerFieldEmitOptions>{
 					readOnly: field.isReadOnly
 				}
 			}
 		},
-		enumEmitOptions: {
-		},
-		interfaceEmitOptions: {
-			methodEmitOptions: {
-				argumentTypeEmitOptions: {},
-				returnTypeEmitOptions: {}
-			},
-			propertyEmitOptions: {
-				typeEmitOptions: {}
-			}
-		},
-		structEmitOptions: {
-			perStructEmitOptions: (struct) => <PerStructEmitOptions>{
-				name: struct.name
+		propertyEmitOptions: {
+			perPropertyEmitOptions: (property) => <PerPropertyEmitOptions>{
+				name: property.name
 			}
 		}
 	};

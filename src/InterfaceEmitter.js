@@ -4,7 +4,7 @@ var TypeEmitter_1 = require("./TypeEmitter");
 var PropertyEmitter_1 = require("./PropertyEmitter");
 var MethodEmitter_1 = require("./MethodEmitter");
 var ts = require("typescript");
-var InterfaceEmitter = /** @class */ (function () {
+var InterfaceEmitter = (function () {
     function InterfaceEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
         this.logger = logger;
