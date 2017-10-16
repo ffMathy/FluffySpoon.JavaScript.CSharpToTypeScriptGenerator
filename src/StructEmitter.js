@@ -6,7 +6,7 @@ var PropertyEmitter_1 = require("./PropertyEmitter");
 var FieldEmitter_1 = require("./FieldEmitter");
 var MethodEmitter_1 = require("./MethodEmitter");
 var ts = require("typescript");
-var StructEmitter = (function () {
+var StructEmitter = /** @class */ (function () {
     function StructEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
         this.logger = logger;
@@ -33,7 +33,6 @@ var StructEmitter = (function () {
     };
     StructEmitter.prototype.createTypeScriptStructNode = function (struct, options) {
         var _this = this;
-        options = this.prepareOptions(options);
         options = Object.assign(options, options.perStructEmitOptions(struct));
         if (struct.properties.length === 0 && struct.methods.length === 0 && struct.fields.length === 0) {
             this.logger.log("Skipping interface " + struct.name + " because it contains no properties, fields or methods");
@@ -58,18 +57,6 @@ var StructEmitter = (function () {
             .createTypeScriptPropertyNode(p, options.propertyEmitOptions); });
         var node = ts.createInterfaceDeclaration([], modifiers, structName, [], [], properties.concat(fields));
         return node;
-    };
-    StructEmitter.prototype.prepareOptions = function (options) {
-        if (!options) {
-            options = {};
-        }
-        if (!options.filter) {
-            options.filter = function (struct) { return struct.isPublic; };
-        }
-        if (!options.perStructEmitOptions) {
-            options.perStructEmitOptions = function () { return options; };
-        }
-        return options;
     };
     return StructEmitter;
 }());

@@ -26,8 +26,7 @@ export declare class InterfaceEmitter {
     private methodEmitter;
     private typeEmitter;
     constructor(stringEmitter: StringEmitter, logger: Logger);
-    emitInterfaces(interfaces: CSharpInterface[], options?: InterfaceEmitOptions): void;
-    emitInterface(interfaceObject: CSharpInterface, options?: InterfaceEmitOptions): void;
-    createTypeScriptInterfaceNodes(interfaceObject: CSharpInterface, options?: InterfaceEmitOptions & PerInterfaceEmitOptions): ts.Statement[];
-    private prepareOptions(options?);
+    emitInterfaces(interfaces: CSharpInterface[], options: InterfaceEmitOptions): void;
+    emitInterface(interfaceObject: CSharpInterface, options: InterfaceEmitOptions): void;
+    createTypeScriptInterfaceNodes(interfaceObject: CSharpInterface, options: InterfaceEmitOptions & PerInterfaceEmitOptions): ts.Statement[];
 }

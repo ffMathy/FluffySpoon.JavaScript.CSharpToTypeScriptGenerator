@@ -9,12 +9,13 @@ import { PropertyEmitOptions } from './PropertyEmitter';
 import { FieldEmitOptions } from './FieldEmitter';
 import { FileEmitOptions } from './FileEmitter';
 export interface OptionsInheritanceTreeNode<T> {
-    typeName: string;
-    applyInheritance?: (parent: T) => T;
-    inheritanceTree: OptionsInheritanceTreeNode<any>[];
+    propertyName?: string;
+    applyInheritance?: (parent: T, defaultValue?: T) => OptionsInheritanceTreeNode<any>[] | null;
 }
 export declare class OptionsHelper {
-    prepareFileEmitOptionInheritance(options: FileEmitOptions): void;
+    private mergeOptions<T, K>(defaultOptions, newOptions);
+    prepareFileEmitOptionInheritance(options: FileEmitOptions): FileEmitOptions;
+    private applyInheritanceTree(parent, tree);
     prepareEnumEmitOptionDefaults(options: EnumEmitOptions): EnumEmitOptions;
     prepareTypeEmitOptionDefaults(options: TypeEmitOptions): TypeEmitOptions;
     prepareFieldEmitOptionDefaults(options: FieldEmitOptions): FieldEmitOptions;

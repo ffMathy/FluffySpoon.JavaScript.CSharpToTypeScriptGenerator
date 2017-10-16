@@ -19,8 +19,7 @@ export declare class PropertyEmitter {
     private logger;
     private typeEmitter;
     constructor(stringEmitter: StringEmitter, logger: Logger);
-    emitProperties(properties: CSharpProperty[], options?: PropertyEmitOptions & PerPropertyEmitOptions): void;
-    emitProperty(property: CSharpProperty, options?: PropertyEmitOptions & PerPropertyEmitOptions): void;
-    createTypeScriptPropertyNode(property: CSharpProperty, options?: PropertyEmitOptions & PerPropertyEmitOptions): ts.PropertySignature;
-    private prepareOptions(options?);
+    emitProperties(properties: CSharpProperty[], options: PropertyEmitOptions & PerPropertyEmitOptions): void;
+    emitProperty(property: CSharpProperty, options: PropertyEmitOptions & PerPropertyEmitOptions): void;
+    createTypeScriptPropertyNode(property: CSharpProperty, options: PropertyEmitOptions & PerPropertyEmitOptions): ts.PropertySignature;
 }

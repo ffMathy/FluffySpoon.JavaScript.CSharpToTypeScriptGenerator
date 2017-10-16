@@ -1,64 +1,58 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var fs = require('fs');
+var fluffy_spoon_javascript_csharp_parser_1 = require("fluffy-spoon.javascript.csharp-parser");
 var OptionsHelper_1 = require("../src/OptionsHelper");
 describe("OptionsHelper", function () {
-    it("should be able to handle merging of complex objects", function () {
+    it("inheritance propagates correctly with simple values", function () {
         var helper = new OptionsHelper_1.OptionsHelper();
-        var offset = 10;
-        var result = helper.mergeOptions({
-            a: 1337,
-            b: "foo",
-            q: 8,
-            c: {
-                d: true,
-                e: 42,
-                f: function (number) { return offset += number + 2; }
-            }
-        }, {
-            o: 987,
-            b: "foo1",
-            c: {
-                d: false,
-                e: 42,
-                f: function (number) { return offset += number + 1337; }
+        var options = helper.prepareFileEmitOptionInheritance({
+            classEmitOptions: {
+                fieldEmitOptions: {
+                    readOnly: 2
+                }
+            },
+            namespaceEmitOptions: {
+                classEmitOptions: {
+                    fieldEmitOptions: {
+                        readOnly: 3
+                    }
+                }
+            },
+            fieldEmitOptions: {
+                readOnly: 1,
+                filter: "foo"
             }
         });
-        expect(result.a).toBe(1337);
-        expect(result.b).toBe("foo1");
-        expect(result.o).toBe(987);
-        expect(result.q).toBe(8);
-        expect(result.c.d).toBe(false);
-        expect(result.c.e).toBe(42);
-        expect(result.c.f(20)).toBe(10 + 1337 + 2 + 20 + 20);
+        expect(options.fieldEmitOptions.readOnly).toBe(1);
+        expect(options.classEmitOptions.fieldEmitOptions.readOnly).toBe(2);
+        expect(options.namespaceEmitOptions.classEmitOptions.fieldEmitOptions.readOnly).toBe(3);
+        expect(options.fieldEmitOptions.filter).toBe("foo");
+        expect(options.classEmitOptions.fieldEmitOptions.filter).toBe("foo");
+        expect(options.namespaceEmitOptions.classEmitOptions.fieldEmitOptions.filter).toBe("foo");
     });
-    it("should be able to handle merging of declare values", function () {
+    it("inheritance propagates correctly for functions", function () {
         var helper = new OptionsHelper_1.OptionsHelper();
-        var offset = 10;
-        var result = helper.mergeOptions({
-            namespaceEmitOptions: {
-                skip: true,
-                structEmitOptions: {
-                    declare: true
-                },
-                interfaceEmitOptions: {
-                    declare: true
+        var options = helper.prepareFileEmitOptionInheritance({
+            classEmitOptions: {
+                fieldEmitOptions: {
+                    perFieldEmitOptions: function (field) { return ({ name: field.name + "_FileClassField" }); }
                 }
-            }
-        }, {
+            },
             namespaceEmitOptions: {
-                skip: true,
-                structEmitOptions: {
-                    declare: false
-                },
-                interfaceEmitOptions: {
-                    declare: false
+                classEmitOptions: {
+                    fieldEmitOptions: {
+                        perFieldEmitOptions: function (field) { return ({ name: field.name + "_FileNamespaceClassField" }); }
+                    }
                 }
+            },
+            fieldEmitOptions: {
+                perFieldEmitOptions: function (field) { return ({ name: field.name + "_FileField" }); }
             }
         });
-        expect(result.namespaceEmitOptions.skip).toBe(true);
-        expect(result.namespaceEmitOptions.structEmitOptions.declare).toBe(false);
-        expect(result.namespaceEmitOptions.interfaceEmitOptions.declare).toBe(false);
+        expect(options.fieldEmitOptions.perFieldEmitOptions(new fluffy_spoon_javascript_csharp_parser_1.CSharpField("foo")).name).toBe("foo_FileField");
+        expect(options.classEmitOptions.fieldEmitOptions.perFieldEmitOptions(new fluffy_spoon_javascript_csharp_parser_1.CSharpField("foo")).name).toBe("foo_FileClassField");
+        expect(options.namespaceEmitOptions.classEmitOptions.fieldEmitOptions.perFieldEmitOptions(new fluffy_spoon_javascript_csharp_parser_1.CSharpField("foo")).name).toBe("foo_FileNamespaceClassField");
     });
 });
 //# sourceMappingURL=OptionsHelperSpec.js.map

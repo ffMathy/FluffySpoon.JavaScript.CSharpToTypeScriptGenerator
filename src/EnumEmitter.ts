@@ -18,26 +18,8 @@ export class EnumEmitter {
 
 	}
 
-	private prepareOptions(options?: EnumEmitOptions) {
-		if (!options) {
-			options = {}
-		}
-
-		if (!options.filter) {
-			options.filter = (field) => field.isPublic;
-		}
-
-		if (!options.strategy) {
-			options.strategy = "default";
-		}
-
-		return options;
-	}
-
-	emitEnums(enums: CSharpEnum[], options?: EnumEmitOptions) {
+	emitEnums(enums: CSharpEnum[], options: EnumEmitOptions) {
 		this.logger.log("Emitting enums", enums);
-
-		options = this.prepareOptions(options);
 
 		for (var enumObject of enums) {
 			this.emitEnum(enumObject, options);
@@ -46,7 +28,7 @@ export class EnumEmitter {
 		this.logger.log("Done emitting enums", enums);
 	}
 
-	emitEnum(enumObject: CSharpEnum, options?: EnumEmitOptions) {
+	emitEnum(enumObject: CSharpEnum, options: EnumEmitOptions) {
 		var node = this.createTypeScriptEnumNode(enumObject, options);
 		if (!node)
 			return;
@@ -54,9 +36,7 @@ export class EnumEmitter {
 		this.stringEmitter.emitTypeScriptNode(node);
 	}
 
-	createTypeScriptEnumNode(enumObject: CSharpEnum, options?: EnumEmitOptions) {
-		options = this.prepareOptions(options);
-
+	createTypeScriptEnumNode(enumObject: CSharpEnum, options: EnumEmitOptions) {
 		if (!options.filter(enumObject))
 			return null;
 

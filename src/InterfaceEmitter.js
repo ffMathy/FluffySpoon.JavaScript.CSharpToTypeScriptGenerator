@@ -4,7 +4,7 @@ var TypeEmitter_1 = require("./TypeEmitter");
 var PropertyEmitter_1 = require("./PropertyEmitter");
 var MethodEmitter_1 = require("./MethodEmitter");
 var ts = require("typescript");
-var InterfaceEmitter = (function () {
+var InterfaceEmitter = /** @class */ (function () {
     function InterfaceEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
         this.logger = logger;
@@ -30,7 +30,6 @@ var InterfaceEmitter = (function () {
     };
     InterfaceEmitter.prototype.createTypeScriptInterfaceNodes = function (interfaceObject, options) {
         var _this = this;
-        options = this.prepareOptions(options);
         options = Object.assign(options, options.perInterfaceEmitOptions(interfaceObject));
         if (!options.filter(interfaceObject))
             return [];
@@ -44,7 +43,7 @@ var InterfaceEmitter = (function () {
         if (options.declare)
             modifiers.push(ts.createToken(ts.SyntaxKind.DeclareKeyword));
         var heritageClauses = new Array();
-        if (interfaceObject.inheritsFrom && this.typeEmitter.canEmitType(interfaceObject.inheritsFrom))
+        if (interfaceObject.inheritsFrom && this.typeEmitter.canEmitType(interfaceObject.inheritsFrom, options.inheritedTypeEmitOptions))
             heritageClauses.push(ts.createHeritageClause(ts.SyntaxKind.ExtendsKeyword, [this.typeEmitter.createTypeScriptExpressionWithTypeArguments(interfaceObject.inheritsFrom, options.inheritedTypeEmitOptions)]));
         var properties = interfaceObject
             .properties
@@ -68,18 +67,6 @@ var InterfaceEmitter = (function () {
         nodes.push(node);
         this.logger.log("Done emitting interface", interfaceObject);
         return nodes;
-    };
-    InterfaceEmitter.prototype.prepareOptions = function (options) {
-        if (!options) {
-            options = {};
-        }
-        if (!options.filter) {
-            options.filter = function (interfaceObject) { return interfaceObject.isPublic; };
-        }
-        if (!options.perInterfaceEmitOptions) {
-            options.perInterfaceEmitOptions = function () { return options; };
-        }
-        return options;
     };
     return InterfaceEmitter;
 }());

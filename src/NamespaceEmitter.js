@@ -5,7 +5,7 @@ var ClassEmitter_1 = require("./ClassEmitter");
 var InterfaceEmitter_1 = require("./InterfaceEmitter");
 var StructEmitter_1 = require("./StructEmitter");
 var ts = require("typescript");
-var NamespaceEmitter = (function () {
+var NamespaceEmitter = /** @class */ (function () {
     function NamespaceEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
         this.logger = logger;
@@ -27,7 +27,6 @@ var NamespaceEmitter = (function () {
         this.stringEmitter.emitTypeScriptNodes(nodes);
     };
     NamespaceEmitter.prototype.createTypeScriptNamespaceNodes = function (namespace, options) {
-        options = this.prepareOptions(options);
         if (!options.filter(namespace))
             return [];
         this.logger.log("Emitting namespace", namespace);
@@ -35,28 +34,36 @@ var NamespaceEmitter = (function () {
         if (options.declare)
             modifiers.push(ts.createToken(ts.SyntaxKind.DeclareKeyword));
         var content = new Array();
-        for (var _i = 0, _a = namespace.classes; _i < _a.length; _i++) {
-            var classObject = _a[_i];
+        for (var _i = 0, _a = namespace.enums; _i < _a.length; _i++) {
+            var enumObject = _a[_i];
+            content.push(this.enumEmitter.createTypeScriptEnumNode(enumObject, Object.assign({ declare: options.skip }, options.enumEmitOptions)));
+        }
+        for (var _b = 0, _c = namespace.classes; _b < _c.length; _b++) {
+            var classObject = _c[_b];
             var classNodes = this.classEmitter.createTypeScriptClassNodes(classObject, Object.assign({ declare: options.skip }, options.classEmitOptions));
-            for (var _b = 0, classNodes_1 = classNodes; _b < classNodes_1.length; _b++) {
-                var classNode = classNodes_1[_b];
+            for (var _d = 0, classNodes_1 = classNodes; _d < classNodes_1.length; _d++) {
+                var classNode = classNodes_1[_d];
                 content.push(classNode);
             }
         }
-        for (var _c = 0, _d = namespace.namespaces; _c < _d.length; _c++) {
-            var namespaceObject = _d[_c];
-            var namespaceNodes = this.createTypeScriptNamespaceNodes(namespaceObject, Object.assign({ declare: options.skip }, Object.assign({}, options)));
-            for (var _e = 0, namespaceNodes_1 = namespaceNodes; _e < namespaceNodes_1.length; _e++) {
-                var namespaceNode = namespaceNodes_1[_e];
+        for (var _e = 0, _f = namespace.interfaces; _e < _f.length; _e++) {
+            var interfaceObject = _f[_e];
+            var interfaceNodes = this.interfaceEmitter.createTypeScriptInterfaceNodes(interfaceObject, Object.assign({ declare: options.skip }, options.interfaceEmitOptions));
+            for (var _g = 0, interfaceNodes_1 = interfaceNodes; _g < interfaceNodes_1.length; _g++) {
+                var interfaceNode = interfaceNodes_1[_g];
+                content.push(interfaceNode);
+            }
+        }
+        for (var _h = 0, _j = namespace.namespaces; _h < _j.length; _h++) {
+            var namespaceObject = _j[_h];
+            var namespaceNodes = this.createTypeScriptNamespaceNodes(namespaceObject, Object.assign(Object.assign({}, options), { declare: false }));
+            for (var _k = 0, namespaceNodes_1 = namespaceNodes; _k < namespaceNodes_1.length; _k++) {
+                var namespaceNode = namespaceNodes_1[_k];
                 content.push(namespaceNode);
             }
         }
-        for (var _f = 0, _g = namespace.enums; _f < _g.length; _f++) {
-            var enumObject = _g[_f];
-            content.push(this.enumEmitter.createTypeScriptEnumNode(enumObject, Object.assign({ declare: options.skip }, options.enumEmitOptions)));
-        }
-        for (var _h = 0, _j = namespace.structs; _h < _j.length; _h++) {
-            var structObject = _j[_h];
+        for (var _l = 0, _m = namespace.structs; _l < _m.length; _l++) {
+            var structObject = _m[_l];
             content.push(this.structEmitter.createTypeScriptStructNode(structObject, Object.assign({ declare: options.skip }, options.structEmitOptions)));
         }
         var nodes = new Array();
@@ -68,15 +75,6 @@ var NamespaceEmitter = (function () {
         }
         this.logger.log("Done emitting namespace", namespace);
         return nodes;
-    };
-    NamespaceEmitter.prototype.prepareOptions = function (options) {
-        if (!options) {
-            options = {};
-        }
-        if (!options.filter) {
-            options.filter = function (namespace) { return true; };
-        }
-        return options;
     };
     return NamespaceEmitter;
 }());

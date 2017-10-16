@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var ts = require("typescript");
-var StringEmitter = (function () {
+var StringEmitter = /** @class */ (function () {
     function StringEmitter(logger) {
         this.logger = logger;
         this._output = '';

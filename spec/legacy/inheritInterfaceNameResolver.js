@@ -50,10 +50,10 @@ namespace MyNamespace.Domain\n\
     Id: number;\n\
     Name: string;\n\
     Title: string;\n\
-    ListFields: string[];\n\
-    IEnumerableFields: string[];\n\
-    ICollectionFields: string[];\n\
-    ArrayFields: string[];\n\
+    ListFields: Array<string>;\n\
+    IEnumerableFields: Array<string>;\n\
+    ICollectionFields: Array<string>;\n\
+    ArrayFields: Array<string>;\n\
     OptionalBool?: boolean;\n\
     SomeDate: string;\n\
     SomeDecimal: number;\n\
@@ -115,10 +115,10 @@ namespace MyNamespace.Domain\n\
     Id: number;\n\
     Name: string;\n\
     Title: string;\n\
-    ListFields: string[];\n\
-    IEnumerableFields: string[];\n\
-    ICollectionFields: string[];\n\
-    ArrayFields: string[];\n\
+    ListFields: Array<string>;\n\
+    IEnumerableFields: Array<string>;\n\
+    ICollectionFields: Array<string>;\n\
+    ArrayFields: Array<string>;\n\
     OptionalBool?: boolean;\n\
     SomeDate: string;\n\
     SomeDecimal: number;\n\

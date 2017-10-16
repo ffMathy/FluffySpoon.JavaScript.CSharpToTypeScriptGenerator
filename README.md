@@ -102,7 +102,7 @@ declare interface MyClass {
 ### Wrapping all emitted code in a namespace
 ```typescript
 var typescriptCode = emitter.emitFile(<FileEmitOptions>{
-  afterParsing: (file: CSharpFile) => {
+  onAfterParsing: (file: CSharpFile) => {
     //we create a namespace, move all items of the file into that namespace, and remove the same items from the file. 
     //we then add the newly created namespace to the file.
 

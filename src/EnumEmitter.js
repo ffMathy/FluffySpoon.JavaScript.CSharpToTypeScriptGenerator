@@ -1,26 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var ts = require("typescript");
-var EnumEmitter = (function () {
+var EnumEmitter = /** @class */ (function () {
     function EnumEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
         this.logger = logger;
     }
-    EnumEmitter.prototype.prepareOptions = function (options) {
-        if (!options) {
-            options = {};
-        }
-        if (!options.filter) {
-            options.filter = function (field) { return field.isPublic; };
-        }
-        if (!options.strategy) {
-            options.strategy = "default";
-        }
-        return options;
-    };
     EnumEmitter.prototype.emitEnums = function (enums, options) {
         this.logger.log("Emitting enums", enums);
-        options = this.prepareOptions(options);
         for (var _i = 0, enums_1 = enums; _i < enums_1.length; _i++) {
             var enumObject = enums_1[_i];
             this.emitEnum(enumObject, options);
@@ -34,7 +21,6 @@ var EnumEmitter = (function () {
         this.stringEmitter.emitTypeScriptNode(node);
     };
     EnumEmitter.prototype.createTypeScriptEnumNode = function (enumObject, options) {
-        options = this.prepareOptions(options);
         if (!options.filter(enumObject))
             return null;
         this.logger.log("Emitting enum", enumObject);

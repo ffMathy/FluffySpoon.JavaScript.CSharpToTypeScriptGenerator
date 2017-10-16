@@ -18,7 +18,7 @@ namespace MyNamespace.Domain\n\
 
 var expectedOutput = "declare enum MyEnum {\n\
     Unknown = -1,\n\
-    Green = 0,\n\
+    Green,\n\
     Red = 1,\n\
     Blue = 2\n\
 }";

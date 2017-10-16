@@ -50,7 +50,7 @@ namespace MyNamespace.Domain\n\
 }\n";
 
 var expectedOutput = "declare enum MyEnum {\n\
-    Green = 0,\n\
+    Green,\n\
     Blue = 1\n\
 }\n\n\
 declare interface MyPoco {\n\

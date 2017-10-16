@@ -22,7 +22,7 @@ namespace MyNamespace.Domain\n\
 }\n";
 
         var expectedOutput = "declare enum MyEnum {\n\
-    Green = 0,\n\
+    Green,\n\
     Red = 1,\n\
     Blue = 2\n\
 }";
@@ -49,7 +49,7 @@ namespace MyNamespace.Domain\n\
 }\n";
 
         var expectedOutput = "declare enum MyEnum {\n\
-    Green = 0,\n\
+    Green,\n\
     Red = 1,\n\
     Blue = 2\n\
 }";

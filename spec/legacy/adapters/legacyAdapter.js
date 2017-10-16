@@ -1,10 +1,12 @@
 "use strict";
 var FileEmitter_1 = require("../../../src/FileEmitter");
+var OptionsHelper_1 = require("../../../src/OptionsHelper");
 var fluffy_spoon_javascript_csharp_parser_1 = require("fluffy-spoon.javascript.csharp-parser");
 Error.stackTraceLimit = 100;
 function LegacyAdapter(contents, options) {
     var emitter = new FileEmitter_1.FileEmitter(contents);
-    var emitOptions = {
+    var optionsHelper = new OptionsHelper_1.OptionsHelper();
+    var emitOptions = optionsHelper.prepareFileEmitOptionDefaults({
         namespaceEmitOptions: {
             skip: true
         },
@@ -20,7 +22,7 @@ function LegacyAdapter(contents, options) {
                 name: property.name
             }); }
         }
-    };
+    });
     emitter.logger.setLogMethod(function (message) {
         var parameters = [];
         for (var _i = 1; _i < arguments.length; _i++) {
@@ -92,6 +94,11 @@ function LegacyAdapter(contents, options) {
         }
         if (options.ignoreInheritance) {
             emitOptions.interfaceEmitOptions.filter = function (classObject) { return options.ignoreInheritance.indexOf(classObject.name) === -1; };
+            emitOptions.interfaceEmitOptions.perInterfaceEmitOptions = function (interfaceObject) { return ({
+                inheritedTypeEmitOptions: {
+                    filter: function (type) { return options.ignoreInheritance.indexOf(type.name) === -1; }
+                }
+            }); };
             emitOptions.classEmitOptions.filter = function (classObject) { return options.ignoreInheritance.indexOf(classObject.name) === -1; };
             emitOptions.classEmitOptions.perClassEmitOptions = function (classObject) { return ({
                 inheritedTypeEmitOptions: {
@@ -101,7 +108,8 @@ function LegacyAdapter(contents, options) {
         }
         if (options.baseNamespace) {
             emitOptions.namespaceEmitOptions.skip = false;
-            emitOptions.afterParsing = function (file) {
+            emitOptions.namespaceEmitOptions.declare = true;
+            emitOptions.onAfterParsing = function (file) {
                 if (file.namespaces.filter(function (n) { return n.name === options.baseNamespace; })[0])
                     return;
                 var namespace = new fluffy_spoon_javascript_csharp_parser_1.CSharpNamespace(options.baseNamespace);

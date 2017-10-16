@@ -33,16 +33,11 @@ namespace MyNamespace.Domain\n\
             get;\n\
             set;\n\
         }\n\
-        public List<string> ListFields { get; set; }\n\
-        public IEnumerable<string> IEnumerableFields { get; set; }\n\
-        public string[] ArrayFields { get; set; }\n\
         public bool? OptionalBool {get; set;}\n\
         public DateTime SomeDate {get;set;}\n\
         public decimal SomeDecimal {get;set;}\n\
         public Guid SomeGuid {get;set;}\n\
         public SomeOtherPoco AnotherPoco {get; set;}\n\
-        public List<SomeOtherPoco> MorePocos {get; set;}\n\
-        public SomeOtherPoco[] ArrayPocos {get; set;}\n\
         public System.DateTime SomeSpecifiedDateTime {get; set;}\n\
     }\n\
 }\n";
@@ -51,16 +46,11 @@ var expectedOutput = "declare interface MyPoco {\n\
     Id: number;\n\
     Name: string;\n\
     Title: string;\n\
-    ListFields: string[];\n\
-    IEnumerableFields: string[];\n\
-    ArrayFields: string[];\n\
     OptionalBool?: boolean;\n\
     SomeDate: Date;\n\
     SomeDecimal: number;\n\
     SomeGuid: string;\n\
     AnotherPoco: SomeOtherPoco;\n\
-    MorePocos: SomeOtherPoco[];\n\
-    ArrayPocos: SomeOtherPoco[];\n\
     SomeSpecifiedDateTime: Date;\n\
 }";
 

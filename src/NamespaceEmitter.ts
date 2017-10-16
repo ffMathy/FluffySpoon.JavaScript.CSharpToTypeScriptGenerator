@@ -37,7 +37,7 @@ export class NamespaceEmitter {
 		this.structEmitter = new StructEmitter(stringEmitter, logger);
 	}
 
-	emitNamespaces(namespaces: CSharpNamespace[], options?: NamespaceEmitOptions) {
+	emitNamespaces(namespaces: CSharpNamespace[], options: NamespaceEmitOptions) {
 		this.logger.log("Emitting namespaces", namespaces);
 
 		for (var namespace of namespaces) {
@@ -47,14 +47,12 @@ export class NamespaceEmitter {
 		this.logger.log("Done emitting namespaces", namespaces);
 	}
 
-	emitNamespace(namespace: CSharpNamespace, options?: NamespaceEmitOptions) {
+	emitNamespace(namespace: CSharpNamespace, options: NamespaceEmitOptions) {
 		var nodes = this.createTypeScriptNamespaceNodes(namespace, options);
 		this.stringEmitter.emitTypeScriptNodes(nodes);
 	}
 
-	createTypeScriptNamespaceNodes(namespace: CSharpNamespace, options?: NamespaceEmitOptions) {
-		options = this.prepareOptions(options);
-
+	createTypeScriptNamespaceNodes(namespace: CSharpNamespace, options: NamespaceEmitOptions) {
 		if (!options.filter(namespace))
 			return [];
 
@@ -65,6 +63,15 @@ export class NamespaceEmitter {
 			modifiers.push(ts.createToken(ts.SyntaxKind.DeclareKeyword));
 
 		var content = new Array<ts.Statement>();
+
+		for (let enumObject of namespace.enums) {
+			content.push(
+				this.enumEmitter.createTypeScriptEnumNode(
+				  enumObject,
+				  Object.assign(
+					  { declare: options.skip },
+					  options.enumEmitOptions)));
+		}
 
 		for (let classObject of namespace.classes) {
 			let classNodes = this.classEmitter.createTypeScriptClassNodes(
@@ -77,24 +84,26 @@ export class NamespaceEmitter {
 			}
 		}
 
+		for (let interfaceObject of namespace.interfaces) {
+			let interfaceNodes = this.interfaceEmitter.createTypeScriptInterfaceNodes(
+				interfaceObject,
+				Object.assign(
+					{ declare: options.skip },
+					options.interfaceEmitOptions));
+			for (let interfaceNode of interfaceNodes) {
+				content.push(interfaceNode);
+			}
+		}
+
 		for (let namespaceObject of namespace.namespaces) {
 			let namespaceNodes = this.createTypeScriptNamespaceNodes(
 				namespaceObject,
 				Object.assign(
-					{ declare: options.skip },
-					Object.assign({}, options)));
+					Object.assign({}, options),
+					{ declare: false }));
 			for (let namespaceNode of namespaceNodes) {
 				content.push(namespaceNode);
 			}
-		}
-
-		for (let enumObject of namespace.enums) {
-			content.push(
-				this.enumEmitter.createTypeScriptEnumNode(
-				  enumObject,
-				  Object.assign(
-					  { declare: options.skip },
-					  options.enumEmitOptions)));
 		}
 
 		for (let structObject of namespace.structs) {
@@ -121,17 +130,5 @@ export class NamespaceEmitter {
 		this.logger.log("Done emitting namespace", namespace);
 
 		return nodes;
-	}
-
-	private prepareOptions(options?: NamespaceEmitOptions) {
-		if (!options) {
-			options = {};
-		}
-
-		if (!options.filter) {
-			options.filter = (namespace) => true;
-		}
-
-		return options;
 	}
 }

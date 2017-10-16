@@ -1,21 +1,20 @@
 ﻿declare interface BeforeClass {
 	foo: string;
-
-	MyProperty: string;
+	myProperty: string;
 }
 
 declare interface MainClass<Foo> {
-	MyProperty: string;
-	BlahProperty: SomeStuff<OtherStuff, RegularStuff>;
-	OtherBlahProperty: OtherStuff[];
+	myProperty: string;
+	blahProperty: SomeStuff<OtherStuff, RegularStuff>;
+	otherBlahProperty: Array<OtherStuff>;
 }
 
 declare namespace MainClass {
 	interface SubClass {
-		MyProperty: string;
+		myProperty: string;
 	}
 }
 
 declare interface OtherClass {
-	MyProperty: string;
+	myProperty: string;
 }

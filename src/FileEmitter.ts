@@ -26,7 +26,7 @@ export interface FileEmitOptions {
 	fieldEmitOptions?: FieldEmitOptions,
 	methodEmitOptions?: MethodEmitOptions,
 
-	afterParsing?: (file: CSharpFile, fileEmitter: StringEmitter) => void
+	onAfterParsing?: (file: CSharpFile, fileEmitter: StringEmitter) => void
 }
 
 export class FileEmitter {
@@ -57,16 +57,20 @@ export class FileEmitter {
 	}
 
 	emitFile(options?: FileEmitOptions) {
+		if(!options)
+			options = {};
+
 		this.logger.log("Emitting file.");
 		
 		console.log("Raw options are", JSON.stringify(options, null, 2));
 
 		options = this.optionsHelper.prepareFileEmitOptionDefaults(options);
+		options = this.optionsHelper.prepareFileEmitOptionInheritance(options);
 		console.log("Parsed options are", JSON.stringify(options, null, 2));
 
 		var file = this.fileParser.parseFile();
-		if (options.afterParsing)
-			options.afterParsing(file, this.stringEmitter);
+		if (options.onAfterParsing)
+			options.onAfterParsing(file, this.stringEmitter);
 
 		console.log("File parsed as", JSON.stringify(file, (key, value) => {
 			if(key === "parent")
@@ -77,12 +81,33 @@ export class FileEmitter {
 
 		var nodes = new Array<ts.Statement>();
 
+		for (let enumObject of file.enums) {
+			let enumNode = this.enumEmitter.createTypeScriptEnumNode(
+				enumObject,
+				Object.assign(
+					{ declare: true },
+					options.enumEmitOptions));
+			nodes.push(enumNode);
+		}
+
 		for (let namespace of file.namespaces) {
 			var namespaceNodes = this.namespaceEmitter.createTypeScriptNamespaceNodes(
 				namespace,
-				options.namespaceEmitOptions);
+				Object.assign(
+					{ declare: true },
+					options.namespaceEmitOptions));
 			for (var namespaceNode of namespaceNodes)
 				nodes.push(namespaceNode);
+		}
+
+		for (let interfaceObject of file.interfaces) {
+			let interfaceNodes = this.interfaceEmitter.createTypeScriptInterfaceNodes(
+				interfaceObject,
+				Object.assign(
+					{ declare: true },
+					options.classEmitOptions));
+			for (let interfaceNode of interfaceNodes)
+				nodes.push(interfaceNode);
 		}
 
 		for (let classObject of file.classes) {
@@ -93,15 +118,6 @@ export class FileEmitter {
 					options.classEmitOptions));
 			for (let classNode of classNodes)
 				nodes.push(classNode);
-		}
-
-		for (let enumObject of file.enums) {
-			let enumNode = this.enumEmitter.createTypeScriptEnumNode(
-				enumObject,
-				Object.assign(
-					{ declare: true },
-					options.enumEmitOptions));
-			nodes.push(enumNode);
 		}
 
 		for (let structObject of file.structs) {

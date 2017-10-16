@@ -19,8 +19,7 @@ export declare class FieldEmitter {
     private logger;
     private typeEmitter;
     constructor(stringEmitter: StringEmitter, logger: Logger);
-    emitFields(fields: CSharpField[], options?: FieldEmitOptions): void;
-    emitField(field: CSharpField, options?: FieldEmitOptions & PerFieldEmitOptions): void;
-    createTypeScriptFieldNode(field: CSharpField, options?: FieldEmitOptions & PerFieldEmitOptions): ts.PropertySignature;
-    private prepareOptions(options?);
+    emitFields(fields: CSharpField[], options: FieldEmitOptions): void;
+    emitField(field: CSharpField, options: FieldEmitOptions & PerFieldEmitOptions): void;
+    createTypeScriptFieldNode(field: CSharpField, options: FieldEmitOptions & PerFieldEmitOptions): ts.PropertySignature;
 }

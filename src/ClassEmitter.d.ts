@@ -36,10 +36,8 @@ export declare class ClassEmitter {
     private methodEmitter;
     private interfaceEmitter;
     private typeEmitter;
-    private namespaceEmitter;
     constructor(stringEmitter: StringEmitter, logger: Logger);
-    emitClasses(classes: CSharpClass[], options?: ClassEmitOptions): void;
-    emitClass(classObject: CSharpClass, options?: ClassEmitOptions): void;
-    createTypeScriptClassNodes(classObject: CSharpClass, options?: ClassEmitOptions & PerClassEmitOptions): ts.Statement[];
-    private prepareOptions(options?);
+    emitClasses(classes: CSharpClass[], options: ClassEmitOptions): void;
+    emitClass(classObject: CSharpClass, options: ClassEmitOptions): void;
+    createTypeScriptClassNodes(classObject: CSharpClass, options: ClassEmitOptions & PerClassEmitOptions): ts.Statement[];
 }

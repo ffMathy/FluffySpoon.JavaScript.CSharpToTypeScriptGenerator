@@ -42,7 +42,7 @@ export class InterfaceEmitter {
 		this.typeEmitter = new TypeEmitter(stringEmitter, logger);
 	}
 
-	emitInterfaces(interfaces: CSharpInterface[], options?: InterfaceEmitOptions) {
+	emitInterfaces(interfaces: CSharpInterface[], options: InterfaceEmitOptions) {
 		this.logger.log("Emitting interfaces", interfaces);
 
 		for (var interfaceObject of interfaces) {
@@ -54,14 +54,13 @@ export class InterfaceEmitter {
 		this.logger.log("Done emitting interfaces", interfaces);
 	}
 
-	emitInterface(interfaceObject: CSharpInterface, options?: InterfaceEmitOptions) {
+	emitInterface(interfaceObject: CSharpInterface, options: InterfaceEmitOptions) {
 		var nodes = this.createTypeScriptInterfaceNodes(interfaceObject, options);
 		for (var node of nodes)
 			this.stringEmitter.emitTypeScriptNode(node);
 	}
 
-	createTypeScriptInterfaceNodes(interfaceObject: CSharpInterface, options?: InterfaceEmitOptions & PerInterfaceEmitOptions) {
-		options = this.prepareOptions(options);
+	createTypeScriptInterfaceNodes(interfaceObject: CSharpInterface, options: InterfaceEmitOptions & PerInterfaceEmitOptions) {
 		options = Object.assign(
 			options,
 			options.perInterfaceEmitOptions(interfaceObject));
@@ -83,7 +82,7 @@ export class InterfaceEmitter {
 			modifiers.push(ts.createToken(ts.SyntaxKind.DeclareKeyword));
 
 		var heritageClauses = new Array<ts.HeritageClause>();
-		if (interfaceObject.inheritsFrom && this.typeEmitter.canEmitType(interfaceObject.inheritsFrom))
+		if (interfaceObject.inheritsFrom && this.typeEmitter.canEmitType(interfaceObject.inheritsFrom, options.inheritedTypeEmitOptions))
 			heritageClauses.push(ts.createHeritageClause(
 				ts.SyntaxKind.ExtendsKeyword,
 				[this.typeEmitter.createTypeScriptExpressionWithTypeArguments(
@@ -123,21 +122,5 @@ export class InterfaceEmitter {
 		this.logger.log("Done emitting interface", interfaceObject);
 
 		return nodes;
-	}
-
-	private prepareOptions(options?: InterfaceEmitOptions) {
-		if (!options) {
-			options = {};
-		}
-
-		if (!options.filter) {
-			options.filter = (interfaceObject) => interfaceObject.isPublic;
-		}
-
-		if (!options.perInterfaceEmitOptions) {
-			options.perInterfaceEmitOptions = () => options;
-		}
-
-		return options;
 	}
 }

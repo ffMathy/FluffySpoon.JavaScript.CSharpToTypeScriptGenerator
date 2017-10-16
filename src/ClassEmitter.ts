@@ -42,7 +42,6 @@ export class ClassEmitter {
 	private methodEmitter: MethodEmitter;
 	private interfaceEmitter: InterfaceEmitter;
 	private typeEmitter: TypeEmitter;
-	private namespaceEmitter: NamespaceEmitter;
 
 	constructor(
 		private stringEmitter: StringEmitter,
@@ -56,7 +55,7 @@ export class ClassEmitter {
 		this.interfaceEmitter = new InterfaceEmitter(stringEmitter, logger);
 	}
 
-	emitClasses(classes: CSharpClass[], options?: ClassEmitOptions) {
+	emitClasses(classes: CSharpClass[], options: ClassEmitOptions) {
 		this.logger.log("Emitting classes", classes);
 
 		for (var classObject of classes) {
@@ -66,85 +65,95 @@ export class ClassEmitter {
 		this.logger.log("Done emitting classes", classes);
 	}
 
-	emitClass(classObject: CSharpClass, options?: ClassEmitOptions) {
+	emitClass(classObject: CSharpClass, options: ClassEmitOptions) {
 		var nodes = this.createTypeScriptClassNodes(classObject, options);
 		for (var node of nodes)
 			this.stringEmitter.emitTypeScriptNode(node);
 	}
 
-	createTypeScriptClassNodes(classObject: CSharpClass, options?: ClassEmitOptions & PerClassEmitOptions) {
-		options = this.prepareOptions(options);
+	createTypeScriptClassNodes(classObject: CSharpClass, options: ClassEmitOptions & PerClassEmitOptions) {
 		options = Object.assign(
 			options,
 			options.perClassEmitOptions(classObject));
-
-		if (!options.filter(classObject))
+			
+		if (!options.filter(classObject)) {
 			return [];
+		}
 
-		if (classObject.properties.length === 0 && classObject.methods.length === 0 && classObject.fields.length === 0) {
-			this.logger.log("Skipping emitting body of class " + classObject.name + " because it contains no properties, fields or methods");
+		var hasNestedChildren = 
+			classObject.interfaces.length > 0 || 
+			classObject.classes.length > 0 || 
+			classObject.structs.length > 0 || 
+			classObject.enums.length > 0;
+
+		var hasDirectChildren = 
+			classObject.properties.length > 0 || 
+			classObject.methods.length > 0 || 
+			classObject.fields.length > 0;
+
+		if (!hasDirectChildren && !hasNestedChildren) {
+			this.logger.log("Skipping emitting body of class " + classObject.name + " because it contains no children");
 			return [];
 		}
 
 		this.logger.log("Emitting class", classObject);
 
 		var nodes = new Array<ts.Statement>();
-		var modifiers = new Array<ts.Modifier>();
 
-		if (options.declare)
-			modifiers.push(ts.createToken(ts.SyntaxKind.DeclareKeyword));
+		if(hasDirectChildren) {
+			var modifiers = new Array<ts.Modifier>();
 
-		var heritageClauses = new Array<ts.HeritageClause>();
-		if (classObject.inheritsFrom && this.typeEmitter.canEmitType(classObject.inheritsFrom))
-			heritageClauses.push(ts.createHeritageClause(
-				ts.SyntaxKind.ExtendsKeyword,
-				[this.typeEmitter.createTypeScriptExpressionWithTypeArguments(
-					classObject.inheritsFrom,
-					options.inheritedTypeEmitOptions)]));
+			if (options.declare)
+				modifiers.push(ts.createToken(ts.SyntaxKind.DeclareKeyword));
 
-		var properties = classObject
-			.properties
-			.map(x => this
-				.propertyEmitter
-				.createTypeScriptPropertyNode(x, options.propertyEmitOptions));
-				
-		var methods = classObject
-			.methods
-			.map(x => this
-				.methodEmitter
-				.createTypeScriptMethodNode(x, options.methodEmitOptions));
+			var heritageClauses = new Array<ts.HeritageClause>();
+			if (classObject.inheritsFrom && this.typeEmitter.canEmitType(classObject.inheritsFrom, options.inheritedTypeEmitOptions))
+				heritageClauses.push(ts.createHeritageClause(
+					ts.SyntaxKind.ExtendsKeyword,
+					[this.typeEmitter.createTypeScriptExpressionWithTypeArguments(
+						classObject.inheritsFrom,
+						options.inheritedTypeEmitOptions)]));
 
-		var genericParameters = new Array<ts.TypeParameterDeclaration>();
-		if (classObject.genericParameters)
-			genericParameters = genericParameters.concat(classObject
-				.genericParameters
+			var properties = classObject
+				.properties
 				.map(x => this
-					.typeEmitter
-					.createTypeScriptTypeParameterDeclaration(x, options.genericParameterTypeEmitOptions)));
+					.propertyEmitter
+					.createTypeScriptPropertyNode(x, options.propertyEmitOptions));
+					
+			var methods = classObject
+				.methods
+				.map(x => this
+					.methodEmitter
+					.createTypeScriptMethodNode(x, options.methodEmitOptions));
 
-		var fields = classObject
-			.fields
-			.map(x => this
-				.fieldEmitter
-				.createTypeScriptFieldNode(x, options.fieldEmitOptions));
+			var genericParameters = new Array<ts.TypeParameterDeclaration>();
+			if (classObject.genericParameters)
+				genericParameters = genericParameters.concat(classObject
+					.genericParameters
+					.map(x => this
+						.typeEmitter
+						.createTypeScriptTypeParameterDeclaration(x, options.genericParameterTypeEmitOptions)));
 
-		var classMembers = [...fields, ...properties, ...methods];
-		var node = ts.createInterfaceDeclaration(
-			[],
-			modifiers,
-			options.name || classObject.name,
-			genericParameters,
-			heritageClauses,
-			classMembers);
-		nodes.push(node);
+			var fields = classObject
+				.fields
+				.map(x => this
+					.fieldEmitter
+					.createTypeScriptFieldNode(x, options.fieldEmitOptions));
 
-		if (classObject.classes.length > 0 ||
-			classObject.interfaces.length > 0 ||
-			classObject.enums.length > 0 ||
-			classObject.structs.length > 0) {
+			var classMembers = [...fields, ...properties, ...methods];
+			var node = ts.createInterfaceDeclaration(
+				[],
+				modifiers,
+				options.name || classObject.name,
+				genericParameters,
+				heritageClauses,
+				classMembers);
+			nodes.push(node);
+		}
 
+		if (hasNestedChildren) {
 			var wrappedNamespace = new CSharpNamespace(options.name || classObject.name);
-			wrappedNamespace.classes = classObject.classes.concat([classObject]);
+			wrappedNamespace.classes = classObject.classes;
 			wrappedNamespace.enums = classObject.enums;
 			wrappedNamespace.interfaces = classObject.interfaces;
 			wrappedNamespace.structs = classObject.structs;
@@ -159,14 +168,19 @@ export class ClassEmitter {
 
 			classObject.parent = wrappedNamespace;
 
-			var namespaceNodes = this.namespaceEmitter.createTypeScriptNamespaceNodes(wrappedNamespace,
+			var namespaceEmitter = new NamespaceEmitter(this.stringEmitter, this.logger);
+			var falseDeclare = { 
+				declare: false
+			};
+			var namespaceNodes = namespaceEmitter.createTypeScriptNamespaceNodes(
+				wrappedNamespace,
 				{
-					classEmitOptions: options,
-					declare: options.declare,
-					enumEmitOptions: options.enumEmitOptions,
-					interfaceEmitOptions: options.interfaceEmitOptions,
-					structEmitOptions: options.structEmitOptions,
-					skip: false
+					classEmitOptions: Object.assign(options, falseDeclare),
+					enumEmitOptions: Object.assign(options.enumEmitOptions, falseDeclare),
+					interfaceEmitOptions: Object.assign(options.interfaceEmitOptions, falseDeclare),
+					structEmitOptions: Object.assign(options.structEmitOptions, falseDeclare),
+					skip: false,
+					declare: true
 				});
 			for (var namespaceNode of namespaceNodes)
 				nodes.push(namespaceNode);
@@ -175,21 +189,5 @@ export class ClassEmitter {
 		this.logger.log("Done emitting class", classObject);
 
 		return nodes;
-	}
-
-	private prepareOptions(options?: ClassEmitOptions) {
-		if (!options) {
-			options = {}
-		}
-
-		if (!options.filter) {
-			options.filter = (classObject) => classObject.isPublic;
-		}
-
-		if (!options.perClassEmitOptions) {
-			options.perClassEmitOptions = () => <PerClassEmitOptions>{};
-		}
-
-		return options;
 	}
 }

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var TypeEmitter_1 = require("./TypeEmitter");
 var ts = require("typescript");
-var FieldEmitter = (function () {
+var FieldEmitter = /** @class */ (function () {
     function FieldEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
         this.logger = logger;
@@ -22,7 +22,7 @@ var FieldEmitter = (function () {
         this.stringEmitter.emitTypeScriptNode(node);
     };
     FieldEmitter.prototype.createTypeScriptFieldNode = function (field, options) {
-        options = Object.assign(this.prepareOptions(options), options.perFieldEmitOptions(field));
+        options = Object.assign(options, options.perFieldEmitOptions(field));
         if (!options.filter(field))
             return null;
         this.logger.log("Emitting field", field);
@@ -32,18 +32,6 @@ var FieldEmitter = (function () {
         var node = ts.createPropertySignature(modifiers, options.name || field.name, field.type.isNullable ? ts.createToken(ts.SyntaxKind.QuestionToken) : null, this.typeEmitter.createTypeScriptTypeReferenceNode(field.type, options.typeEmitOptions), null);
         this.logger.log("Done emitting field", field);
         return node;
-    };
-    FieldEmitter.prototype.prepareOptions = function (options) {
-        if (!options) {
-            options = {};
-        }
-        if (!options.filter) {
-            options.filter = function (field) { return field.isPublic; };
-        }
-        if (!options.perFieldEmitOptions) {
-            options.perFieldEmitOptions = function () { return options; };
-        }
-        return options;
     };
     return FieldEmitter;
 }());

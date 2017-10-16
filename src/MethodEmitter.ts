@@ -31,15 +31,13 @@ export class MethodEmitter {
 		this.typeEmitter = new TypeEmitter(stringEmitter, logger);
 	}
 
-	emitMethods(methods: CSharpMethod[], options?: MethodEmitOptions & PerMethodEmitOptions) {
-		options = this.prepareOptions(options);
-
+	emitMethods(methods: CSharpMethod[], options: MethodEmitOptions & PerMethodEmitOptions) {
 		for (var method of methods) {
 			this.emitMethod(method, options);
 		}
 	}
 
-	emitMethod(method: CSharpMethod, options?: MethodEmitOptions & PerMethodEmitOptions) {
+	emitMethod(method: CSharpMethod, options: MethodEmitOptions & PerMethodEmitOptions) {
 		var node = this.createTypeScriptMethodNode(method, options);
 		if(!node)
 			return;
@@ -47,8 +45,7 @@ export class MethodEmitter {
 		this.stringEmitter.emitTypeScriptNode(node);
 	}
 
-	createTypeScriptMethodNode(method: CSharpMethod, options?: MethodEmitOptions & PerMethodEmitOptions) {
-		options = this.prepareOptions(options);
+	createTypeScriptMethodNode(method: CSharpMethod, options: MethodEmitOptions & PerMethodEmitOptions) {
 		options = Object.assign(
 			options,
 			options.perMethodEmitOptions(method));
@@ -69,22 +66,6 @@ export class MethodEmitter {
 			null);
 
 		return node;
-	}
-
-	private prepareOptions(options?: MethodEmitOptions) {
-		if (!options) {
-			options = {}
-		}
-
-		if (!options.filter) {
-			options.filter = (method) => method.isPublic;
-		}
-
-		if (!options.perMethodEmitOptions) {
-			options.perMethodEmitOptions = () => options;
-		}
-
-		return options;
 	}
 
 	private createTypeScriptMethodParameterNodes(parameters: CSharpMethodParameter[], options: MethodEmitOptions) {

@@ -15,7 +15,7 @@ namespace MyNamespace.Domain\n\
 }\n";
 
 var expectedOutput = "declare enum JustAnEnum {\n\
-    One = 0,\n\
+    One,\n\
     Two = 1\n\
 }";
 

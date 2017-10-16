@@ -45,7 +45,7 @@ export class StructEmitter {
 		this.typeEmitter = new TypeEmitter(stringEmitter, logger);
 	}
 
-	emitStructs(structs: CSharpStruct[], options?: StructEmitOptions) {
+	emitStructs(structs: CSharpStruct[], options: StructEmitOptions) {
 		this.logger.log("Emitting structs", structs);
 
 		for (var struct of structs) {
@@ -55,7 +55,7 @@ export class StructEmitter {
 		this.logger.log("Done emitting structs", structs);
 	}
 
-	emitStruct(struct: CSharpStruct, options?: StructEmitOptions) {
+	emitStruct(struct: CSharpStruct, options: StructEmitOptions) {
 		this.logger.log("Emitting struct", struct);
 
 		var node = this.createTypeScriptStructNode(struct, options);
@@ -65,8 +65,7 @@ export class StructEmitter {
 		this.logger.log("Done emitting struct", struct);
 	}
 
-	createTypeScriptStructNode(struct: CSharpStruct, options?: StructEmitOptions & PerStructEmitOptions) {
-		options = this.prepareOptions(options);
+	createTypeScriptStructNode(struct: CSharpStruct, options: StructEmitOptions & PerStructEmitOptions) {
 		options = Object.assign(
 			options,
 			options.perStructEmitOptions(struct));
@@ -107,21 +106,5 @@ export class StructEmitter {
 			[...properties, ...fields]);
 
 		return node;
-	}
-
-	private prepareOptions(options?: StructEmitOptions) {
-		if (!options) {
-			options = {};
-		}
-
-		if (!options.filter) {
-			options.filter = (struct) => struct.isPublic;
-		}
-
-		if (!options.perStructEmitOptions) {
-			options.perStructEmitOptions = () => options;
-		}
-
-		return options;
 	}
 }

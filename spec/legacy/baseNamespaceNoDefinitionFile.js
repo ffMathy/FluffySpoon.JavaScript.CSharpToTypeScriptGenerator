@@ -20,9 +20,9 @@ namespace MyNamespace\n\
 
 var expectedOutput = "declare namespace MyNamespace {\n\
     enum MyEnum {\n\
-        One = 0,\n\
+        One,\n\
         Two = 1\n\
-    }\n\n\
+    }\n\
     interface MyPoco {\n\
         SomeInt: number;\n\
     }\n\

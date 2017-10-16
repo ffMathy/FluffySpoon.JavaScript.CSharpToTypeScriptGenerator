@@ -48,11 +48,11 @@ export class TypeEmitter {
 		};
 	}
 
-	canEmitType(type: CSharpType, options?: TypeEmitOptions) {
-		return this.prepareOptions(options).filter(type);
+	canEmitType(type: CSharpType, options: TypeEmitOptions) {
+		return options.filter(type);
 	}
 
-	emitType(type: CSharpType, options?: TypeEmitOptions) {
+	emitType(type: CSharpType, options: TypeEmitOptions) {
 		var node = this.createTypeScriptTypeReferenceNode(type, options);
 		if(!node)
 			return;
@@ -60,49 +60,41 @@ export class TypeEmitter {
 		this.stringEmitter.emitTypeScriptNode(node);
 	}
 
-	emitGenericParameters(genericParameters: CSharpType[], options?: TypeEmitOptions) {
-		options = this.prepareOptions(options);
-
+	emitGenericParameters(genericParameters: CSharpType[], options: TypeEmitOptions) {
 		this.stringEmitter.write(this.generateGenericParametersString(genericParameters, options));
 	}
 
-	createTypeScriptExpressionWithTypeArguments(type: CSharpType, options?: TypeEmitOptions) {
-		options = this.prepareOptions(options);
-
+	createTypeScriptExpressionWithTypeArguments(type: CSharpType, options: TypeEmitOptions) {
 		var typeName = this.getNonGenericMatchingTypeMappingAsString(type, options);
 		return ts.createExpressionWithTypeArguments(
 			this.createTypeScriptTypeReferenceNodes(
-				[],
+				type.genericParameters || [],
 				options),
 			ts.createIdentifier(typeName));
 	}
 
-	createTypeScriptTypeReferenceNode(type: CSharpType, options?: TypeEmitOptions) {
-		options = this.prepareOptions(options);
-
+	createTypeScriptTypeReferenceNode(type: CSharpType, options: TypeEmitOptions) {
 		if (!this.canEmitType(type, options))
 			return null;
 
 		this.logger.log("Emitting type", type);
 
 		var type = this.getMatchingTypeMappingAsType(type, options);
-		var node = this.createTypeScriptTypeReferenceNodes([type])[0];
+		var node = this.createTypeScriptTypeReferenceNodes(
+			[type], 
+			options)[0];
 
 		this.logger.log("Done emitting type", type);
 
 		return node;
 	}
 	
-	createTypeScriptTypeParameterDeclaration(type: CSharpType, options?: TypeEmitOptions) {
-		options = this.prepareOptions(options);
-
+	createTypeScriptTypeParameterDeclaration(type: CSharpType, options: TypeEmitOptions) {
 		return ts.createTypeParameterDeclaration(
 			this.getNonGenericMatchingTypeMappingAsString(type, options));
 	}
 
-	createTypeScriptTypeReferenceNodes(types: CSharpType[], options?: TypeEmitOptions) {
-		options = this.prepareOptions(options);
-
+	createTypeScriptTypeReferenceNodes(types: CSharpType[], options: TypeEmitOptions) {
 		var nodes = new Array<ts.TypeReferenceNode>();
 		if(!types)
 			return nodes;
@@ -117,18 +109,6 @@ export class TypeEmitter {
 		return nodes;
 	}
 
-	private prepareOptions(options?: TypeEmitOptions) {
-		if (!options) {
-			options = {};
-		}
-
-		if (!options.filter) {
-			options.filter = (property) => true;
-		}
-
-		return options;
-	}
-
 	private getNonGenericTypeName(type: CSharpType) {
 		var typeName = type.name;
 		if (type.genericParameters) {
@@ -141,7 +121,7 @@ export class TypeEmitter {
 
 	private getNonGenericMatchingTypeMappingAsString(
 		type: CSharpType,
-		options?: TypeEmitOptions) {
+		options: TypeEmitOptions) {
 
 		var mapping = this.getMatchingTypeMappingAsType(type, options);
 		var typeName = this.getNonGenericTypeName(mapping);
@@ -150,7 +130,7 @@ export class TypeEmitter {
 
 	private getMatchingTypeMappingAsType(
 		type: CSharpType,
-		options?: TypeEmitOptions) {
+		options: TypeEmitOptions) {
 
 		var mapping = this.getMatchingTypeMappingAsString(type, options);
 		var type = this.typeParser.parseType(mapping);
@@ -159,10 +139,14 @@ export class TypeEmitter {
 
 	private getMatchingTypeMappingAsString(
 		type: CSharpType,
-		options?: TypeEmitOptions) {
+		options: TypeEmitOptions) {
 
 		if (options && options.mapper) {
-			let mappedValue: string = options.mapper(type, this.getMatchingTypeMappingAsString(type));
+			let mappedValue: string = options.mapper(
+				type, 
+				this.getMatchingTypeMappingAsString(
+					type,
+					options));
 			this.logger.log("mapping", type, mappedValue);
 			if(mappedValue)
 				return mappedValue;

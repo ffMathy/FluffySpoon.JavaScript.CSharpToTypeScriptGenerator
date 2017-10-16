@@ -52,11 +52,11 @@ var expectedOutput = "declare interface MyPoco {\n\
     Id: number;\n\
     Name: string;\n\
     Title: string;\n\
-    ListFields: string[];\n\
-    IEnumerableFields: string[];\n\
-    ArrayFields: string[];\n\
-    NumberArray: number[];\n\
-    NumberList: number[];\n\
+    ListFields: Array<string>;\n\
+    IEnumerableFields: Array<string>;\n\
+    ArrayFields: Array<string>;\n\
+    NumberArray: Array<number>;\n\
+    NumberList: Array<number>;\n\
     OptionalBool?: boolean;\n\
     SomeDate: string;\n\
     SomeDecimal: number;\n\

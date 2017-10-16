@@ -6,6 +6,7 @@ import { PerInterfaceEmitOptions } from '../../../src/InterfaceEmitter';
 import { PerMethodEmitOptions } from '../../../src/MethodEmitter';
 import { PerStructEmitOptions } from '../../../src/StructEmitter';
 import { TypeEmitOptions } from '../../../src/TypeEmitter';
+import { OptionsHelper } from '../../../src/OptionsHelper';
 
 import {
 	CSharpClass,
@@ -17,7 +18,9 @@ Error.stackTraceLimit = 100;
 
 function LegacyAdapter(contents: any, options: any) {
 	var emitter = new FileEmitter(contents);
-	var emitOptions = <FileEmitOptions>{
+
+	var optionsHelper = new OptionsHelper();
+	var emitOptions = optionsHelper.prepareFileEmitOptionDefaults({
 		namespaceEmitOptions: {
 			skip: true
 		},
@@ -33,7 +36,7 @@ function LegacyAdapter(contents: any, options: any) {
 				name: property.name
 			}
 		}
-	};
+	});
 
 	emitter.logger.setLogMethod((message, ...parameters) => {
 		if (parameters.length > 0) {
@@ -114,6 +117,11 @@ function LegacyAdapter(contents: any, options: any) {
 
 		if (options.ignoreInheritance) {
 			emitOptions.interfaceEmitOptions.filter = (classObject) => options.ignoreInheritance.indexOf(classObject.name) === -1;
+			emitOptions.interfaceEmitOptions.perInterfaceEmitOptions = (interfaceObject) => <PerInterfaceEmitOptions>{
+				inheritedTypeEmitOptions: {
+					filter: (type) => options.ignoreInheritance.indexOf(type.name) === -1
+				}
+			};
 			emitOptions.classEmitOptions.filter = (classObject) => options.ignoreInheritance.indexOf(classObject.name) === -1;
 			emitOptions.classEmitOptions.perClassEmitOptions = (classObject) => <PerClassEmitOptions>{
 				inheritedTypeEmitOptions: {
@@ -124,8 +132,9 @@ function LegacyAdapter(contents: any, options: any) {
 
 		if (options.baseNamespace) {
 			emitOptions.namespaceEmitOptions.skip = false;
+			emitOptions.namespaceEmitOptions.declare = true;
 
-			emitOptions.afterParsing = (file) => {
+			emitOptions.onAfterParsing = (file) => {
 				if (file.namespaces.filter(n => n.name === options.baseNamespace)[0])
 					return;
 

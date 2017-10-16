@@ -19,10 +19,9 @@ export declare class MethodEmitter {
     private logger;
     private typeEmitter;
     constructor(stringEmitter: StringEmitter, logger: Logger);
-    emitMethods(methods: CSharpMethod[], options?: MethodEmitOptions & PerMethodEmitOptions): void;
-    emitMethod(method: CSharpMethod, options?: MethodEmitOptions & PerMethodEmitOptions): void;
-    createTypeScriptMethodNode(method: CSharpMethod, options?: MethodEmitOptions & PerMethodEmitOptions): ts.MethodSignature;
-    private prepareOptions(options?);
+    emitMethods(methods: CSharpMethod[], options: MethodEmitOptions & PerMethodEmitOptions): void;
+    emitMethod(method: CSharpMethod, options: MethodEmitOptions & PerMethodEmitOptions): void;
+    createTypeScriptMethodNode(method: CSharpMethod, options: MethodEmitOptions & PerMethodEmitOptions): ts.MethodSignature;
     private createTypeScriptMethodParameterNodes(parameters, options);
     private createTypeScriptMethodParameterNode(parameter, options);
 }

@@ -20,7 +20,7 @@ export interface FileEmitOptions {
     propertyEmitOptions?: PropertyEmitOptions;
     fieldEmitOptions?: FieldEmitOptions;
     methodEmitOptions?: MethodEmitOptions;
-    afterParsing?: (file: CSharpFile, fileEmitter: StringEmitter) => void;
+    onAfterParsing?: (file: CSharpFile, fileEmitter: StringEmitter) => void;
 }
 export declare class FileEmitter {
     readonly stringEmitter: StringEmitter;

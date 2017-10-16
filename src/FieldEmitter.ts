@@ -1,4 +1,5 @@
 import { CSharpField, FieldParser } from 'fluffy-spoon.javascript.csharp-parser';
+
 import { StringEmitter } from './StringEmitter';
 import { TypeEmitter, TypeEmitOptions } from './TypeEmitter';
 import { Logger } from './Logger';
@@ -29,7 +30,7 @@ export class FieldEmitter {
 		this.typeEmitter = new TypeEmitter(stringEmitter, logger);
 	}
 
-	emitFields(fields: CSharpField[], options?: FieldEmitOptions) {
+	emitFields(fields: CSharpField[], options: FieldEmitOptions) {
 		for (var property of fields) {
 			this.emitField(property, options);
 		}
@@ -37,7 +38,7 @@ export class FieldEmitter {
 		this.stringEmitter.removeLastNewLines();
 	}
 
-	emitField(field: CSharpField, options?: FieldEmitOptions & PerFieldEmitOptions) {
+	emitField(field: CSharpField, options: FieldEmitOptions & PerFieldEmitOptions) {
 		var node = this.createTypeScriptFieldNode(field, options);
 		if(!node) 
 			return;
@@ -45,9 +46,9 @@ export class FieldEmitter {
 		this.stringEmitter.emitTypeScriptNode(node);
 	}
 
-	createTypeScriptFieldNode(field: CSharpField, options?: FieldEmitOptions & PerFieldEmitOptions) {
+	createTypeScriptFieldNode(field: CSharpField, options: FieldEmitOptions & PerFieldEmitOptions) {
 		options = Object.assign(
-			this.prepareOptions(options),
+			options,
 			options.perFieldEmitOptions(field));
 
 		if (!options.filter(field))
@@ -69,22 +70,6 @@ export class FieldEmitter {
 		this.logger.log("Done emitting field", field);
 
 		return node;
-	}
-
-	private prepareOptions(options?: FieldEmitOptions) {
-		if (!options) {
-			options = {};
-		}
-
-		if (!options.filter) {
-			options.filter = (field) => field.isPublic;
-		}
-
-		if (!options.perFieldEmitOptions) {
-			options.perFieldEmitOptions = () => options;
-		}
-
-		return options;
 	}
 
 }

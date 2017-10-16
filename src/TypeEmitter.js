@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var fluffy_spoon_javascript_csharp_parser_1 = require("fluffy-spoon.javascript.csharp-parser");
 var RegExHelper_1 = require("./RegExHelper");
 var ts = require("typescript");
-var TypeEmitter = (function () {
+var TypeEmitter = /** @class */ (function () {
     function TypeEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
         this.logger = logger;
@@ -35,7 +35,7 @@ var TypeEmitter = (function () {
         };
     }
     TypeEmitter.prototype.canEmitType = function (type, options) {
-        return this.prepareOptions(options).filter(type);
+        return options.filter(type);
     };
     TypeEmitter.prototype.emitType = function (type, options) {
         var node = this.createTypeScriptTypeReferenceNode(type, options);
@@ -44,30 +44,25 @@ var TypeEmitter = (function () {
         this.stringEmitter.emitTypeScriptNode(node);
     };
     TypeEmitter.prototype.emitGenericParameters = function (genericParameters, options) {
-        options = this.prepareOptions(options);
         this.stringEmitter.write(this.generateGenericParametersString(genericParameters, options));
     };
     TypeEmitter.prototype.createTypeScriptExpressionWithTypeArguments = function (type, options) {
-        options = this.prepareOptions(options);
         var typeName = this.getNonGenericMatchingTypeMappingAsString(type, options);
-        return ts.createExpressionWithTypeArguments(this.createTypeScriptTypeReferenceNodes([], options), ts.createIdentifier(typeName));
+        return ts.createExpressionWithTypeArguments(this.createTypeScriptTypeReferenceNodes(type.genericParameters || [], options), ts.createIdentifier(typeName));
     };
     TypeEmitter.prototype.createTypeScriptTypeReferenceNode = function (type, options) {
-        options = this.prepareOptions(options);
         if (!this.canEmitType(type, options))
             return null;
         this.logger.log("Emitting type", type);
         var type = this.getMatchingTypeMappingAsType(type, options);
-        var node = this.createTypeScriptTypeReferenceNodes([type])[0];
+        var node = this.createTypeScriptTypeReferenceNodes([type], options)[0];
         this.logger.log("Done emitting type", type);
         return node;
     };
     TypeEmitter.prototype.createTypeScriptTypeParameterDeclaration = function (type, options) {
-        options = this.prepareOptions(options);
         return ts.createTypeParameterDeclaration(this.getNonGenericMatchingTypeMappingAsString(type, options));
     };
     TypeEmitter.prototype.createTypeScriptTypeReferenceNodes = function (types, options) {
-        options = this.prepareOptions(options);
         var nodes = new Array();
         if (!types)
             return nodes;
@@ -77,15 +72,6 @@ var TypeEmitter = (function () {
             nodes.push(node);
         }
         return nodes;
-    };
-    TypeEmitter.prototype.prepareOptions = function (options) {
-        if (!options) {
-            options = {};
-        }
-        if (!options.filter) {
-            options.filter = function (property) { return true; };
-        }
-        return options;
     };
     TypeEmitter.prototype.getNonGenericTypeName = function (type) {
         var typeName = type.name;
@@ -107,7 +93,7 @@ var TypeEmitter = (function () {
     };
     TypeEmitter.prototype.getMatchingTypeMappingAsString = function (type, options) {
         if (options && options.mapper) {
-            var mappedValue_1 = options.mapper(type, this.getMatchingTypeMappingAsString(type));
+            var mappedValue_1 = options.mapper(type, this.getMatchingTypeMappingAsString(type, options));
             this.logger.log("mapping", type, mappedValue_1);
             if (mappedValue_1)
                 return mappedValue_1;

@@ -11,8 +11,7 @@ export declare class EnumEmitter {
     private stringEmitter;
     private logger;
     constructor(stringEmitter: StringEmitter, logger: Logger);
-    private prepareOptions(options?);
-    emitEnums(enums: CSharpEnum[], options?: EnumEmitOptions): void;
-    emitEnum(enumObject: CSharpEnum, options?: EnumEmitOptions): void;
-    createTypeScriptEnumNode(enumObject: CSharpEnum, options?: EnumEmitOptions): ts.Statement;
+    emitEnums(enums: CSharpEnum[], options: EnumEmitOptions): void;
+    emitEnum(enumObject: CSharpEnum, options: EnumEmitOptions): void;
+    createTypeScriptEnumNode(enumObject: CSharpEnum, options: EnumEmitOptions): ts.Statement;
 }

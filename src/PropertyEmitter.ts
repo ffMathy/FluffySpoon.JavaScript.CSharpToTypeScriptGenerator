@@ -29,22 +29,21 @@ export class PropertyEmitter {
 		this.typeEmitter = new TypeEmitter(stringEmitter, logger);
 	}
 
-	emitProperties(properties: CSharpProperty[], options?: PropertyEmitOptions & PerPropertyEmitOptions) {
-		options = this.prepareOptions(options);
-
+	emitProperties(properties: CSharpProperty[], options: PropertyEmitOptions & PerPropertyEmitOptions) {
 		for (var property of properties) {
 			this.emitProperty(property, options);
 		}
 	}
 
-	emitProperty(property: CSharpProperty, options?: PropertyEmitOptions & PerPropertyEmitOptions) {
+	emitProperty(property: CSharpProperty, options: PropertyEmitOptions & PerPropertyEmitOptions) {
 		var node = this.createTypeScriptPropertyNode(property, options);
-		if(node)
-			this.stringEmitter.emitTypeScriptNode(node);
+		if(!node)
+			return;
+
+		this.stringEmitter.emitTypeScriptNode(node);
 	}
 
-	createTypeScriptPropertyNode(property: CSharpProperty, options?: PropertyEmitOptions & PerPropertyEmitOptions) {
-		options = this.prepareOptions(options);
+	createTypeScriptPropertyNode(property: CSharpProperty, options: PropertyEmitOptions & PerPropertyEmitOptions) {
 		options = Object.assign(
 			options,
 			options.perPropertyEmitOptions(property));
@@ -60,28 +59,12 @@ export class PropertyEmitter {
 			modifiers,
 			options.name || property.name,
 			property.type.isNullable ? ts.createToken(ts.SyntaxKind.QuestionToken) : null,
-			this.typeEmitter.createTypeScriptTypeReferenceNode(property.type, options.typeEmitOptions),
+			this.typeEmitter.createTypeScriptTypeReferenceNode(
+				property.type, 
+				options.typeEmitOptions),
 			null);
 
 		return node;
-	}
-
-	private prepareOptions(options?: PropertyEmitOptions) {
-		if (!options) {
-			options = {};
-		}
-
-		if (!options.filter) {
-			options.filter = (property) => property.isPublic;
-		}
-
-		if (!options.perPropertyEmitOptions) {
-			options.perPropertyEmitOptions = (property) => <PerPropertyEmitOptions>{
-				name: property.name.charAt(0).toLowerCase() + property.name.substring(1)
-			};
-		}
-
-		return options;
 	}
 
 }

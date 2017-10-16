@@ -27,8 +27,7 @@ export declare class StructEmitter {
     private methodEmitter;
     private typeEmitter;
     constructor(stringEmitter: StringEmitter, logger: Logger);
-    emitStructs(structs: CSharpStruct[], options?: StructEmitOptions): void;
-    emitStruct(struct: CSharpStruct, options?: StructEmitOptions): void;
-    createTypeScriptStructNode(struct: CSharpStruct, options?: StructEmitOptions & PerStructEmitOptions): ts.InterfaceDeclaration;
-    private prepareOptions(options?);
+    emitStructs(structs: CSharpStruct[], options: StructEmitOptions): void;
+    emitStruct(struct: CSharpStruct, options: StructEmitOptions): void;
+    createTypeScriptStructNode(struct: CSharpStruct, options: StructEmitOptions & PerStructEmitOptions): ts.InterfaceDeclaration;
 }

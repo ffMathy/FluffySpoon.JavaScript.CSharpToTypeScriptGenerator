@@ -7,8 +7,9 @@ var PropertyEmitter_1 = require("./PropertyEmitter");
 var InterfaceEmitter_1 = require("./InterfaceEmitter");
 var FieldEmitter_1 = require("./FieldEmitter");
 var MethodEmitter_1 = require("./MethodEmitter");
+var NamespaceEmitter_1 = require("./NamespaceEmitter");
 var ts = require("typescript");
-var ClassEmitter = (function () {
+var ClassEmitter = /** @class */ (function () {
     function ClassEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
         this.logger = logger;
@@ -36,53 +37,59 @@ var ClassEmitter = (function () {
     };
     ClassEmitter.prototype.createTypeScriptClassNodes = function (classObject, options) {
         var _this = this;
-        options = this.prepareOptions(options);
         options = Object.assign(options, options.perClassEmitOptions(classObject));
-        if (!options.filter(classObject))
+        if (!options.filter(classObject)) {
             return [];
-        if (classObject.properties.length === 0 && classObject.methods.length === 0 && classObject.fields.length === 0) {
-            this.logger.log("Skipping emitting body of class " + classObject.name + " because it contains no properties, fields or methods");
+        }
+        var hasNestedChildren = classObject.interfaces.length > 0 ||
+            classObject.classes.length > 0 ||
+            classObject.structs.length > 0 ||
+            classObject.enums.length > 0;
+        var hasDirectChildren = classObject.properties.length > 0 ||
+            classObject.methods.length > 0 ||
+            classObject.fields.length > 0;
+        if (!hasDirectChildren && !hasNestedChildren) {
+            this.logger.log("Skipping emitting body of class " + classObject.name + " because it contains no children");
             return [];
         }
         this.logger.log("Emitting class", classObject);
         var nodes = new Array();
-        var modifiers = new Array();
-        if (options.declare)
-            modifiers.push(ts.createToken(ts.SyntaxKind.DeclareKeyword));
-        var heritageClauses = new Array();
-        if (classObject.inheritsFrom && this.typeEmitter.canEmitType(classObject.inheritsFrom))
-            heritageClauses.push(ts.createHeritageClause(ts.SyntaxKind.ExtendsKeyword, [this.typeEmitter.createTypeScriptExpressionWithTypeArguments(classObject.inheritsFrom, options.inheritedTypeEmitOptions)]));
-        var properties = classObject
-            .properties
-            .map(function (x) { return _this
-            .propertyEmitter
-            .createTypeScriptPropertyNode(x, options.propertyEmitOptions); });
-        var methods = classObject
-            .methods
-            .map(function (x) { return _this
-            .methodEmitter
-            .createTypeScriptMethodNode(x, options.methodEmitOptions); });
-        var genericParameters = new Array();
-        if (classObject.genericParameters)
-            genericParameters = genericParameters.concat(classObject
-                .genericParameters
+        if (hasDirectChildren) {
+            var modifiers = new Array();
+            if (options.declare)
+                modifiers.push(ts.createToken(ts.SyntaxKind.DeclareKeyword));
+            var heritageClauses = new Array();
+            if (classObject.inheritsFrom && this.typeEmitter.canEmitType(classObject.inheritsFrom, options.inheritedTypeEmitOptions))
+                heritageClauses.push(ts.createHeritageClause(ts.SyntaxKind.ExtendsKeyword, [this.typeEmitter.createTypeScriptExpressionWithTypeArguments(classObject.inheritsFrom, options.inheritedTypeEmitOptions)]));
+            var properties = classObject
+                .properties
                 .map(function (x) { return _this
-                .typeEmitter
-                .createTypeScriptTypeParameterDeclaration(x, options.genericParameterTypeEmitOptions); }));
-        var fields = classObject
-            .fields
-            .map(function (x) { return _this
-            .fieldEmitter
-            .createTypeScriptFieldNode(x, options.fieldEmitOptions); });
-        var classMembers = fields.concat(properties, methods);
-        var node = ts.createInterfaceDeclaration([], modifiers, options.name || classObject.name, genericParameters, heritageClauses, classMembers);
-        nodes.push(node);
-        if (classObject.classes.length > 0 ||
-            classObject.interfaces.length > 0 ||
-            classObject.enums.length > 0 ||
-            classObject.structs.length > 0) {
+                .propertyEmitter
+                .createTypeScriptPropertyNode(x, options.propertyEmitOptions); });
+            var methods = classObject
+                .methods
+                .map(function (x) { return _this
+                .methodEmitter
+                .createTypeScriptMethodNode(x, options.methodEmitOptions); });
+            var genericParameters = new Array();
+            if (classObject.genericParameters)
+                genericParameters = genericParameters.concat(classObject
+                    .genericParameters
+                    .map(function (x) { return _this
+                    .typeEmitter
+                    .createTypeScriptTypeParameterDeclaration(x, options.genericParameterTypeEmitOptions); }));
+            var fields = classObject
+                .fields
+                .map(function (x) { return _this
+                .fieldEmitter
+                .createTypeScriptFieldNode(x, options.fieldEmitOptions); });
+            var classMembers = fields.concat(properties, methods);
+            var node = ts.createInterfaceDeclaration([], modifiers, options.name || classObject.name, genericParameters, heritageClauses, classMembers);
+            nodes.push(node);
+        }
+        if (hasNestedChildren) {
             var wrappedNamespace = new fluffy_spoon_javascript_csharp_parser_1.CSharpNamespace(options.name || classObject.name);
-            wrappedNamespace.classes = classObject.classes.concat([classObject]);
+            wrappedNamespace.classes = classObject.classes;
             wrappedNamespace.enums = classObject.enums;
             wrappedNamespace.interfaces = classObject.interfaces;
             wrappedNamespace.structs = classObject.structs;
@@ -93,13 +100,17 @@ var ClassEmitter = (function () {
             classObject.interfaces = [];
             classObject.structs = [];
             classObject.parent = wrappedNamespace;
-            var namespaceNodes = this.namespaceEmitter.createTypeScriptNamespaceNodes(wrappedNamespace, {
-                classEmitOptions: options,
-                declare: options.declare,
-                enumEmitOptions: options.enumEmitOptions,
-                interfaceEmitOptions: options.interfaceEmitOptions,
-                structEmitOptions: options.structEmitOptions,
-                skip: false
+            var namespaceEmitter = new NamespaceEmitter_1.NamespaceEmitter(this.stringEmitter, this.logger);
+            var falseDeclare = {
+                declare: false
+            };
+            var namespaceNodes = namespaceEmitter.createTypeScriptNamespaceNodes(wrappedNamespace, {
+                classEmitOptions: Object.assign(options, falseDeclare),
+                enumEmitOptions: Object.assign(options.enumEmitOptions, falseDeclare),
+                interfaceEmitOptions: Object.assign(options.interfaceEmitOptions, falseDeclare),
+                structEmitOptions: Object.assign(options.structEmitOptions, falseDeclare),
+                skip: false,
+                declare: true
             });
             for (var _i = 0, namespaceNodes_1 = namespaceNodes; _i < namespaceNodes_1.length; _i++) {
                 var namespaceNode = namespaceNodes_1[_i];
@@ -108,18 +119,6 @@ var ClassEmitter = (function () {
         }
         this.logger.log("Done emitting class", classObject);
         return nodes;
-    };
-    ClassEmitter.prototype.prepareOptions = function (options) {
-        if (!options) {
-            options = {};
-        }
-        if (!options.filter) {
-            options.filter = function (classObject) { return classObject.isPublic; };
-        }
-        if (!options.perClassEmitOptions) {
-            options.perClassEmitOptions = function () { return ({}); };
-        }
-        return options;
     };
     return ClassEmitter;
 }());
