@@ -5,389 +5,43 @@ var OptionsHelper = /** @class */ (function () {
     }
     OptionsHelper.prototype.mergeOptions = function (defaultOptions, newOptions) {
         var me = this;
-        if (!Array.isArray(defaultOptions) && !Array.isArray(newOptions) && typeof defaultOptions === "object" && typeof newOptions === "object") {
+        if (typeof defaultOptions === "function")
+            return null;
+        if (typeof newOptions === "function")
+            return null;
+        if (typeof defaultOptions === "undefined")
+            return newOptions;
+        if (typeof newOptions === "undefined")
+            return defaultOptions;
+        if (!Array.isArray(defaultOptions) && !Array.isArray(newOptions) &&
+            typeof defaultOptions === "object" && typeof newOptions === "object") {
             var parent = Object.assign({}, defaultOptions);
             var child = Object.assign({}, newOptions);
-            for (var parentKey in parent) {
-                var _loop_1 = function () {
+            for (var parentKey in parent)
+                for (var childKey in child) {
                     if (!parent.hasOwnProperty(parentKey))
-                        return "continue";
+                        continue;
                     if (!child.hasOwnProperty(childKey))
-                        return "continue";
+                        continue;
                     if (parentKey.toString() !== childKey.toString())
-                        return "continue";
-                    defaultValue = parent[parentKey];
+                        continue;
+                    var defaultValue = parent[parentKey];
                     if (typeof defaultValue !== "undefined" && typeof defaultValue !== "object" && typeof defaultValue !== "function")
-                        return "continue";
-                    newValue = child[childKey];
+                        continue;
+                    var newValue = child[childKey];
                     if (typeof defaultValue !== typeof newValue)
                         throw new Error("Could not merge options [" + typeof defaultValue + "] " + parentKey + " and [" + typeof newValue + "] " + childKey + ".");
-                    if (defaultValue === null || newValue === null)
-                        return "continue";
-                    type = typeof defaultValue;
-                    if (type === "function") {
-                        var oldChildValue_1 = newValue;
-                        newValue = function () {
-                            var parentFunctionOutput = typeof defaultValue !== "function" ? {} :
-                                defaultValue.apply(defaultValue, arguments);
-                            var childFunctionOutput = typeof oldChildValue_1 !== "function" ? {} :
-                                oldChildValue_1.apply(defaultValue, arguments);
-                            return me.mergeOptions(parentFunctionOutput, childFunctionOutput);
-                        };
-                    }
-                    else {
-                        newValue = this_1.mergeOptions(defaultValue, newValue);
-                    }
+                    if (typeof defaultValue === "function")
+                        continue;
+                    newValue = this.mergeOptions(defaultValue, newValue);
                     parent[parentKey] = defaultValue;
                     child[childKey] = newValue;
-                };
-                var this_1 = this, defaultValue, newValue, type;
-                for (var childKey in child) {
-                    _loop_1();
                 }
-            }
-            console.log("Merging option object", parent, "with", child);
-            var merged = Object.assign(parent, child);
-            return merged;
+            return Object.assign(parent, child);
         }
-        var result = (typeof newOptions !== "undefined" ? newOptions : defaultOptions);
-        return result;
-    };
-    OptionsHelper.prototype.prepareFileEmitOptionInheritance = function (options) {
-        var _this = this;
-        var tree = {
-            applyInheritance: function (fileEmitOptions) {
-                return [
-                    {
-                        propertyName: "methodEmitOptions",
-                        applyInheritance: function (methodEmitOptions) {
-                            methodEmitOptions.argumentTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.argumentTypeEmitOptions);
-                            methodEmitOptions.returnTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.returnTypeEmitOptions);
-                        }
-                    },
-                    {
-                        propertyName: "fieldEmitOptions",
-                        applyInheritance: function (fieldEmitOptions) {
-                            console.log("Merging file members into file.field members");
-                            fieldEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, fieldEmitOptions.typeEmitOptions);
-                        }
-                    },
-                    {
-                        propertyName: "propertyEmitOptions",
-                        applyInheritance: function (propertyEmitOptions) {
-                            propertyEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, propertyEmitOptions.typeEmitOptions);
-                        }
-                    },
-                    {
-                        propertyName: "namespaceEmitOptions",
-                        applyInheritance: function (namespaceEmitOptions) {
-                            console.log("Merging file members into file.namespace members");
-                            namespaceEmitOptions.classEmitOptions = _this.mergeOptions(fileEmitOptions.classEmitOptions, namespaceEmitOptions.classEmitOptions);
-                            namespaceEmitOptions.enumEmitOptions = _this.mergeOptions(fileEmitOptions.enumEmitOptions, namespaceEmitOptions.enumEmitOptions);
-                            namespaceEmitOptions.interfaceEmitOptions = _this.mergeOptions(fileEmitOptions.interfaceEmitOptions, namespaceEmitOptions.interfaceEmitOptions);
-                            namespaceEmitOptions.structEmitOptions = _this.mergeOptions(fileEmitOptions.structEmitOptions, namespaceEmitOptions.structEmitOptions);
-                            return [
-                                {
-                                    propertyName: "structEmitOptions",
-                                    applyInheritance: function (structEmitOptions) {
-                                        structEmitOptions.fieldEmitOptions = _this.mergeOptions(fileEmitOptions.fieldEmitOptions, structEmitOptions.fieldEmitOptions);
-                                        structEmitOptions.methodEmitOptions = _this.mergeOptions(fileEmitOptions.methodEmitOptions, structEmitOptions.methodEmitOptions);
-                                        structEmitOptions.propertyEmitOptions = _this.mergeOptions(fileEmitOptions.propertyEmitOptions, structEmitOptions.propertyEmitOptions);
-                                        return [
-                                            {
-                                                propertyName: "methodEmitOptions",
-                                                applyInheritance: function (methodEmitOptions) {
-                                                    methodEmitOptions.argumentTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.argumentTypeEmitOptions);
-                                                    methodEmitOptions.returnTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.returnTypeEmitOptions);
-                                                }
-                                            },
-                                            {
-                                                propertyName: "propertyEmitOptions",
-                                                applyInheritance: function (propertyEmitOptions) {
-                                                    propertyEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, propertyEmitOptions.typeEmitOptions);
-                                                }
-                                            },
-                                            {
-                                                propertyName: "fieldEmitOptions",
-                                                applyInheritance: function (fieldEmitOptions) {
-                                                    fieldEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, fieldEmitOptions.typeEmitOptions);
-                                                }
-                                            }
-                                        ];
-                                    }
-                                },
-                                {
-                                    propertyName: "interfaceEmitOptions",
-                                    applyInheritance: function (interfaceEmitOptions) {
-                                        interfaceEmitOptions.genericParameterTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, interfaceEmitOptions.genericParameterTypeEmitOptions);
-                                        interfaceEmitOptions.inheritedTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, interfaceEmitOptions.inheritedTypeEmitOptions);
-                                        interfaceEmitOptions.methodEmitOptions = _this.mergeOptions(fileEmitOptions.methodEmitOptions, interfaceEmitOptions.methodEmitOptions);
-                                        interfaceEmitOptions.propertyEmitOptions = _this.mergeOptions(fileEmitOptions.propertyEmitOptions, interfaceEmitOptions.propertyEmitOptions);
-                                        return [
-                                            {
-                                                propertyName: "methodEmitOptions",
-                                                applyInheritance: function (methodEmitOptions) {
-                                                    methodEmitOptions.argumentTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.argumentTypeEmitOptions);
-                                                    methodEmitOptions.returnTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.returnTypeEmitOptions);
-                                                }
-                                            },
-                                            {
-                                                propertyName: "propertyEmitOptions",
-                                                applyInheritance: function (propertyEmitOptions) {
-                                                    propertyEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, propertyEmitOptions.typeEmitOptions);
-                                                }
-                                            }
-                                        ];
-                                    }
-                                },
-                                {
-                                    propertyName: "classEmitOptions",
-                                    applyInheritance: function (classEmitOptions) {
-                                        console.log("Merging file.namespace members into file.namespace.class members");
-                                        classEmitOptions.enumEmitOptions = _this.mergeOptions(namespaceEmitOptions.enumEmitOptions, classEmitOptions.enumEmitOptions);
-                                        classEmitOptions.fieldEmitOptions = _this.mergeOptions(fileEmitOptions.fieldEmitOptions, classEmitOptions.fieldEmitOptions);
-                                        classEmitOptions.genericParameterTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, classEmitOptions.genericParameterTypeEmitOptions);
-                                        classEmitOptions.inheritedTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, classEmitOptions.inheritedTypeEmitOptions);
-                                        classEmitOptions.interfaceEmitOptions = _this.mergeOptions(namespaceEmitOptions.interfaceEmitOptions, classEmitOptions.interfaceEmitOptions);
-                                        classEmitOptions.methodEmitOptions = _this.mergeOptions(fileEmitOptions.methodEmitOptions, classEmitOptions.methodEmitOptions);
-                                        classEmitOptions.propertyEmitOptions = _this.mergeOptions(fileEmitOptions.propertyEmitOptions, classEmitOptions.propertyEmitOptions);
-                                        classEmitOptions.structEmitOptions = _this.mergeOptions(namespaceEmitOptions.structEmitOptions, classEmitOptions.structEmitOptions);
-                                        return [
-                                            {
-                                                propertyName: "methodEmitOptions",
-                                                applyInheritance: function (methodEmitOptions) {
-                                                    methodEmitOptions.argumentTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.argumentTypeEmitOptions);
-                                                    methodEmitOptions.returnTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.returnTypeEmitOptions);
-                                                }
-                                            },
-                                            {
-                                                propertyName: "propertyEmitOptions",
-                                                applyInheritance: function (propertyEmitOptions) {
-                                                    propertyEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, propertyEmitOptions.typeEmitOptions);
-                                                }
-                                            },
-                                            {
-                                                propertyName: "fieldEmitOptions",
-                                                applyInheritance: function (fieldEmitOptions) {
-                                                    console.log("Merging file.namespace.class members into file.namespace.class.field members");
-                                                    fieldEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, fieldEmitOptions.typeEmitOptions);
-                                                }
-                                            },
-                                            {
-                                                propertyName: "structEmitOptions",
-                                                applyInheritance: function (structEmitOptions) {
-                                                    structEmitOptions.fieldEmitOptions = _this.mergeOptions(classEmitOptions.fieldEmitOptions, structEmitOptions.fieldEmitOptions);
-                                                    structEmitOptions.methodEmitOptions = _this.mergeOptions(classEmitOptions.methodEmitOptions, structEmitOptions.methodEmitOptions);
-                                                    structEmitOptions.propertyEmitOptions = _this.mergeOptions(classEmitOptions.propertyEmitOptions, structEmitOptions.propertyEmitOptions);
-                                                    return [
-                                                        {
-                                                            propertyName: "methodEmitOptions",
-                                                            applyInheritance: function (methodEmitOptions) {
-                                                                methodEmitOptions.argumentTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.argumentTypeEmitOptions);
-                                                                methodEmitOptions.returnTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.returnTypeEmitOptions);
-                                                            }
-                                                        },
-                                                        {
-                                                            propertyName: "propertyEmitOptions",
-                                                            applyInheritance: function (propertyEmitOptions) {
-                                                                propertyEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, propertyEmitOptions.typeEmitOptions);
-                                                            }
-                                                        },
-                                                        {
-                                                            propertyName: "fieldEmitOptions",
-                                                            applyInheritance: function (fieldEmitOptions) {
-                                                                fieldEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, fieldEmitOptions.typeEmitOptions);
-                                                            }
-                                                        }
-                                                    ];
-                                                }
-                                            },
-                                            {
-                                                propertyName: "interfaceEmitOptions",
-                                                applyInheritance: function (interfaceEmitOptions) {
-                                                    interfaceEmitOptions.genericParameterTypeEmitOptions = _this.mergeOptions(classEmitOptions.genericParameterTypeEmitOptions, interfaceEmitOptions.genericParameterTypeEmitOptions);
-                                                    interfaceEmitOptions.inheritedTypeEmitOptions = _this.mergeOptions(classEmitOptions.inheritedTypeEmitOptions, interfaceEmitOptions.inheritedTypeEmitOptions);
-                                                    interfaceEmitOptions.methodEmitOptions = _this.mergeOptions(classEmitOptions.methodEmitOptions, interfaceEmitOptions.methodEmitOptions);
-                                                    interfaceEmitOptions.propertyEmitOptions = _this.mergeOptions(classEmitOptions.propertyEmitOptions, interfaceEmitOptions.propertyEmitOptions);
-                                                    return [
-                                                        {
-                                                            propertyName: "methodEmitOptions",
-                                                            applyInheritance: function (methodEmitOptions) {
-                                                                methodEmitOptions.argumentTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.argumentTypeEmitOptions);
-                                                                methodEmitOptions.returnTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.returnTypeEmitOptions);
-                                                            }
-                                                        },
-                                                        {
-                                                            propertyName: "propertyEmitOptions",
-                                                            applyInheritance: function (propertyEmitOptions) {
-                                                                propertyEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, propertyEmitOptions.typeEmitOptions);
-                                                            }
-                                                        }
-                                                    ];
-                                                }
-                                            }
-                                        ];
-                                    }
-                                }
-                            ];
-                        }
-                    },
-                    {
-                        propertyName: "structEmitOptions",
-                        applyInheritance: function (structEmitOptions) {
-                            structEmitOptions.fieldEmitOptions = _this.mergeOptions(fileEmitOptions.fieldEmitOptions, structEmitOptions.fieldEmitOptions);
-                            structEmitOptions.methodEmitOptions = _this.mergeOptions(fileEmitOptions.methodEmitOptions, structEmitOptions.methodEmitOptions);
-                            structEmitOptions.propertyEmitOptions = _this.mergeOptions(fileEmitOptions.propertyEmitOptions, structEmitOptions.propertyEmitOptions);
-                            return [
-                                {
-                                    propertyName: "methodEmitOptions",
-                                    applyInheritance: function (methodEmitOptions) {
-                                        methodEmitOptions.argumentTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.argumentTypeEmitOptions);
-                                        methodEmitOptions.returnTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.returnTypeEmitOptions);
-                                    }
-                                },
-                                {
-                                    propertyName: "propertyEmitOptions",
-                                    applyInheritance: function (propertyEmitOptions) {
-                                        propertyEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, propertyEmitOptions.typeEmitOptions);
-                                    }
-                                },
-                                {
-                                    propertyName: "fieldEmitOptions",
-                                    applyInheritance: function (fieldEmitOptions) {
-                                        fieldEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, fieldEmitOptions.typeEmitOptions);
-                                    }
-                                }
-                            ];
-                        }
-                    },
-                    {
-                        propertyName: "interfaceEmitOptions",
-                        applyInheritance: function (interfaceEmitOptions) {
-                            interfaceEmitOptions.genericParameterTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, interfaceEmitOptions.genericParameterTypeEmitOptions);
-                            interfaceEmitOptions.inheritedTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, interfaceEmitOptions.inheritedTypeEmitOptions);
-                            interfaceEmitOptions.methodEmitOptions = _this.mergeOptions(fileEmitOptions.methodEmitOptions, interfaceEmitOptions.methodEmitOptions);
-                            interfaceEmitOptions.propertyEmitOptions = _this.mergeOptions(fileEmitOptions.propertyEmitOptions, interfaceEmitOptions.propertyEmitOptions);
-                            return [
-                                {
-                                    propertyName: "methodEmitOptions",
-                                    applyInheritance: function (methodEmitOptions) {
-                                        methodEmitOptions.argumentTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.argumentTypeEmitOptions);
-                                        methodEmitOptions.returnTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.returnTypeEmitOptions);
-                                    }
-                                },
-                                {
-                                    propertyName: "propertyEmitOptions",
-                                    applyInheritance: function (propertyEmitOptions) {
-                                        propertyEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, propertyEmitOptions.typeEmitOptions);
-                                    }
-                                }
-                            ];
-                        }
-                    },
-                    {
-                        propertyName: "classEmitOptions",
-                        applyInheritance: function (classEmitOptions) {
-                            classEmitOptions.enumEmitOptions = _this.mergeOptions(fileEmitOptions.enumEmitOptions, classEmitOptions.enumEmitOptions);
-                            classEmitOptions.fieldEmitOptions = _this.mergeOptions(fileEmitOptions.fieldEmitOptions, classEmitOptions.fieldEmitOptions);
-                            classEmitOptions.genericParameterTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, classEmitOptions.genericParameterTypeEmitOptions);
-                            classEmitOptions.inheritedTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, classEmitOptions.inheritedTypeEmitOptions);
-                            classEmitOptions.interfaceEmitOptions = _this.mergeOptions(fileEmitOptions.interfaceEmitOptions, classEmitOptions.interfaceEmitOptions);
-                            classEmitOptions.methodEmitOptions = _this.mergeOptions(fileEmitOptions.methodEmitOptions, classEmitOptions.methodEmitOptions);
-                            classEmitOptions.propertyEmitOptions = _this.mergeOptions(fileEmitOptions.propertyEmitOptions, classEmitOptions.propertyEmitOptions);
-                            classEmitOptions.structEmitOptions = _this.mergeOptions(fileEmitOptions.structEmitOptions, classEmitOptions.structEmitOptions);
-                            return [
-                                {
-                                    propertyName: "methodEmitOptions",
-                                    applyInheritance: function (methodEmitOptions) {
-                                        methodEmitOptions.argumentTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.argumentTypeEmitOptions);
-                                        methodEmitOptions.returnTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.returnTypeEmitOptions);
-                                    }
-                                },
-                                {
-                                    propertyName: "propertyEmitOptions",
-                                    applyInheritance: function (propertyEmitOptions, defaultPropertyEmitOptions) {
-                                        propertyEmitOptions.perPropertyEmitOptions = function (property) {
-                                            return _this.mergeOptions(fileEmitOptions.propertyEmitOptions.perPropertyEmitOptions(property), defaultPropertyEmitOptions.perPropertyEmitOptions(property));
-                                        };
-                                        propertyEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, propertyEmitOptions.typeEmitOptions);
-                                    }
-                                },
-                                {
-                                    propertyName: "fieldEmitOptions",
-                                    applyInheritance: function (fieldEmitOptions, defaultFieldEmitOptions) {
-                                        fieldEmitOptions.typeEmitOptions.filter = function (type) {
-                                            return fileEmitOptions.typeEmitOptions.filter(type) &&
-                                                defaultFieldEmitOptions.typeEmitOptions.filter(type);
-                                        };
-                                        fieldEmitOptions.perFieldEmitOptions = function (field) {
-                                            return _this.mergeOptions(fileEmitOptions.fieldEmitOptions.perFieldEmitOptions(field), defaultFieldEmitOptions.perFieldEmitOptions(field));
-                                        };
-                                        fieldEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, fieldEmitOptions.typeEmitOptions);
-                                    }
-                                },
-                                {
-                                    propertyName: "structEmitOptions",
-                                    applyInheritance: function (structEmitOptions) {
-                                        structEmitOptions.fieldEmitOptions = _this.mergeOptions(classEmitOptions.fieldEmitOptions, structEmitOptions.fieldEmitOptions);
-                                        structEmitOptions.methodEmitOptions = _this.mergeOptions(classEmitOptions.methodEmitOptions, structEmitOptions.methodEmitOptions);
-                                        structEmitOptions.propertyEmitOptions = _this.mergeOptions(classEmitOptions.propertyEmitOptions, structEmitOptions.propertyEmitOptions);
-                                        return [
-                                            {
-                                                propertyName: "methodEmitOptions",
-                                                applyInheritance: function (methodEmitOptions) {
-                                                    methodEmitOptions.argumentTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.argumentTypeEmitOptions);
-                                                    methodEmitOptions.returnTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.returnTypeEmitOptions);
-                                                }
-                                            },
-                                            {
-                                                propertyName: "propertyEmitOptions",
-                                                applyInheritance: function (propertyEmitOptions) {
-                                                    propertyEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, propertyEmitOptions.typeEmitOptions);
-                                                }
-                                            },
-                                            {
-                                                propertyName: "fieldEmitOptions",
-                                                applyInheritance: function (fieldEmitOptions) {
-                                                    fieldEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, fieldEmitOptions.typeEmitOptions);
-                                                }
-                                            }
-                                        ];
-                                    }
-                                },
-                                {
-                                    propertyName: "interfaceEmitOptions",
-                                    applyInheritance: function (interfaceEmitOptions) {
-                                        interfaceEmitOptions.genericParameterTypeEmitOptions = _this.mergeOptions(classEmitOptions.genericParameterTypeEmitOptions, interfaceEmitOptions.genericParameterTypeEmitOptions);
-                                        interfaceEmitOptions.inheritedTypeEmitOptions = _this.mergeOptions(classEmitOptions.inheritedTypeEmitOptions, interfaceEmitOptions.inheritedTypeEmitOptions);
-                                        interfaceEmitOptions.methodEmitOptions = _this.mergeOptions(classEmitOptions.methodEmitOptions, interfaceEmitOptions.methodEmitOptions);
-                                        interfaceEmitOptions.propertyEmitOptions = _this.mergeOptions(classEmitOptions.propertyEmitOptions, interfaceEmitOptions.propertyEmitOptions);
-                                        return [
-                                            {
-                                                propertyName: "methodEmitOptions",
-                                                applyInheritance: function (methodEmitOptions) {
-                                                    methodEmitOptions.argumentTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.argumentTypeEmitOptions);
-                                                    methodEmitOptions.returnTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.returnTypeEmitOptions);
-                                                }
-                                            },
-                                            {
-                                                propertyName: "propertyEmitOptions",
-                                                applyInheritance: function (propertyEmitOptions) {
-                                                    propertyEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, propertyEmitOptions.typeEmitOptions);
-                                                }
-                                            }
-                                        ];
-                                    }
-                                }
-                            ];
-                        }
-                    }
-                ];
-            }
-        };
-        var inheritancesToRun = [tree];
-        options = this.applyInheritanceTree(options, inheritancesToRun);
-        return options;
+        if (typeof defaultOptions !== "undefined" && typeof defaultOptions !== "object" && typeof defaultOptions !== "function")
+            return defaultOptions;
+        return newOptions;
     };
     OptionsHelper.prototype.applyInheritanceTree = function (parent, tree) {
         if (!tree)
@@ -401,10 +55,16 @@ var OptionsHelper = /** @class */ (function () {
                 parent[inheritance.propertyName] :
                 parent;
             var defaultValue = Object.assign({}, property);
-            var newInheritances = inheritance.applyInheritance(property, defaultValue);
+            var returnValue = inheritance.applyInheritance(property, defaultValue);
+            if (inheritance.propertyName) {
+                parent[inheritance.propertyName] = returnValue.result;
+            }
+            else {
+                parent = returnValue.result;
+            }
             inheritancesToRun.push({
-                parent: property,
-                tree: newInheritances
+                parent: returnValue.result,
+                tree: returnValue.tree
             });
         }
         for (var _a = 0, inheritancesToRun_1 = inheritancesToRun; _a < inheritancesToRun_1.length; _a++) {
@@ -413,9 +73,477 @@ var OptionsHelper = /** @class */ (function () {
         }
         return parent;
     };
+    OptionsHelper.prototype.prepareFileEmitOptionInheritance = function (options) {
+        var _this = this;
+        var tree = {
+            applyInheritance: function (fileEmitOptions) {
+                return {
+                    result: fileEmitOptions, tree: [
+                        {
+                            propertyName: "methodEmitOptions",
+                            applyInheritance: function (methodEmitOptions) {
+                                methodEmitOptions.argumentTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.argumentTypeEmitOptions);
+                                methodEmitOptions.returnTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.returnTypeEmitOptions);
+                                return { result: methodEmitOptions };
+                            }
+                        },
+                        {
+                            propertyName: "fieldEmitOptions",
+                            applyInheritance: function (fieldEmitOptions) {
+                                fieldEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, fieldEmitOptions.typeEmitOptions);
+                                return {
+                                    result: fieldEmitOptions, tree: [
+                                        {
+                                            propertyName: "typeEmitOptions",
+                                            applyInheritance: function (typeEmitOptions, defaultTypeEmitOptions) {
+                                                console.log("file->field->type inherited from file->type");
+                                                typeEmitOptions.filter = function (type) {
+                                                    return fileEmitOptions.typeEmitOptions.filter(type) &&
+                                                        defaultTypeEmitOptions.filter(type);
+                                                };
+                                                return { result: typeEmitOptions };
+                                            }
+                                        }
+                                    ]
+                                };
+                            }
+                        },
+                        {
+                            propertyName: "propertyEmitOptions",
+                            applyInheritance: function (propertyEmitOptions) {
+                                propertyEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, propertyEmitOptions.typeEmitOptions);
+                                return { result: propertyEmitOptions };
+                            }
+                        },
+                        {
+                            propertyName: "namespaceEmitOptions",
+                            applyInheritance: function (namespaceEmitOptions) {
+                                namespaceEmitOptions.classEmitOptions = _this.mergeOptions(fileEmitOptions.classEmitOptions, namespaceEmitOptions.classEmitOptions);
+                                namespaceEmitOptions.enumEmitOptions = _this.mergeOptions(fileEmitOptions.enumEmitOptions, namespaceEmitOptions.enumEmitOptions);
+                                namespaceEmitOptions.interfaceEmitOptions = _this.mergeOptions(fileEmitOptions.interfaceEmitOptions, namespaceEmitOptions.interfaceEmitOptions);
+                                namespaceEmitOptions.structEmitOptions = _this.mergeOptions(fileEmitOptions.structEmitOptions, namespaceEmitOptions.structEmitOptions);
+                                return {
+                                    result: namespaceEmitOptions, tree: [
+                                        {
+                                            propertyName: "structEmitOptions",
+                                            applyInheritance: function (structEmitOptions) {
+                                                structEmitOptions.fieldEmitOptions = _this.mergeOptions(fileEmitOptions.fieldEmitOptions, structEmitOptions.fieldEmitOptions);
+                                                structEmitOptions.methodEmitOptions = _this.mergeOptions(fileEmitOptions.methodEmitOptions, structEmitOptions.methodEmitOptions);
+                                                structEmitOptions.propertyEmitOptions = _this.mergeOptions(fileEmitOptions.propertyEmitOptions, structEmitOptions.propertyEmitOptions);
+                                                return {
+                                                    result: structEmitOptions, tree: [
+                                                        {
+                                                            propertyName: "methodEmitOptions",
+                                                            applyInheritance: function (methodEmitOptions) {
+                                                                methodEmitOptions.argumentTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.argumentTypeEmitOptions);
+                                                                methodEmitOptions.returnTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.returnTypeEmitOptions);
+                                                                return { result: methodEmitOptions };
+                                                            }
+                                                        },
+                                                        {
+                                                            propertyName: "propertyEmitOptions",
+                                                            applyInheritance: function (propertyEmitOptions) {
+                                                                propertyEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, propertyEmitOptions.typeEmitOptions);
+                                                                return { result: propertyEmitOptions };
+                                                            }
+                                                        },
+                                                        {
+                                                            propertyName: "fieldEmitOptions",
+                                                            applyInheritance: function (fieldEmitOptions, defaultFieldEmitOptions) {
+                                                                fieldEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, fieldEmitOptions.typeEmitOptions);
+                                                                return {
+                                                                    result: fieldEmitOptions, tree: [
+                                                                        {
+                                                                            propertyName: "typeEmitOptions",
+                                                                            applyInheritance: function (typeEmitOptions, defaultTypeEmitOptions) {
+                                                                                console.log("file->namespace->struct->field->type inherited from file->type");
+                                                                                typeEmitOptions.filter = function (type) {
+                                                                                    return fileEmitOptions.typeEmitOptions.filter(type) &&
+                                                                                        defaultTypeEmitOptions.filter(type);
+                                                                                };
+                                                                                return { result: typeEmitOptions };
+                                                                            }
+                                                                        }
+                                                                    ]
+                                                                };
+                                                            }
+                                                        }
+                                                    ]
+                                                };
+                                            }
+                                        },
+                                        {
+                                            propertyName: "interfaceEmitOptions",
+                                            applyInheritance: function (interfaceEmitOptions) {
+                                                interfaceEmitOptions.genericParameterTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, interfaceEmitOptions.genericParameterTypeEmitOptions);
+                                                interfaceEmitOptions.inheritedTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, interfaceEmitOptions.inheritedTypeEmitOptions);
+                                                interfaceEmitOptions.methodEmitOptions = _this.mergeOptions(fileEmitOptions.methodEmitOptions, interfaceEmitOptions.methodEmitOptions);
+                                                interfaceEmitOptions.propertyEmitOptions = _this.mergeOptions(fileEmitOptions.propertyEmitOptions, interfaceEmitOptions.propertyEmitOptions);
+                                                return {
+                                                    result: interfaceEmitOptions, tree: [
+                                                        {
+                                                            propertyName: "methodEmitOptions",
+                                                            applyInheritance: function (methodEmitOptions) {
+                                                                methodEmitOptions.argumentTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.argumentTypeEmitOptions);
+                                                                methodEmitOptions.returnTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.returnTypeEmitOptions);
+                                                                return { result: methodEmitOptions };
+                                                            }
+                                                        },
+                                                        {
+                                                            propertyName: "propertyEmitOptions",
+                                                            applyInheritance: function (propertyEmitOptions) {
+                                                                propertyEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, propertyEmitOptions.typeEmitOptions);
+                                                                return { result: propertyEmitOptions };
+                                                            }
+                                                        }
+                                                    ]
+                                                };
+                                            }
+                                        },
+                                        {
+                                            propertyName: "classEmitOptions",
+                                            applyInheritance: function (classEmitOptions) {
+                                                classEmitOptions.enumEmitOptions = _this.mergeOptions(namespaceEmitOptions.enumEmitOptions, classEmitOptions.enumEmitOptions);
+                                                classEmitOptions.fieldEmitOptions = _this.mergeOptions(fileEmitOptions.fieldEmitOptions, classEmitOptions.fieldEmitOptions);
+                                                classEmitOptions.genericParameterTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, classEmitOptions.genericParameterTypeEmitOptions);
+                                                classEmitOptions.inheritedTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, classEmitOptions.inheritedTypeEmitOptions);
+                                                classEmitOptions.interfaceEmitOptions = _this.mergeOptions(namespaceEmitOptions.interfaceEmitOptions, classEmitOptions.interfaceEmitOptions);
+                                                classEmitOptions.methodEmitOptions = _this.mergeOptions(fileEmitOptions.methodEmitOptions, classEmitOptions.methodEmitOptions);
+                                                classEmitOptions.propertyEmitOptions = _this.mergeOptions(fileEmitOptions.propertyEmitOptions, classEmitOptions.propertyEmitOptions);
+                                                classEmitOptions.structEmitOptions = _this.mergeOptions(namespaceEmitOptions.structEmitOptions, classEmitOptions.structEmitOptions);
+                                                return {
+                                                    result: classEmitOptions, tree: [
+                                                        {
+                                                            propertyName: "methodEmitOptions",
+                                                            applyInheritance: function (methodEmitOptions) {
+                                                                methodEmitOptions.argumentTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.argumentTypeEmitOptions);
+                                                                methodEmitOptions.returnTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.returnTypeEmitOptions);
+                                                                return { result: methodEmitOptions };
+                                                            }
+                                                        },
+                                                        {
+                                                            propertyName: "propertyEmitOptions",
+                                                            applyInheritance: function (propertyEmitOptions) {
+                                                                propertyEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, propertyEmitOptions.typeEmitOptions);
+                                                                return { result: propertyEmitOptions };
+                                                            }
+                                                        },
+                                                        {
+                                                            propertyName: "fieldEmitOptions",
+                                                            applyInheritance: function (fieldEmitOptions, defaultFieldEmitOptions) {
+                                                                fieldEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, fieldEmitOptions.typeEmitOptions);
+                                                                return {
+                                                                    result: fieldEmitOptions, tree: [
+                                                                        {
+                                                                            propertyName: "typeEmitOptions",
+                                                                            applyInheritance: function (typeEmitOptions, defaultTypeEmitOptions) {
+                                                                                console.log("file->namespace->class->field->type inherited from file->type");
+                                                                                typeEmitOptions.filter = function (type) {
+                                                                                    return fileEmitOptions.typeEmitOptions.filter(type) &&
+                                                                                        defaultTypeEmitOptions.filter(type);
+                                                                                };
+                                                                                return { result: typeEmitOptions };
+                                                                            }
+                                                                        }
+                                                                    ]
+                                                                };
+                                                            }
+                                                        },
+                                                        {
+                                                            propertyName: "structEmitOptions",
+                                                            applyInheritance: function (structEmitOptions) {
+                                                                structEmitOptions.fieldEmitOptions = _this.mergeOptions(classEmitOptions.fieldEmitOptions, structEmitOptions.fieldEmitOptions);
+                                                                structEmitOptions.methodEmitOptions = _this.mergeOptions(classEmitOptions.methodEmitOptions, structEmitOptions.methodEmitOptions);
+                                                                structEmitOptions.propertyEmitOptions = _this.mergeOptions(classEmitOptions.propertyEmitOptions, structEmitOptions.propertyEmitOptions);
+                                                                return {
+                                                                    result: structEmitOptions, tree: [
+                                                                        {
+                                                                            propertyName: "methodEmitOptions",
+                                                                            applyInheritance: function (methodEmitOptions) {
+                                                                                methodEmitOptions.argumentTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.argumentTypeEmitOptions);
+                                                                                methodEmitOptions.returnTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.returnTypeEmitOptions);
+                                                                                return { result: methodEmitOptions };
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            propertyName: "propertyEmitOptions",
+                                                                            applyInheritance: function (propertyEmitOptions) {
+                                                                                propertyEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, propertyEmitOptions.typeEmitOptions);
+                                                                                return { result: propertyEmitOptions };
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            propertyName: "fieldEmitOptions",
+                                                                            applyInheritance: function (fieldEmitOptions) {
+                                                                                fieldEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, fieldEmitOptions.typeEmitOptions);
+                                                                                return {
+                                                                                    result: fieldEmitOptions, tree: [
+                                                                                        {
+                                                                                            propertyName: "typeEmitOptions",
+                                                                                            applyInheritance: function (typeEmitOptions, defaultTypeEmitOptions) {
+                                                                                                console.log("file->namespace->class->struct->field->type inherited from file->type");
+                                                                                                typeEmitOptions.filter = function (type) {
+                                                                                                    return fileEmitOptions.typeEmitOptions.filter(type) &&
+                                                                                                        defaultTypeEmitOptions.filter(type);
+                                                                                                };
+                                                                                                return { result: typeEmitOptions };
+                                                                                            }
+                                                                                        }
+                                                                                    ]
+                                                                                };
+                                                                            }
+                                                                        }
+                                                                    ]
+                                                                };
+                                                            }
+                                                        },
+                                                        {
+                                                            propertyName: "interfaceEmitOptions",
+                                                            applyInheritance: function (interfaceEmitOptions) {
+                                                                interfaceEmitOptions.genericParameterTypeEmitOptions = _this.mergeOptions(classEmitOptions.genericParameterTypeEmitOptions, interfaceEmitOptions.genericParameterTypeEmitOptions);
+                                                                interfaceEmitOptions.inheritedTypeEmitOptions = _this.mergeOptions(classEmitOptions.inheritedTypeEmitOptions, interfaceEmitOptions.inheritedTypeEmitOptions);
+                                                                interfaceEmitOptions.methodEmitOptions = _this.mergeOptions(classEmitOptions.methodEmitOptions, interfaceEmitOptions.methodEmitOptions);
+                                                                interfaceEmitOptions.propertyEmitOptions = _this.mergeOptions(classEmitOptions.propertyEmitOptions, interfaceEmitOptions.propertyEmitOptions);
+                                                                return {
+                                                                    result: interfaceEmitOptions, tree: [
+                                                                        {
+                                                                            propertyName: "methodEmitOptions",
+                                                                            applyInheritance: function (methodEmitOptions) {
+                                                                                methodEmitOptions.argumentTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.argumentTypeEmitOptions);
+                                                                                methodEmitOptions.returnTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.returnTypeEmitOptions);
+                                                                                return { result: methodEmitOptions };
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            propertyName: "propertyEmitOptions",
+                                                                            applyInheritance: function (propertyEmitOptions) {
+                                                                                propertyEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, propertyEmitOptions.typeEmitOptions);
+                                                                                return { result: propertyEmitOptions };
+                                                                            }
+                                                                        }
+                                                                    ]
+                                                                };
+                                                            }
+                                                        }
+                                                    ]
+                                                };
+                                            }
+                                        }
+                                    ]
+                                };
+                            }
+                        },
+                        {
+                            propertyName: "structEmitOptions",
+                            applyInheritance: function (structEmitOptions) {
+                                structEmitOptions.fieldEmitOptions = _this.mergeOptions(fileEmitOptions.fieldEmitOptions, structEmitOptions.fieldEmitOptions);
+                                structEmitOptions.methodEmitOptions = _this.mergeOptions(fileEmitOptions.methodEmitOptions, structEmitOptions.methodEmitOptions);
+                                structEmitOptions.propertyEmitOptions = _this.mergeOptions(fileEmitOptions.propertyEmitOptions, structEmitOptions.propertyEmitOptions);
+                                return {
+                                    result: structEmitOptions, tree: [
+                                        {
+                                            propertyName: "methodEmitOptions",
+                                            applyInheritance: function (methodEmitOptions) {
+                                                methodEmitOptions.argumentTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.argumentTypeEmitOptions);
+                                                methodEmitOptions.returnTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.returnTypeEmitOptions);
+                                                return { result: methodEmitOptions };
+                                            }
+                                        },
+                                        {
+                                            propertyName: "propertyEmitOptions",
+                                            applyInheritance: function (propertyEmitOptions) {
+                                                propertyEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, propertyEmitOptions.typeEmitOptions);
+                                                return { result: propertyEmitOptions };
+                                            }
+                                        },
+                                        {
+                                            propertyName: "fieldEmitOptions",
+                                            applyInheritance: function (fieldEmitOptions) {
+                                                fieldEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, fieldEmitOptions.typeEmitOptions);
+                                                return { result: fieldEmitOptions };
+                                            }
+                                        }
+                                    ]
+                                };
+                            }
+                        },
+                        {
+                            propertyName: "interfaceEmitOptions",
+                            applyInheritance: function (interfaceEmitOptions) {
+                                interfaceEmitOptions.genericParameterTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, interfaceEmitOptions.genericParameterTypeEmitOptions);
+                                interfaceEmitOptions.inheritedTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, interfaceEmitOptions.inheritedTypeEmitOptions);
+                                interfaceEmitOptions.methodEmitOptions = _this.mergeOptions(fileEmitOptions.methodEmitOptions, interfaceEmitOptions.methodEmitOptions);
+                                interfaceEmitOptions.propertyEmitOptions = _this.mergeOptions(fileEmitOptions.propertyEmitOptions, interfaceEmitOptions.propertyEmitOptions);
+                                return {
+                                    result: interfaceEmitOptions, tree: [
+                                        {
+                                            propertyName: "methodEmitOptions",
+                                            applyInheritance: function (methodEmitOptions) {
+                                                methodEmitOptions.argumentTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.argumentTypeEmitOptions);
+                                                methodEmitOptions.returnTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.returnTypeEmitOptions);
+                                                return { result: methodEmitOptions };
+                                            }
+                                        },
+                                        {
+                                            propertyName: "propertyEmitOptions",
+                                            applyInheritance: function (propertyEmitOptions) {
+                                                propertyEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, propertyEmitOptions.typeEmitOptions);
+                                                return { result: propertyEmitOptions };
+                                            }
+                                        }
+                                    ]
+                                };
+                            }
+                        },
+                        {
+                            propertyName: "classEmitOptions",
+                            applyInheritance: function (classEmitOptions) {
+                                classEmitOptions.enumEmitOptions = _this.mergeOptions(fileEmitOptions.enumEmitOptions, classEmitOptions.enumEmitOptions);
+                                classEmitOptions.fieldEmitOptions = _this.mergeOptions(fileEmitOptions.fieldEmitOptions, classEmitOptions.fieldEmitOptions);
+                                classEmitOptions.genericParameterTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, classEmitOptions.genericParameterTypeEmitOptions);
+                                classEmitOptions.inheritedTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, classEmitOptions.inheritedTypeEmitOptions);
+                                classEmitOptions.interfaceEmitOptions = _this.mergeOptions(fileEmitOptions.interfaceEmitOptions, classEmitOptions.interfaceEmitOptions);
+                                classEmitOptions.methodEmitOptions = _this.mergeOptions(fileEmitOptions.methodEmitOptions, classEmitOptions.methodEmitOptions);
+                                classEmitOptions.propertyEmitOptions = _this.mergeOptions(fileEmitOptions.propertyEmitOptions, classEmitOptions.propertyEmitOptions);
+                                classEmitOptions.structEmitOptions = _this.mergeOptions(fileEmitOptions.structEmitOptions, classEmitOptions.structEmitOptions);
+                                return {
+                                    result: classEmitOptions, tree: [
+                                        {
+                                            propertyName: "methodEmitOptions",
+                                            applyInheritance: function (methodEmitOptions) {
+                                                methodEmitOptions.argumentTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.argumentTypeEmitOptions);
+                                                methodEmitOptions.returnTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.returnTypeEmitOptions);
+                                                return { result: methodEmitOptions };
+                                            }
+                                        },
+                                        {
+                                            propertyName: "propertyEmitOptions",
+                                            applyInheritance: function (propertyEmitOptions, defaultPropertyEmitOptions) {
+                                                propertyEmitOptions.perPropertyEmitOptions = function (property) {
+                                                    return _this.mergeOptions(fileEmitOptions.propertyEmitOptions.perPropertyEmitOptions(property), defaultPropertyEmitOptions.perPropertyEmitOptions(property));
+                                                };
+                                                propertyEmitOptions.perPropertyEmitOptions = function (property) {
+                                                    return _this.mergeOptions(fileEmitOptions.propertyEmitOptions.perPropertyEmitOptions(property), defaultPropertyEmitOptions.perPropertyEmitOptions(property));
+                                                };
+                                                propertyEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, propertyEmitOptions.typeEmitOptions);
+                                                return { result: propertyEmitOptions };
+                                            }
+                                        },
+                                        {
+                                            propertyName: "fieldEmitOptions",
+                                            applyInheritance: function (fieldEmitOptions, defaultFieldEmitOptions) {
+                                                fieldEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, fieldEmitOptions.typeEmitOptions);
+                                                fieldEmitOptions.perFieldEmitOptions = function (field) {
+                                                    return _this.mergeOptions(fileEmitOptions.fieldEmitOptions.perFieldEmitOptions(field), defaultFieldEmitOptions.perFieldEmitOptions(field));
+                                                };
+                                                return {
+                                                    result: fieldEmitOptions, tree: [
+                                                        {
+                                                            propertyName: "typeEmitOptions",
+                                                            applyInheritance: function (typeEmitOptions, defaultTypeEmitOptions) {
+                                                                console.log("file->class->field->type inherited from file->type");
+                                                                typeEmitOptions.filter = function (type) {
+                                                                    return fileEmitOptions.typeEmitOptions.filter(type) &&
+                                                                        defaultTypeEmitOptions.filter(type);
+                                                                };
+                                                                return { result: typeEmitOptions };
+                                                            }
+                                                        }
+                                                    ]
+                                                };
+                                            }
+                                        },
+                                        {
+                                            propertyName: "structEmitOptions",
+                                            applyInheritance: function (structEmitOptions) {
+                                                structEmitOptions.fieldEmitOptions = _this.mergeOptions(classEmitOptions.fieldEmitOptions, structEmitOptions.fieldEmitOptions);
+                                                structEmitOptions.methodEmitOptions = _this.mergeOptions(classEmitOptions.methodEmitOptions, structEmitOptions.methodEmitOptions);
+                                                structEmitOptions.propertyEmitOptions = _this.mergeOptions(classEmitOptions.propertyEmitOptions, structEmitOptions.propertyEmitOptions);
+                                                return {
+                                                    result: structEmitOptions, tree: [
+                                                        {
+                                                            propertyName: "methodEmitOptions",
+                                                            applyInheritance: function (methodEmitOptions) {
+                                                                methodEmitOptions.argumentTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.argumentTypeEmitOptions);
+                                                                methodEmitOptions.returnTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.returnTypeEmitOptions);
+                                                                return { result: methodEmitOptions };
+                                                            }
+                                                        },
+                                                        {
+                                                            propertyName: "propertyEmitOptions",
+                                                            applyInheritance: function (propertyEmitOptions) {
+                                                                propertyEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, propertyEmitOptions.typeEmitOptions);
+                                                                return { result: propertyEmitOptions };
+                                                            }
+                                                        },
+                                                        {
+                                                            propertyName: "fieldEmitOptions",
+                                                            applyInheritance: function (fieldEmitOptions) {
+                                                                fieldEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, fieldEmitOptions.typeEmitOptions);
+                                                                return {
+                                                                    result: fieldEmitOptions, tree: [
+                                                                        {
+                                                                            propertyName: "typeEmitOptions",
+                                                                            applyInheritance: function (typeEmitOptions, defaultTypeEmitOptions) {
+                                                                                console.log("file->class->struct->field->type inherited from file->type");
+                                                                                typeEmitOptions.filter = function (type) {
+                                                                                    return fileEmitOptions.typeEmitOptions.filter(type) &&
+                                                                                        defaultTypeEmitOptions.filter(type);
+                                                                                };
+                                                                                return { result: typeEmitOptions };
+                                                                            }
+                                                                        }
+                                                                    ]
+                                                                };
+                                                            }
+                                                        }
+                                                    ]
+                                                };
+                                            }
+                                        },
+                                        {
+                                            propertyName: "interfaceEmitOptions",
+                                            applyInheritance: function (interfaceEmitOptions) {
+                                                interfaceEmitOptions.genericParameterTypeEmitOptions = _this.mergeOptions(classEmitOptions.genericParameterTypeEmitOptions, interfaceEmitOptions.genericParameterTypeEmitOptions);
+                                                interfaceEmitOptions.inheritedTypeEmitOptions = _this.mergeOptions(classEmitOptions.inheritedTypeEmitOptions, interfaceEmitOptions.inheritedTypeEmitOptions);
+                                                interfaceEmitOptions.methodEmitOptions = _this.mergeOptions(classEmitOptions.methodEmitOptions, interfaceEmitOptions.methodEmitOptions);
+                                                interfaceEmitOptions.propertyEmitOptions = _this.mergeOptions(classEmitOptions.propertyEmitOptions, interfaceEmitOptions.propertyEmitOptions);
+                                                return {
+                                                    result: interfaceEmitOptions, tree: [
+                                                        {
+                                                            propertyName: "methodEmitOptions",
+                                                            applyInheritance: function (methodEmitOptions) {
+                                                                methodEmitOptions.argumentTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.argumentTypeEmitOptions);
+                                                                methodEmitOptions.returnTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, methodEmitOptions.returnTypeEmitOptions);
+                                                                return { result: methodEmitOptions };
+                                                            }
+                                                        },
+                                                        {
+                                                            propertyName: "propertyEmitOptions",
+                                                            applyInheritance: function (propertyEmitOptions) {
+                                                                propertyEmitOptions.typeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, propertyEmitOptions.typeEmitOptions);
+                                                                return { result: propertyEmitOptions };
+                                                            }
+                                                        }
+                                                    ]
+                                                };
+                                            }
+                                        }
+                                    ]
+                                };
+                            }
+                        }
+                    ]
+                };
+            }
+        };
+        var inheritancesToRun = [tree];
+        options = this.applyInheritanceTree(options, inheritancesToRun);
+        return options;
+    };
     OptionsHelper.prototype.prepareEnumEmitOptionDefaults = function (options) {
         if (!options.filter)
-            options.filter = function (classObject) { return classObject.isPublic; };
+            options.filter = function (enumObject) { return !!enumObject.isPublic; };
         if (!options.strategy) {
             options.strategy = "default";
         }
@@ -431,7 +559,7 @@ var OptionsHelper = /** @class */ (function () {
         if (!options.typeEmitOptions)
             options.typeEmitOptions = {};
         if (!options.filter) {
-            options.filter = function (field) { return field.isPublic; };
+            options.filter = function (field) { return !!field.isPublic; };
         }
         if (!options.perFieldEmitOptions) {
             options.perFieldEmitOptions = function () { return options; };
@@ -443,7 +571,7 @@ var OptionsHelper = /** @class */ (function () {
         if (!options.typeEmitOptions)
             options.typeEmitOptions = {};
         if (!options.filter) {
-            options.filter = function (property) { return property.isPublic; };
+            options.filter = function (property) { return !!property.isPublic; };
         }
         if (!options.perPropertyEmitOptions) {
             options.perPropertyEmitOptions = function (property) { return ({
@@ -461,7 +589,7 @@ var OptionsHelper = /** @class */ (function () {
         if (!options.fieldEmitOptions)
             options.fieldEmitOptions = {};
         if (!options.filter) {
-            options.filter = function (struct) { return struct.isPublic; };
+            options.filter = function (struct) { return !!struct.isPublic; };
         }
         if (!options.perStructEmitOptions) {
             options.perStructEmitOptions = function () { return options; };
@@ -477,7 +605,7 @@ var OptionsHelper = /** @class */ (function () {
         if (!options.returnTypeEmitOptions)
             options.returnTypeEmitOptions = {};
         if (!options.filter) {
-            options.filter = function (method) { return method.isPublic; };
+            options.filter = function (method) { return !!method.isPublic; };
         }
         if (!options.perMethodEmitOptions) {
             options.perMethodEmitOptions = function () { return options; };
@@ -496,7 +624,7 @@ var OptionsHelper = /** @class */ (function () {
         if (!options.propertyEmitOptions)
             options.propertyEmitOptions = {};
         if (!options.filter) {
-            options.filter = function (interfaceObject) { return interfaceObject.isPublic; };
+            options.filter = function (interfaceObject) { return !!interfaceObject.isPublic; };
         }
         if (!options.perInterfaceEmitOptions) {
             options.perInterfaceEmitOptions = function () { return options; };
@@ -543,7 +671,7 @@ var OptionsHelper = /** @class */ (function () {
         if (!options.structEmitOptions)
             options.structEmitOptions = {};
         if (!options.filter)
-            options.filter = function (classObject) { return classObject.isPublic; };
+            options.filter = function (classObject) { return !!classObject.isPublic; };
         if (!options.perClassEmitOptions)
             options.perClassEmitOptions = function () { return ({}); };
         options.enumEmitOptions = this.prepareEnumEmitOptionDefaults(options.enumEmitOptions);

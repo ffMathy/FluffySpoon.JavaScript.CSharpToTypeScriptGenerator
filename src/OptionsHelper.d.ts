@@ -10,12 +10,15 @@ import { FieldEmitOptions } from './FieldEmitter';
 import { FileEmitOptions } from './FileEmitter';
 export interface OptionsInheritanceTreeNode<T> {
     propertyName?: string;
-    applyInheritance?: (parent: T, defaultValue?: T) => OptionsInheritanceTreeNode<any>[] | null;
+    applyInheritance?: (parent: T, defaultValue?: T) => {
+        tree?: OptionsInheritanceTreeNode<any>[] | null;
+        result: T;
+    };
 }
 export declare class OptionsHelper {
     private mergeOptions<T, K>(defaultOptions, newOptions);
-    prepareFileEmitOptionInheritance(options: FileEmitOptions): FileEmitOptions;
     private applyInheritanceTree(parent, tree);
+    prepareFileEmitOptionInheritance(options: FileEmitOptions): FileEmitOptions;
     prepareEnumEmitOptionDefaults(options: EnumEmitOptions): EnumEmitOptions;
     prepareTypeEmitOptionDefaults(options: TypeEmitOptions): TypeEmitOptions;
     prepareFieldEmitOptionDefaults(options: FieldEmitOptions): FieldEmitOptions;
