@@ -27,7 +27,7 @@ var FieldEmitter = /** @class */ (function () {
             return null;
         this.logger.log("Emitting field", field);
         var modifiers = new Array();
-        if (options.readOnly)
+        if ((typeof options.readOnly !== "boolean" || options.readOnly) && field.isReadOnly)
             modifiers.push(ts.createToken(ts.SyntaxKind.ReadonlyKeyword));
         var node = ts.createPropertySignature(modifiers, options.name || field.name, field.type.isNullable ? ts.createToken(ts.SyntaxKind.QuestionToken) : null, this.typeEmitter.createTypeScriptTypeReferenceNode(field.type, options.typeEmitOptions), null);
         this.logger.log("Done emitting field", field);

@@ -110,7 +110,7 @@ function LegacyAdapter(contents: any, options: any) {
 		}
 
 		if (options.stripReadOnly) {
-			emitOptions.classEmitOptions.fieldEmitOptions.perFieldEmitOptions = () => <PerFieldEmitOptions>{
+			emitOptions.fieldEmitOptions.perFieldEmitOptions = () => <PerFieldEmitOptions>{
 				readOnly: false
 			};
 		}

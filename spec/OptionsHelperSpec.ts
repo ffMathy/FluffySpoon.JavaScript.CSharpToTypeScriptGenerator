@@ -36,10 +36,7 @@ describe("OptionsHelper", function () {
         expect(options.classEmitOptions.fieldEmitOptions.readOnly).toBe(<any>2);
         expect(options.namespaceEmitOptions.classEmitOptions.fieldEmitOptions.readOnly).toBe(<any>2);
 
-        expect(options.fieldEmitOptions.filter(<any>{isPublic: true})).toBe(false, "field");
-        expect(options.classEmitOptions.fieldEmitOptions.filter(<any>{isPublic: true})).toBe(false, "class_field");
-        expect(options.namespaceEmitOptions.classEmitOptions.fieldEmitOptions.filter(<any>{isPublic: true})).toBe(false, "namespace_class_field");
-	});
+    });
 
 	it("inheritance propagates correctly for functions", function () {
 		var helper = new OptionsHelper();

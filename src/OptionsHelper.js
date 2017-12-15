@@ -96,7 +96,6 @@ var OptionsHelper = /** @class */ (function () {
                                         {
                                             propertyName: "typeEmitOptions",
                                             applyInheritance: function (typeEmitOptions, defaultTypeEmitOptions) {
-                                                console.log("file->field->type inherited from file->type");
                                                 typeEmitOptions.filter = function (type) {
                                                     return fileEmitOptions.typeEmitOptions.filter(type) &&
                                                         defaultTypeEmitOptions.filter(type);
@@ -118,6 +117,7 @@ var OptionsHelper = /** @class */ (function () {
                         {
                             propertyName: "namespaceEmitOptions",
                             applyInheritance: function (namespaceEmitOptions) {
+                                console.log('file->namespace->class inherited from file->class');
                                 namespaceEmitOptions.classEmitOptions = _this.mergeOptions(fileEmitOptions.classEmitOptions, namespaceEmitOptions.classEmitOptions);
                                 namespaceEmitOptions.enumEmitOptions = _this.mergeOptions(fileEmitOptions.enumEmitOptions, namespaceEmitOptions.enumEmitOptions);
                                 namespaceEmitOptions.interfaceEmitOptions = _this.mergeOptions(fileEmitOptions.interfaceEmitOptions, namespaceEmitOptions.interfaceEmitOptions);
@@ -156,7 +156,6 @@ var OptionsHelper = /** @class */ (function () {
                                                                         {
                                                                             propertyName: "typeEmitOptions",
                                                                             applyInheritance: function (typeEmitOptions, defaultTypeEmitOptions) {
-                                                                                console.log("file->namespace->struct->field->type inherited from file->type");
                                                                                 typeEmitOptions.filter = function (type) {
                                                                                     return fileEmitOptions.typeEmitOptions.filter(type) &&
                                                                                         defaultTypeEmitOptions.filter(type);
@@ -203,6 +202,7 @@ var OptionsHelper = /** @class */ (function () {
                                         {
                                             propertyName: "classEmitOptions",
                                             applyInheritance: function (classEmitOptions) {
+                                                console.log('file->namespace->class->field inherited from file->field');
                                                 classEmitOptions.enumEmitOptions = _this.mergeOptions(namespaceEmitOptions.enumEmitOptions, classEmitOptions.enumEmitOptions);
                                                 classEmitOptions.fieldEmitOptions = _this.mergeOptions(fileEmitOptions.fieldEmitOptions, classEmitOptions.fieldEmitOptions);
                                                 classEmitOptions.genericParameterTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, classEmitOptions.genericParameterTypeEmitOptions);
@@ -237,7 +237,6 @@ var OptionsHelper = /** @class */ (function () {
                                                                         {
                                                                             propertyName: "typeEmitOptions",
                                                                             applyInheritance: function (typeEmitOptions, defaultTypeEmitOptions) {
-                                                                                console.log("file->namespace->class->field->type inherited from file->type");
                                                                                 typeEmitOptions.filter = function (type) {
                                                                                     return fileEmitOptions.typeEmitOptions.filter(type) &&
                                                                                         defaultTypeEmitOptions.filter(type);
@@ -281,7 +280,6 @@ var OptionsHelper = /** @class */ (function () {
                                                                                         {
                                                                                             propertyName: "typeEmitOptions",
                                                                                             applyInheritance: function (typeEmitOptions, defaultTypeEmitOptions) {
-                                                                                                console.log("file->namespace->class->struct->field->type inherited from file->type");
                                                                                                 typeEmitOptions.filter = function (type) {
                                                                                                     return fileEmitOptions.typeEmitOptions.filter(type) &&
                                                                                                         defaultTypeEmitOptions.filter(type);
@@ -398,6 +396,7 @@ var OptionsHelper = /** @class */ (function () {
                         {
                             propertyName: "classEmitOptions",
                             applyInheritance: function (classEmitOptions) {
+                                console.log('file->class->field inherited from file->field');
                                 classEmitOptions.enumEmitOptions = _this.mergeOptions(fileEmitOptions.enumEmitOptions, classEmitOptions.enumEmitOptions);
                                 classEmitOptions.fieldEmitOptions = _this.mergeOptions(fileEmitOptions.fieldEmitOptions, classEmitOptions.fieldEmitOptions);
                                 classEmitOptions.genericParameterTypeEmitOptions = _this.mergeOptions(fileEmitOptions.typeEmitOptions, classEmitOptions.genericParameterTypeEmitOptions);
@@ -441,7 +440,6 @@ var OptionsHelper = /** @class */ (function () {
                                                         {
                                                             propertyName: "typeEmitOptions",
                                                             applyInheritance: function (typeEmitOptions, defaultTypeEmitOptions) {
-                                                                console.log("file->class->field->type inherited from file->type");
                                                                 typeEmitOptions.filter = function (type) {
                                                                     return fileEmitOptions.typeEmitOptions.filter(type) &&
                                                                         defaultTypeEmitOptions.filter(type);
@@ -485,7 +483,6 @@ var OptionsHelper = /** @class */ (function () {
                                                                         {
                                                                             propertyName: "typeEmitOptions",
                                                                             applyInheritance: function (typeEmitOptions, defaultTypeEmitOptions) {
-                                                                                console.log("file->class->struct->field->type inherited from file->type");
                                                                                 typeEmitOptions.filter = function (type) {
                                                                                     return fileEmitOptions.typeEmitOptions.filter(type) &&
                                                                                         defaultTypeEmitOptions.filter(type);

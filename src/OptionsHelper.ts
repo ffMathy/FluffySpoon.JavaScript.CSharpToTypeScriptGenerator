@@ -139,7 +139,6 @@ export class OptionsHelper {
 										<OptionsInheritanceTreeNode<TypeEmitOptions>>{
 											propertyName: "typeEmitOptions",
 											applyInheritance: (typeEmitOptions, defaultTypeEmitOptions) => {
-												console.log("file->field->type inherited from file->type")
 												typeEmitOptions.filter = type =>
 													fileEmitOptions.typeEmitOptions.filter(type) &&
 													defaultTypeEmitOptions.filter(type);
@@ -164,6 +163,8 @@ export class OptionsHelper {
 						<OptionsInheritanceTreeNode<NamespaceEmitOptions>>{
 							propertyName: "namespaceEmitOptions",
 							applyInheritance: (namespaceEmitOptions) => {
+								console.log('file->namespace->class inherited from file->class')
+
 								namespaceEmitOptions.classEmitOptions = this.mergeOptions(
 									fileEmitOptions.classEmitOptions,
 									namespaceEmitOptions.classEmitOptions);
@@ -229,7 +230,6 @@ export class OptionsHelper {
 																		<OptionsInheritanceTreeNode<TypeEmitOptions>>{
 																			propertyName: "typeEmitOptions",
 																			applyInheritance: (typeEmitOptions, defaultTypeEmitOptions) => {
-																				console.log("file->namespace->struct->field->type inherited from file->type");
 																				typeEmitOptions.filter = type =>
 																					fileEmitOptions.typeEmitOptions.filter(type) &&
 																					defaultTypeEmitOptions.filter(type);
@@ -293,6 +293,8 @@ export class OptionsHelper {
 										<OptionsInheritanceTreeNode<ClassEmitOptions>>{
 											propertyName: "classEmitOptions",
 											applyInheritance: (classEmitOptions) => {
+												console.log('file->namespace->class->field inherited from file->field');
+
 												classEmitOptions.enumEmitOptions = this.mergeOptions(
 													namespaceEmitOptions.enumEmitOptions,
 													classEmitOptions.enumEmitOptions);
@@ -355,7 +357,6 @@ export class OptionsHelper {
 																		<OptionsInheritanceTreeNode<TypeEmitOptions>>{
 																			propertyName: "typeEmitOptions",
 																			applyInheritance: (typeEmitOptions, defaultTypeEmitOptions) => {
-																				console.log("file->namespace->class->field->type inherited from file->type")
 																				typeEmitOptions.filter = type =>
 																					fileEmitOptions.typeEmitOptions.filter(type) &&
 																					defaultTypeEmitOptions.filter(type);
@@ -417,7 +418,6 @@ export class OptionsHelper {
 																						<OptionsInheritanceTreeNode<TypeEmitOptions>>{
 																							propertyName: "typeEmitOptions",
 																							applyInheritance: (typeEmitOptions, defaultTypeEmitOptions) => {
-																								console.log("file->namespace->class->struct->field->type inherited from file->type");
 																								typeEmitOptions.filter = type =>
 																									fileEmitOptions.typeEmitOptions.filter(type) &&
 																									defaultTypeEmitOptions.filter(type);
@@ -586,6 +586,8 @@ export class OptionsHelper {
 						<OptionsInheritanceTreeNode<ClassEmitOptions>>{
 							propertyName: "classEmitOptions",
 							applyInheritance: (classEmitOptions) => {
+								console.log('file->class->field inherited from file->field');
+
 								classEmitOptions.enumEmitOptions = this.mergeOptions(
 									fileEmitOptions.enumEmitOptions,
 									classEmitOptions.enumEmitOptions);
@@ -663,7 +665,6 @@ export class OptionsHelper {
 														<OptionsInheritanceTreeNode<TypeEmitOptions>>{
 															propertyName: "typeEmitOptions",
 															applyInheritance: (typeEmitOptions, defaultTypeEmitOptions) => {
-																console.log("file->class->field->type inherited from file->type");
 																typeEmitOptions.filter = type =>
 																	fileEmitOptions.typeEmitOptions.filter(type) &&
 																	defaultTypeEmitOptions.filter(type);
@@ -725,7 +726,6 @@ export class OptionsHelper {
 																		<OptionsInheritanceTreeNode<TypeEmitOptions>>{
 																			propertyName: "typeEmitOptions",
 																			applyInheritance: (typeEmitOptions, defaultTypeEmitOptions) => {
-																				console.log("file->class->struct->field->type inherited from file->type");
 																				typeEmitOptions.filter = type =>
 																					fileEmitOptions.typeEmitOptions.filter(type) &&
 																					defaultTypeEmitOptions.filter(type);

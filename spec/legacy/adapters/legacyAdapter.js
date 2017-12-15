@@ -88,7 +88,7 @@ function LegacyAdapter(contents, options) {
             emitOptions.classEmitOptions.methodEmitOptions.filter = function (method) { return false; };
         }
         if (options.stripReadOnly) {
-            emitOptions.classEmitOptions.fieldEmitOptions.perFieldEmitOptions = function () { return ({
+            emitOptions.fieldEmitOptions.perFieldEmitOptions = function () { return ({
                 readOnly: false
             }); };
         }

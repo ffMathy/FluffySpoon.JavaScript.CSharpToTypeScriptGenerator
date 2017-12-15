@@ -57,7 +57,7 @@ export class FieldEmitter {
 		this.logger.log("Emitting field", field);
 
 		var modifiers = new Array<ts.Modifier>();
-		if (options.readOnly)
+		if ((typeof options.readOnly !== "boolean" || options.readOnly) && field.isReadOnly)
 			modifiers.push(ts.createToken(ts.SyntaxKind.ReadonlyKeyword));
 
 		var node = ts.createPropertySignature(

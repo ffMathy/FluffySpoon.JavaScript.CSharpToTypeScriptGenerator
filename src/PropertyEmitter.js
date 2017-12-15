@@ -25,7 +25,7 @@ var PropertyEmitter = /** @class */ (function () {
         if (!options.filter(property))
             return;
         var modifiers = new Array();
-        if (options.readOnly)
+        if ((typeof options.readOnly !== "boolean" || options.readOnly) && property.isReadOnly)
             modifiers.push(ts.createToken(ts.SyntaxKind.ReadonlyKeyword));
         var node = ts.createPropertySignature(modifiers, options.name || property.name, property.type.isNullable ? ts.createToken(ts.SyntaxKind.QuestionToken) : null, this.typeEmitter.createTypeScriptTypeReferenceNode(property.type, options.typeEmitOptions), null);
         return node;

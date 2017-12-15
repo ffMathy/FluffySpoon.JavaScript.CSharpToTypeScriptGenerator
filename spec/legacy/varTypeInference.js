@@ -8,8 +8,8 @@ describe('typescript-cs-poco', function() {
 	it('should transform types correctly', function() {
 
         var typeMappings = {
-            //'IEnumerable<string>': 'string[]',
-            //'Task<string>': 'Promise<string>',
+            'IEnumerable<string>': 'string[]',
+            'Task<string>': 'Promise<string>',
 			'Task<IEnumerable<string>>': 'Promise<string[]>'
         };
 
