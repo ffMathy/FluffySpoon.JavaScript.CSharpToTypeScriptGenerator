@@ -174,14 +174,14 @@ export class ClassEmitter {
 			};
 			var namespaceNodes = namespaceEmitter.createTypeScriptNamespaceNodes(
 				wrappedNamespace,
-				{
+				Object.assign(options, {
 					classEmitOptions: Object.assign(options, falseDeclare),
 					enumEmitOptions: Object.assign(options.enumEmitOptions, falseDeclare),
 					interfaceEmitOptions: Object.assign(options.interfaceEmitOptions, falseDeclare),
 					structEmitOptions: Object.assign(options.structEmitOptions, falseDeclare),
 					skip: false,
 					declare: true
-				});
+				}));
 			for (var namespaceNode of namespaceNodes)
 				nodes.push(namespaceNode);
 		}

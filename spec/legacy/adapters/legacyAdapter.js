@@ -1,21 +1,19 @@
 "use strict";
 var FileEmitter_1 = require("../../../src/FileEmitter");
-var OptionsHelper_1 = require("../../../src/OptionsHelper");
+var OptionsHelper_1 = require("../../../src/options/OptionsHelper");
 var fluffy_spoon_javascript_csharp_parser_1 = require("fluffy-spoon.javascript.csharp-parser");
 Error.stackTraceLimit = 100;
 function LegacyAdapter(contents, options) {
     var emitter = new FileEmitter_1.FileEmitter(contents);
     var optionsHelper = new OptionsHelper_1.OptionsHelper();
-    var emitOptions = optionsHelper.prepareFileEmitOptionDefaults({
+    var emitOptions = OptionsHelper_1.OptionsHelper.prepareFileEmitOptionDefaults({
         namespaceEmitOptions: {
             skip: true
         },
-        classEmitOptions: {
-            fieldEmitOptions: {
-                perFieldEmitOptions: function (field) { return ({
-                    readOnly: field.isReadOnly
-                }); }
-            }
+        fieldEmitOptions: {
+            perFieldEmitOptions: function (field) { return ({
+                readOnly: field.isReadOnly
+            }); }
         },
         propertyEmitOptions: {
             perPropertyEmitOptions: function (property) { return ({

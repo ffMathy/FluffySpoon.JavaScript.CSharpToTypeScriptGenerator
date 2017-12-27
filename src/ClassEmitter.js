@@ -104,14 +104,14 @@ var ClassEmitter = /** @class */ (function () {
             var falseDeclare = {
                 declare: false
             };
-            var namespaceNodes = namespaceEmitter.createTypeScriptNamespaceNodes(wrappedNamespace, {
+            var namespaceNodes = namespaceEmitter.createTypeScriptNamespaceNodes(wrappedNamespace, Object.assign(options, {
                 classEmitOptions: Object.assign(options, falseDeclare),
                 enumEmitOptions: Object.assign(options.enumEmitOptions, falseDeclare),
                 interfaceEmitOptions: Object.assign(options.interfaceEmitOptions, falseDeclare),
                 structEmitOptions: Object.assign(options.structEmitOptions, falseDeclare),
                 skip: false,
                 declare: true
-            });
+            }));
             for (var _i = 0, namespaceNodes_1 = namespaceNodes; _i < namespaceNodes_1.length; _i++) {
                 var namespaceNode = namespaceNodes_1[_i];
                 nodes.push(namespaceNode);

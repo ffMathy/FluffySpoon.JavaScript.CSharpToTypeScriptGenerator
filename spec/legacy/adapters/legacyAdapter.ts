@@ -6,7 +6,7 @@ import { PerInterfaceEmitOptions } from '../../../src/InterfaceEmitter';
 import { PerMethodEmitOptions } from '../../../src/MethodEmitter';
 import { PerStructEmitOptions } from '../../../src/StructEmitter';
 import { TypeEmitOptions } from '../../../src/TypeEmitter';
-import { OptionsHelper } from '../../../src/OptionsHelper';
+import { OptionsHelper } from '../../../src/options/OptionsHelper';
 
 import {
 	CSharpClass,
@@ -20,15 +20,13 @@ function LegacyAdapter(contents: any, options: any) {
 	var emitter = new FileEmitter(contents);
 
 	var optionsHelper = new OptionsHelper();
-	var emitOptions = optionsHelper.prepareFileEmitOptionDefaults({
+	var emitOptions = OptionsHelper.prepareFileEmitOptionDefaults({
 		namespaceEmitOptions: {
 			skip: true
 		},
-		classEmitOptions: {
-			fieldEmitOptions: {
-				perFieldEmitOptions: (field) => <PerFieldEmitOptions>{
-					readOnly: field.isReadOnly
-				}
+		fieldEmitOptions: {
+			perFieldEmitOptions: (field) => <PerFieldEmitOptions>{
+				readOnly: field.isReadOnly
 			}
 		},
 		propertyEmitOptions: {

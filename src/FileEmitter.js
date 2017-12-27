@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var fluffy_spoon_javascript_csharp_parser_1 = require("fluffy-spoon.javascript.csharp-parser");
 var StringEmitter_1 = require("./StringEmitter");
-var OptionsHelper_1 = require("./OptionsHelper");
+var OptionsHelper_1 = require("./options/OptionsHelper");
 var StructEmitter_1 = require("./StructEmitter");
 var EnumEmitter_1 = require("./EnumEmitter");
 var ClassEmitter_1 = require("./ClassEmitter");
@@ -13,7 +13,6 @@ var FileEmitter = /** @class */ (function () {
     function FileEmitter(content) {
         this.fileParser = new fluffy_spoon_javascript_csharp_parser_1.FileParser(content);
         this.logger = new Logger_1.Logger();
-        this.optionsHelper = new OptionsHelper_1.OptionsHelper();
         this.stringEmitter = new StringEmitter_1.StringEmitter(this.logger);
         this.enumEmitter = new EnumEmitter_1.EnumEmitter(this.stringEmitter, this.logger);
         this.classEmitter = new ClassEmitter_1.ClassEmitter(this.stringEmitter, this.logger);
@@ -25,18 +24,11 @@ var FileEmitter = /** @class */ (function () {
         if (!options)
             options = {};
         this.logger.log("Emitting file.");
-        console.log("Raw options are", JSON.stringify(options, null, 2));
-        options = this.optionsHelper.prepareFileEmitOptionDefaults(options);
-        options = this.optionsHelper.prepareFileEmitOptionInheritance(options);
-        console.log("Parsed options are", JSON.stringify(options, null, 2));
+        options = OptionsHelper_1.OptionsHelper.prepareFileEmitOptionDefaults(options);
+        options = OptionsHelper_1.OptionsHelper.prepareFileEmitOptionInheritance(options);
         var file = this.fileParser.parseFile();
         if (options.onAfterParsing)
             options.onAfterParsing(file, this.stringEmitter);
-        console.log("File parsed as", JSON.stringify(file, function (key, value) {
-            if (key === "parent")
-                return;
-            return value;
-        }, 2));
         var nodes = new Array();
         for (var _i = 0, _a = file.enums; _i < _a.length; _i++) {
             var enumObject = _a[_i];

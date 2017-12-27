@@ -1,7 +1,7 @@
 import { FileParser, CSharpEnum, CSharpEnumOption, CSharpFile } from 'fluffy-spoon.javascript.csharp-parser';
 
 import { StringEmitter } from './StringEmitter';
-import { OptionsHelper } from './OptionsHelper';
+import { OptionsHelper } from './options/OptionsHelper';
 import { TypeEmitOptions } from './TypeEmitter';
 import { StructEmitter, StructEmitOptions } from './StructEmitter';
 import { EnumEmitter, EnumEmitOptions } from './EnumEmitter';
@@ -45,7 +45,6 @@ export class FileEmitter {
 		this.fileParser = new FileParser(content);
 
 		this.logger = new Logger();
-		this.optionsHelper = new OptionsHelper();
 
 		this.stringEmitter = new StringEmitter(this.logger);
 
@@ -62,22 +61,12 @@ export class FileEmitter {
 
 		this.logger.log("Emitting file.");
 		
-		console.log("Raw options are", JSON.stringify(options, null, 2));
-
-		options = this.optionsHelper.prepareFileEmitOptionDefaults(options);
-		options = this.optionsHelper.prepareFileEmitOptionInheritance(options);
-		console.log("Parsed options are", JSON.stringify(options, null, 2));
+		options = OptionsHelper.prepareFileEmitOptionDefaults(options);
+		options = OptionsHelper.prepareFileEmitOptionInheritance(options);
 
 		var file = this.fileParser.parseFile();
 		if (options.onAfterParsing)
 			options.onAfterParsing(file, this.stringEmitter);
-
-		console.log("File parsed as", JSON.stringify(file, (key, value) => {
-			if(key === "parent")
-				return;
-			
-			return value;
-		}, 2));
 
 		var nodes = new Array<ts.Statement>();
 

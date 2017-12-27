@@ -1,14 +1,15 @@
 var fs = require('fs');
 
-import { CSharpField, FieldParser } from 'fluffy-spoon.javascript.csharp-parser';
+import { CSharpField, CSharpProperty, FieldParser } from 'fluffy-spoon.javascript.csharp-parser';
 
-import { OptionsHelper } from '../src/OptionsHelper';
+import { OptionsHelper } from '../src/options/OptionsHelper';
 import { FileEmitOptions } from '../src/FileEmitter';
 import { PerFieldEmitOptions } from '../src/FieldEmitter';
+import { PerPropertyEmitOptions } from '../src/PropertyEmitter';
 
 describe("OptionsHelper", function () {
 
-	it("inheritance propagates correctly with simple values", function () {
+	/*it("inheritance propagates correctly with simple values", function () {
 		var helper = new OptionsHelper();
         var options = helper.prepareFileEmitOptionInheritance(
             helper.prepareFileEmitOptionDefaults({
@@ -36,32 +37,26 @@ describe("OptionsHelper", function () {
         expect(options.classEmitOptions.fieldEmitOptions.readOnly).toBe(<any>2);
         expect(options.namespaceEmitOptions.classEmitOptions.fieldEmitOptions.readOnly).toBe(<any>2);
 
-    });
+    });*/
 
-	it("inheritance propagates correctly for functions", function () {
-		var helper = new OptionsHelper();
-        var options = helper.prepareFileEmitOptionInheritance(
-            helper.prepareFileEmitOptionDefaults({
+	it("inheritance propagates correctly for functions from file to class", function () {
+        var defaultedOptions = OptionsHelper.prepareFileEmitOptionDefaults({
+            propertyEmitOptions: {
+                perPropertyEmitOptions: (field) => <PerPropertyEmitOptions>{ name: field.name + "_FileField"}
+            },
+            namespaceEmitOptions: {
                 classEmitOptions: {
-                    fieldEmitOptions: {
-                        perFieldEmitOptions: (field) => <PerFieldEmitOptions>{ name: field.name + "_FileClassField" }
+                    propertyEmitOptions: {
+                        perPropertyEmitOptions: (field) => <PerPropertyEmitOptions>{ name: field.name + "_FileNamespaceClassField" }
                     }
-                },
-                namespaceEmitOptions: {
-                    classEmitOptions: {
-                        fieldEmitOptions: {
-                            perFieldEmitOptions: (field) => <PerFieldEmitOptions>{ name: field.name + "_FileNamespaceClassField" }
-                        }
-                    }
-                },
-                fieldEmitOptions: {
-                    perFieldEmitOptions: (field) => <PerFieldEmitOptions>{ name: field.name + "_FileField"}
                 }
-            }));
+            }
+        });
+        var options = OptionsHelper.prepareFileEmitOptionInheritance(defaultedOptions);
 
-        expect(options.fieldEmitOptions.perFieldEmitOptions(new CSharpField("foo")).name).toBe("foo_FileField");
-        expect(options.classEmitOptions.fieldEmitOptions.perFieldEmitOptions(new CSharpField("foo")).name).toBe("foo_FileClassField");
-        expect(options.namespaceEmitOptions.classEmitOptions.fieldEmitOptions.perFieldEmitOptions(new CSharpField("foo")).name).toBe("foo_FileNamespaceClassField");
+        expect(options.propertyEmitOptions.perPropertyEmitOptions(new CSharpProperty("foo")).name).toBe("foo_FileField");
+        expect(options.classEmitOptions.propertyEmitOptions.perPropertyEmitOptions(new CSharpProperty("foo")).name).toBe("foo_FileField");
+        expect(options.namespaceEmitOptions.classEmitOptions.propertyEmitOptions.perPropertyEmitOptions(new CSharpProperty("foo")).name).toBe("foo_FileNamespaceClassField");
 	});
 
 });
