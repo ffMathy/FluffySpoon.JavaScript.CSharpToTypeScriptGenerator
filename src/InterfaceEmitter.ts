@@ -13,18 +13,20 @@ import ts = require("typescript");
 export interface InterfaceEmitOptionsBase {
 	declare?: boolean;
 	filter?: (method: CSharpInterface) => boolean;
+}
 
+export interface InterfaceEmitOptionsLinks {
 	propertyEmitOptions?: PropertyEmitOptions;
 	methodEmitOptions?: MethodEmitOptions;
 	genericParameterTypeEmitOptions?: TypeEmitOptions;
 	inheritedTypeEmitOptions?: TypeEmitOptions;
 }
 
-export interface InterfaceEmitOptions extends InterfaceEmitOptionsBase {
+export interface InterfaceEmitOptions extends InterfaceEmitOptionsBase, InterfaceEmitOptionsLinks {
 	perInterfaceEmitOptions?: (interfaceObject: CSharpInterface) => PerInterfaceEmitOptions;
 }
 
-export interface PerInterfaceEmitOptions extends InterfaceEmitOptionsBase {
+export interface PerInterfaceEmitOptions extends InterfaceEmitOptionsBase, InterfaceEmitOptionsLinks {
 	name?: string;
 }
 

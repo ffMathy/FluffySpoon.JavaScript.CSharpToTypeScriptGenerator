@@ -16,7 +16,9 @@ import ts = require("typescript");
 export interface ClassEmitOptionsBase {
 	declare?: boolean;
 	filter?: (classObject: CSharpClass) => boolean;
+}
 
+export interface ClassEmitOptionsLinks {
 	enumEmitOptions?: EnumEmitOptions;
 	propertyEmitOptions?: PropertyEmitOptions;
 	interfaceEmitOptions?: InterfaceEmitOptions;
@@ -27,11 +29,11 @@ export interface ClassEmitOptionsBase {
 	inheritedTypeEmitOptions?: TypeEmitOptions;
 }
 
-export interface ClassEmitOptions extends ClassEmitOptionsBase {
+export interface ClassEmitOptions extends ClassEmitOptionsBase, ClassEmitOptionsLinks {
 	perClassEmitOptions?: (classObject: CSharpClass) => PerClassEmitOptions;
 }
 
-export interface PerClassEmitOptions extends ClassEmitOptionsBase {
+export interface PerClassEmitOptions extends ClassEmitOptionsBase, ClassEmitOptionsLinks {
 	name?: string;
 }
 

@@ -1,149 +1,134 @@
-import { TypeEmitOptions } from '../TypeEmitter';
-import { StructEmitOptions, PerStructEmitOptions } from '../StructEmitter';
-import { EnumEmitOptions } from '../EnumEmitter';
-import { ClassEmitOptions, PerClassEmitOptions } from '../ClassEmitter';
-import { InterfaceEmitOptions, PerInterfaceEmitOptions } from '../InterfaceEmitter';
-import { NamespaceEmitOptions } from '../NamespaceEmitter';
-import { MethodEmitOptions, PerMethodEmitOptions } from '../MethodEmitter';
-import { PropertyEmitOptions, PerPropertyEmitOptions } from '../PropertyEmitter';
-import { FieldEmitOptions, PerFieldEmitOptions } from '../FieldEmitter';
-import { FileEmitOptions } from '../FileEmitter';
+import { FileParser, CSharpEnum, CSharpEnumOption, CSharpFile } from 'fluffy-spoon.javascript.csharp-parser';
 
-import { fileEmitOptionsInheritanceTree } from './FileEmitOptionsInheritanceTree';
+import { StringEmitter } from './StringEmitter';
+import { TypeEmitOptions, TypeEmitOptionsBase } from './TypeEmitter';
+import { StructEmitter, StructEmitOptions, StructEmitOptionsBase } from './StructEmitter';
+import { FileEmitter, FileEmitOptions } from './FileEmitter';
+import { EnumEmitter, EnumEmitOptions, EnumEmitOptionsBase } from './EnumEmitter';
+import { ClassEmitter, ClassEmitOptions, ClassEmitOptionsBase } from './ClassEmitter';
+import { InterfaceEmitter, InterfaceEmitOptions, InterfaceEmitOptionsBase } from './InterfaceEmitter';
+import { NamespaceEmitter, NamespaceEmitOptions, NamespaceEmitOptionsBase } from './NamespaceEmitter';
+import { MethodEmitOptions, MethodEmitOptionsBase } from './MethodEmitter';
+import { PropertyEmitOptions, PerPropertyEmitOptions, PropertyEmitOptionsBase } from './PropertyEmitter';
+import { FieldEmitOptions, FieldEmitOptionsBase } from './FieldEmitter';
+import { Logger } from './Logger';
 
-//for this to work, we need our option objects to be classes, not interfaces.
-export interface OptionsInheritanceTreeNode<T> {
-	propertyName?: string;
-	applyInheritance?: (parent: T, defaultValue?: T) => {
-		tree?: OptionsInheritanceTreeNode<any>[] | null,
-		result: T
-	};
+import ts = require("typescript");
+
+export interface DefaultEmitOptions {
+	classEmitOptions?: ClassEmitOptionsBase,
+	namespaceEmitOptions?: NamespaceEmitOptionsBase,
+	enumEmitOptions?: EnumEmitOptionsBase,
+	structEmitOptions?: StructEmitOptionsBase,
+	interfaceEmitOptions?: InterfaceEmitOptionsBase,
+	typeEmitOptions?: TypeEmitOptionsBase,
+	propertyEmitOptions?: PropertyEmitOptionsBase,
+	fieldEmitOptions?: FieldEmitOptionsBase,
+	methodEmitOptions?: MethodEmitOptionsBase,
 }
 
-export class OptionsHelper {
+export interface EmitOptions {
+	defaults?: DefaultEmitOptions,
+	file?: FileEmitOptions,
+	onAfterParsing?: (file: CSharpFile, fileEmitter: StringEmitter) => void
+}
 
-	static mergeOptions<T extends Object, K extends Object>(
-		defaultOptions: T,
-		initialOptions: T,
-		newOptions: K): T | K 
+export class Emitter {
+	public readonly stringEmitter: StringEmitter;
+	public readonly logger: Logger;
+
+	private fileEmitter: FileEmitter;
+
+	constructor(content: string) {
+		this.logger = new Logger();
+		this.stringEmitter = new StringEmitter(this.logger);
+
+		this.fileEmitter = new FileEmitter(this.logger, this.stringEmitter, content);
+	}
+
+	emit(options?: EmitOptions) {
+		if(!options)
+			options = {};
+
+		this.logger.log("Emitting file.");
+
+		options.defaults = this.prepareEmitOptionDefaults(options.defaults);
+
+		if(!options.file) options.file = {};
+
+		this.mergeOptions({}, options.file.enumEmitOptions, options.defaults.enumEmitOptions);
+		this.mergeOptions({}, options.file.classEmitOptions, options.defaults.classEmitOptions);
+		this.mergeOptions({}, options.file.interfaceEmitOptions, options.defaults.interfaceEmitOptions);
+		this.mergeOptions({}, options.file.namespaceEmitOptions, options.defaults.namespaceEmitOptions);
+		this.mergeOptions({}, options.file.structEmitOptions, options.defaults.structEmitOptions);
+
+
+		return this.fileEmitter.emitFile(options.file);
+	}
+
+	private mergeFileEmitOptions(
+		fromSettings: FileEmitOptions, 
+		toSettings: FileEmitOptions, 
+		defaultSettings: DefaultEmitOptions) 
 	{
-		let me = this;
+		this.mergeOptions(fromSettings.enumEmitOptions, toSettings.enumEmitOptions, defaultSettings.enumEmitOptions);
 
-		if(typeof initialOptions === "function" && initialOptions["isDefault"] !== true) 
-			return initialOptions;
-
-		if(typeof newOptions === "function" && newOptions["isDefault"] !== true) 
-			return newOptions;
-
-		if (typeof initialOptions === "undefined") return newOptions;
-		if (typeof newOptions === "undefined") return initialOptions;
-
-		if (!Array.isArray(initialOptions) && !Array.isArray(newOptions) && 
-			typeof initialOptions === "object" && typeof newOptions === "object") {
-
-			var defaultOptionsCopy = Object.assign({}, defaultOptions);
-			var initialOptionsCopy = Object.assign({}, initialOptions);
-			var newOptionsCopy = Object.assign({}, newOptions);
-
-			let usedKeys = new Array<string>();
-
-			for (var parentKey in initialOptionsCopy)
-				for (var childKey in newOptionsCopy) {
-
-					if (!initialOptionsCopy.hasOwnProperty(parentKey)) continue;
-					if (!newOptionsCopy.hasOwnProperty(childKey)) continue;
-
-					if (parentKey.toString() !== childKey.toString()) continue;
-					
-					if(usedKeys.indexOf(parentKey) > -1) continue;
-					usedKeys.push(parentKey);
-
-					var initialValue = <any>initialOptionsCopy[parentKey];
-					if (typeof initialValue !== "undefined" && typeof initialValue !== "object" && typeof initialValue !== "function")
-						continue;
-
-					var newValue = <any>newOptionsCopy[childKey];					
-					if (typeof initialValue !== typeof newValue)
-						throw new Error("Could not merge options [" + (typeof initialValue) + "] " + parentKey + " and [" + (typeof newValue) + "] " + childKey + ".");
-
-					newValue = this.mergeOptions(
-						defaultOptionsCopy[parentKey], 
-						initialValue, 
-						newValue);
-					if(typeof newValue === "undefined")
-						continue;
-
-					initialOptionsCopy[parentKey] = initialValue;
-					newOptionsCopy[childKey] = newValue;
-				}
-
-			var result = Object.assign(
-				initialOptionsCopy,
-				newOptionsCopy);
-			return result;
-		}
-
-		if (typeof initialOptions !== "undefined" && typeof initialOptions !== "object" && typeof initialOptions !== "function")
-			return initialOptions;
-
-		return newOptions;
+		this.mergeClassEmitOptions(
+			fromSettings.classEmitOptions, 
+			toSettings.classEmitOptions, 
+			defaultSettings);
+		this.mergeInterfaceEmitOptions(
+			fromSettings.interfaceEmitOptions, 
+			toSettings.interfaceEmitOptions, 
+			defaultSettings);
+		this.mergeNamespaceEmitOptions(
+			fromSettings.namespaceEmitOptions, 
+			toSettings.namespaceEmitOptions, 
+			defaultSettings);
+		this.mergeStructEmitOptions(
+			fromSettings.structEmitOptions, 
+			toSettings.structEmitOptions, 
+			defaultSettings);
 	}
 
-	private static markFunctionsAsDefault(target: any) {
-		for(var key in target) {
-			if(!target.hasOwnProperty(key))
+	private mergeClassEmitOptions(
+		fromSettings: ClassEmitOptions, 
+		toSettings: ClassEmitOptions, 
+		defaultSettings: DefaultEmitOptions) 
+	{
+		this.mergeOptions(fromSettings, toSettings, defaultSettings.classEmitOptions);
+		this.mergeOptions(fromSettings.enumEmitOptions, toSettings.enumEmitOptions, defaultSettings.enumEmitOptions);
+		this.mergeOptions(fromSettings.fieldEmitOptions, toSettings.fieldEmitOptions, defaultSettings.fieldEmitOptions);
+		this.mergeOptions(fromSettings.fieldEmitOptions, toSettings.fieldEmitOptions, defaultSettings.fieldEmitOptions);
+	}
+
+	private mergeMethodEmitOptions(
+		fromSettings: MethodEmitOptions, 
+		toSettings: MethodEmitOptions, 
+		defaultSettings: DefaultEmitOptions) 
+	{
+		this.mergeOptions(fromSettings, toSettings, defaultSettings.methodEmitOptions);
+		this.mergeOptions(fromSettings.returnTypeEmitOptions, toSettings.returnTypeEmitOptions, defaultSettings.typeEmitOptions);
+	}
+
+	private mergeOptions<T>(fromSettings: T, toSettings: T, defaultSettings: T): T {
+		if(!toSettings)
+			toSettings = <T>{};
+
+		const properties = Object.getOwnPropertyNames(defaultSettings);
+		for(var propertyName of properties) {
+			const typeName = typeof defaultSettings[propertyName];
+			if(typeName === "function" || typeName === "object")
 				continue;
 
-			if(typeof target[key] === "function")
-				target[key]["isDefault"] = true;
-		}
-	}
-
-	private static applyInheritanceTree(parent: Object, tree: OptionsInheritanceTreeNode<any>[]) {
-		if (!tree)
-			return parent;
-
-		var inheritancesToRun = <{ parent: Object, tree: OptionsInheritanceTreeNode<any>[] }[]>[];
-		for (let inheritance of tree) {
-			if (inheritance.propertyName && !parent[inheritance.propertyName])
-				continue;
-
-			var property = inheritance.propertyName ?
-				parent[inheritance.propertyName] :
-				parent;
-			var defaultValue = Object.assign({}, property);
-			var returnValue = inheritance.applyInheritance(property, defaultValue);
-
-			if (inheritance.propertyName) {
-				parent[inheritance.propertyName] = returnValue.result;
-			} else {
-				parent = returnValue.result;
-			}
-
-			inheritancesToRun.push({
-				parent: returnValue.result,
-				tree: returnValue.tree
-			});
+			if(!(propertyName in toSettings))
+				toSettings[propertyName] = fromSettings[propertyName] || defaultSettings[propertyName];
 		}
 
-		for (let inheritance of inheritancesToRun) {
-			this.applyInheritanceTree(
-				inheritance.parent, 
-				inheritance.tree);
-		}
-
-		return parent;
+		return toSettings;
 	}
 
-	static prepareFileEmitOptionInheritance(options: FileEmitOptions) {
-		var inheritancesToRun = [fileEmitOptionsInheritanceTree];
-		options = this.applyInheritanceTree(options, inheritancesToRun);
-
-		this.markFunctionsAsDefault(options);
-		return options;
-	}
-
-	static prepareEnumEmitOptionDefaults(options: EnumEmitOptions) {
+	private prepareEnumEmitOptionDefaults(options: EnumEmitOptions) {
 		if (!options.filter)
 			options.filter = (enumObject) => !!enumObject.isPublic;
 
@@ -151,20 +136,18 @@ export class OptionsHelper {
 			options.strategy = "default";
 		}
 
-		this.markFunctionsAsDefault(options);
 		return options;
 	}
 
-	static prepareTypeEmitOptionDefaults(options: TypeEmitOptions) {
+	private prepareTypeEmitOptionDefaults(options: TypeEmitOptions) {
 		if (!options.filter) {
 			options.filter = (type) => true;
 		}
 
-		this.markFunctionsAsDefault(options);
 		return options;
 	}
 
-	static prepareFieldEmitOptionDefaults(options: FieldEmitOptions) {
+	private prepareFieldEmitOptionDefaults(options: FieldEmitOptions) {
 		if (!options.typeEmitOptions) options.typeEmitOptions = {};
 
 		if (!options.filter) {
@@ -177,11 +160,10 @@ export class OptionsHelper {
 
 		options.typeEmitOptions = this.prepareTypeEmitOptionDefaults(options.typeEmitOptions);
 
-		this.markFunctionsAsDefault(options);
 		return options;
 	}
 
-	static preparePropertyEmitOptionDefaults(options: PropertyEmitOptions) {
+	private preparePropertyEmitOptionDefaults(options: PropertyEmitOptions) {
 		if (!options.typeEmitOptions) options.typeEmitOptions = {};
 
 		if (!options.filter) {
@@ -196,11 +178,10 @@ export class OptionsHelper {
 
 		options.typeEmitOptions = this.prepareTypeEmitOptionDefaults(options.typeEmitOptions);
 
-		this.markFunctionsAsDefault(options);
 		return options;
 	}
 
-	static prepareStructEmitOptionDefaults(options: StructEmitOptions) {
+	private prepareStructEmitOptionDefaults(options: StructEmitOptions) {
 		if (!options.methodEmitOptions) options.methodEmitOptions = {};
 		if (!options.propertyEmitOptions) options.propertyEmitOptions = {};
 		if (!options.fieldEmitOptions) options.fieldEmitOptions = {};
@@ -217,11 +198,10 @@ export class OptionsHelper {
 		options.propertyEmitOptions = this.preparePropertyEmitOptionDefaults(options.propertyEmitOptions);
 		options.fieldEmitOptions = this.prepareFieldEmitOptionDefaults(options.fieldEmitOptions);
 
-		this.markFunctionsAsDefault(options);
 		return options;
 	}
 
-	static prepareMethodEmitOptionDefaults(options: MethodEmitOptions) {
+	private prepareMethodEmitOptionDefaults(options: MethodEmitOptions) {
 		if (!options.argumentTypeEmitOptions) options.argumentTypeEmitOptions = {};
 		if (!options.returnTypeEmitOptions) options.returnTypeEmitOptions = {};
 
@@ -236,11 +216,10 @@ export class OptionsHelper {
 		options.argumentTypeEmitOptions = this.prepareTypeEmitOptionDefaults(options.argumentTypeEmitOptions);
 		options.returnTypeEmitOptions = this.prepareTypeEmitOptionDefaults(options.returnTypeEmitOptions);
 
-		this.markFunctionsAsDefault(options);
 		return options;
 	}
 
-	static prepareInterfaceEmitOptionDefaults(options: InterfaceEmitOptions) {
+	private prepareInterfaceEmitOptionDefaults(options: InterfaceEmitOptions) {
 		if (!options.genericParameterTypeEmitOptions) options.genericParameterTypeEmitOptions = {};
 		if (!options.inheritedTypeEmitOptions) options.inheritedTypeEmitOptions = {};
 		if (!options.methodEmitOptions) options.methodEmitOptions = {};
@@ -259,11 +238,10 @@ export class OptionsHelper {
 		options.methodEmitOptions = this.prepareMethodEmitOptionDefaults(options.methodEmitOptions);
 		options.propertyEmitOptions = this.preparePropertyEmitOptionDefaults(options.propertyEmitOptions);
 
-		this.markFunctionsAsDefault(options);
 		return options;
 	}
 
-	static prepareNamespaceEmitOptionDefaults(options: NamespaceEmitOptions) {
+	private prepareNamespaceEmitOptionDefaults(options: NamespaceEmitOptions) {
 		if (!options.enumEmitOptions) options.enumEmitOptions = {};
 		if (!options.interfaceEmitOptions) options.interfaceEmitOptions = {};
 		if (!options.structEmitOptions) options.structEmitOptions = {};
@@ -278,11 +256,10 @@ export class OptionsHelper {
 		options.classEmitOptions = this.prepareClassEmitOptionDefaults(options.classEmitOptions);
 		options.structEmitOptions = this.prepareStructEmitOptionDefaults(options.structEmitOptions);
 
-		this.markFunctionsAsDefault(options);
 		return options;
 	}
 
-	static prepareClassEmitOptionDefaults(options: ClassEmitOptions) {
+	private prepareClassEmitOptionDefaults(options: ClassEmitOptions) {
 		if (!options.enumEmitOptions) options.enumEmitOptions = {};
 		if (!options.fieldEmitOptions) options.fieldEmitOptions = {};
 		if (!options.genericParameterTypeEmitOptions) options.genericParameterTypeEmitOptions = {};
@@ -307,11 +284,12 @@ export class OptionsHelper {
 		options.propertyEmitOptions = this.preparePropertyEmitOptionDefaults(options.propertyEmitOptions);
 		options.structEmitOptions = this.prepareStructEmitOptionDefaults(options.structEmitOptions);
 
-		this.markFunctionsAsDefault(options);
 		return options;
 	}
 
-	static prepareFileEmitOptionDefaults(options: FileEmitOptions) {
+	private prepareEmitOptionDefaults(options: DefaultEmitOptions) {
+		if(!options) options = {};
+
 		if (!options.classEmitOptions) options.classEmitOptions = {};
 		if (!options.enumEmitOptions) options.enumEmitOptions = {};
 		if (!options.interfaceEmitOptions) options.interfaceEmitOptions = {};
@@ -332,7 +310,6 @@ export class OptionsHelper {
 		options.propertyEmitOptions = this.preparePropertyEmitOptionDefaults(options.propertyEmitOptions);
 		options.fieldEmitOptions = this.prepareFieldEmitOptionDefaults(options.fieldEmitOptions);
 
-		this.markFunctionsAsDefault(options);
 		return options;
 	}
 }

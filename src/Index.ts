@@ -23,6 +23,7 @@ export {
 
 export { ClassEmitter, ClassEmitOptions, PerClassEmitOptions, ClassEmitOptionsBase } from './ClassEmitter';
 export { EnumEmitter, EnumEmitOptions } from './EnumEmitter';
+export { Emitter, EmitOptions } from './Emitter';
 export { FileEmitter, FileEmitOptions } from './FileEmitter';
 export { TypeEmitter, TypeEmitOptions } from './TypeEmitter';
 export { MethodEmitter, MethodEmitOptions, MethodEmitOptionsBase, PerMethodEmitOptions } from './MethodEmitter';

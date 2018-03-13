@@ -13,17 +13,19 @@ import ts = require("typescript");
 export interface StructEmitOptionsBase {
 	declare?: boolean;
 	filter?: (struct: CSharpStruct) => boolean;
-    
+}
+
+export interface StructEmitOptionsLinks {
 	propertyEmitOptions?: PropertyEmitOptions;
 	methodEmitOptions?: MethodEmitOptions;
 	fieldEmitOptions?: FieldEmitOptions;
 }
 
-export interface StructEmitOptions extends StructEmitOptionsBase {
+export interface StructEmitOptions extends StructEmitOptionsBase, StructEmitOptionsLinks {
 	perStructEmitOptions?: (struct: CSharpStruct) => PerStructEmitOptions;
 }
 
-export interface PerStructEmitOptions extends StructEmitOptionsBase {
+export interface PerStructEmitOptions extends StructEmitOptionsBase, StructEmitOptionsLinks {
 	name?: string;
 }
 

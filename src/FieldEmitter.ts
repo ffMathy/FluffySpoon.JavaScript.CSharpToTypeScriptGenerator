@@ -8,15 +8,18 @@ import ts = require("typescript");
 
 export interface FieldEmitOptionsBase {
 	readOnly?: boolean;
-	typeEmitOptions?: TypeEmitOptions;
 	filter?: (field: CSharpField) => boolean;
 }
 
-export interface FieldEmitOptions extends FieldEmitOptionsBase {
+export interface FieldEmitOptionsLinks {
+	typeEmitOptions?: TypeEmitOptions;
+}
+
+export interface FieldEmitOptions extends FieldEmitOptionsBase, FieldEmitOptionsLinks {
 	perFieldEmitOptions?: (field: CSharpField) => PerFieldEmitOptions;
 }
 
-export interface PerFieldEmitOptions extends FieldEmitOptionsBase {
+export interface PerFieldEmitOptions extends FieldEmitOptionsBase, FieldEmitOptionsLinks {
 	name?: string;
 }
 

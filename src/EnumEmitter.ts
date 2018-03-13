@@ -5,10 +5,13 @@ import { Logger } from './Logger';
 
 import ts = require("typescript");
 
-export interface EnumEmitOptions {
+export interface EnumEmitOptionsBase {
 	declare?: boolean;
 	strategy?: "default" | "string-union";
 	filter?: (enumObject: CSharpEnum) => boolean;
+}
+
+export interface EnumEmitOptions extends EnumEmitOptionsBase {
 }
 
 export class EnumEmitter {

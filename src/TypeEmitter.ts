@@ -5,9 +5,12 @@ import { Logger } from './Logger';
 
 import ts = require("typescript");
 
-export interface TypeEmitOptions {
+export interface TypeEmitOptionsBase {
 	mapper?: (type: CSharpType, suggestedOutput: string) => string;
 	filter?: (type: CSharpType) => boolean;
+}
+
+export interface TypeEmitOptions extends TypeEmitOptionsBase {
 }
 
 export class TypeEmitter {

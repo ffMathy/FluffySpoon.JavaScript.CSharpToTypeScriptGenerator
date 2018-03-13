@@ -1,7 +1,6 @@
 import { FileParser, CSharpEnum, CSharpEnumOption, CSharpFile } from 'fluffy-spoon.javascript.csharp-parser';
 
 import { StringEmitter } from './StringEmitter';
-import { OptionsHelper } from './options/OptionsHelper';
 import { TypeEmitOptions } from './TypeEmitter';
 import { StructEmitter, StructEmitOptions } from './StructEmitter';
 import { EnumEmitter, EnumEmitOptions } from './EnumEmitter';
@@ -21,32 +20,24 @@ export interface FileEmitOptions {
 	enumEmitOptions?: EnumEmitOptions,
 	structEmitOptions?: StructEmitOptions,
 	interfaceEmitOptions?: InterfaceEmitOptions,
-	typeEmitOptions?: TypeEmitOptions,
-	propertyEmitOptions?: PropertyEmitOptions,
-	fieldEmitOptions?: FieldEmitOptions,
-	methodEmitOptions?: MethodEmitOptions,
 
 	onAfterParsing?: (file: CSharpFile, fileEmitter: StringEmitter) => void
 }
 
 export class FileEmitter {
-	public readonly stringEmitter: StringEmitter;
-	public readonly logger: Logger;
-
 	private fileParser: FileParser;
 	private enumEmitter: EnumEmitter;
 	private classEmitter: ClassEmitter;
 	private interfaceEmitter: InterfaceEmitter;
 	private namespaceEmitter: NamespaceEmitter;
 	private structEmitter: StructEmitter;
-	private optionsHelper: OptionsHelper;
 
-	constructor(content: string) {
+	constructor(
+		private logger: Logger,
+		private stringEmitter: StringEmitter,
+		content: string) 
+	{
 		this.fileParser = new FileParser(content);
-
-		this.logger = new Logger();
-
-		this.stringEmitter = new StringEmitter(this.logger);
 
 		this.enumEmitter = new EnumEmitter(this.stringEmitter, this.logger);
 		this.classEmitter = new ClassEmitter(this.stringEmitter, this.logger);
@@ -60,9 +51,6 @@ export class FileEmitter {
 			options = {};
 
 		this.logger.log("Emitting file.");
-		
-		options = OptionsHelper.prepareFileEmitOptionDefaults(options);
-		options = OptionsHelper.prepareFileEmitOptionInheritance(options);
 
 		var file = this.fileParser.parseFile();
 		if (options.onAfterParsing)

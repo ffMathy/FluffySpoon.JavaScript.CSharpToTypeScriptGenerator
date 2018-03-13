@@ -10,15 +10,20 @@ import { Logger } from './Logger';
 
 import ts = require("typescript");
 
-export interface NamespaceEmitOptions {
+export interface NamespaceEmitOptionsBase {
 	declare?: boolean;
 	skip?: boolean;
 	filter?: (namespace: CSharpNamespace) => boolean;
+}
 
+export interface NamespaceEmitOptionsLinks {
 	classEmitOptions?: ClassEmitOptions;
 	interfaceEmitOptions?: InterfaceEmitOptions;
 	structEmitOptions?: StructEmitOptions;
 	enumEmitOptions?: EnumEmitOptions;
+}
+
+export interface NamespaceEmitOptions extends NamespaceEmitOptionsBase, NamespaceEmitOptionsLinks {
 }
 
 export class NamespaceEmitter {

@@ -1,19 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var fluffy_spoon_javascript_csharp_parser_1 = require("fluffy-spoon.javascript.csharp-parser");
-var StringEmitter_1 = require("./StringEmitter");
-var OptionsHelper_1 = require("./options/OptionsHelper");
 var StructEmitter_1 = require("./StructEmitter");
 var EnumEmitter_1 = require("./EnumEmitter");
 var ClassEmitter_1 = require("./ClassEmitter");
 var InterfaceEmitter_1 = require("./InterfaceEmitter");
 var NamespaceEmitter_1 = require("./NamespaceEmitter");
-var Logger_1 = require("./Logger");
 var FileEmitter = /** @class */ (function () {
-    function FileEmitter(content) {
+    function FileEmitter(logger, stringEmitter, content) {
+        this.logger = logger;
+        this.stringEmitter = stringEmitter;
         this.fileParser = new fluffy_spoon_javascript_csharp_parser_1.FileParser(content);
-        this.logger = new Logger_1.Logger();
-        this.stringEmitter = new StringEmitter_1.StringEmitter(this.logger);
         this.enumEmitter = new EnumEmitter_1.EnumEmitter(this.stringEmitter, this.logger);
         this.classEmitter = new ClassEmitter_1.ClassEmitter(this.stringEmitter, this.logger);
         this.interfaceEmitter = new InterfaceEmitter_1.InterfaceEmitter(this.stringEmitter, this.logger);
@@ -24,8 +21,6 @@ var FileEmitter = /** @class */ (function () {
         if (!options)
             options = {};
         this.logger.log("Emitting file.");
-        options = OptionsHelper_1.OptionsHelper.prepareFileEmitOptionDefaults(options);
-        options = OptionsHelper_1.OptionsHelper.prepareFileEmitOptionInheritance(options);
         var file = this.fileParser.parseFile();
         if (options.onAfterParsing)
             options.onAfterParsing(file, this.stringEmitter);
