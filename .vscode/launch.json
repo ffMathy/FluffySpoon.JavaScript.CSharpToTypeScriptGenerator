@@ -19,7 +19,7 @@
             "name": "Run specific test",
             "program": "${workspaceFolder}\\node_modules\\jasmine\\bin\\jasmine.js",
             "args": [
-                "spec\\OptionsHelperSpec.js"
+                "dist\\spec\\OptionsHelperSpec.js"
             ],
             "env": {
                 "NODE_PATH": "."

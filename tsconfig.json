@@ -4,6 +4,7 @@
   "compilerOptions": {
     "target": "es5",
     "lib": [ "es2015", "es2017", "dom" ],
+    "outDir": "./dist",
     "sourceMap": true,
     "declaration": true,
     "emitDecoratorMetadata": true,
