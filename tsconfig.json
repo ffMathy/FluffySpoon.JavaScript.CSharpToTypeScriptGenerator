@@ -1,6 +1,11 @@
 {
   "compileOnSave": true,
-  "exclude": [ "./spec/cases/", "./node_modules" ],
+  "exclude": [
+	"./spec/cases/"
+  ],
+  "include": [
+	"./src/**/*.ts"
+  ],
   "compilerOptions": {
     "target": "es5",
     "lib": [ "es2015", "es2017", "dom" ],
