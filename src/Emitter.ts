@@ -15,6 +15,10 @@ import { Logger } from './Logger';
 
 import ts = require("typescript");
 
+export interface NestingLevelMixin {
+	nestingLevel: number;
+}
+
 export interface DefaultEmitOptions {
 	classEmitOptions?: ClassEmitOptionsBase,
 	namespaceEmitOptions?: NamespaceEmitOptionsBase,
@@ -56,76 +60,157 @@ export class Emitter {
 
 		if(!options.file) options.file = {};
 
-		this.mergeOptions({}, options.file.enumEmitOptions, options.defaults.enumEmitOptions);
-		this.mergeOptions({}, options.file.classEmitOptions, options.defaults.classEmitOptions);
-		this.mergeOptions({}, options.file.interfaceEmitOptions, options.defaults.interfaceEmitOptions);
-		this.mergeOptions({}, options.file.namespaceEmitOptions, options.defaults.namespaceEmitOptions);
-		this.mergeOptions({}, options.file.structEmitOptions, options.defaults.structEmitOptions);
-
+		this.mergeFileEmitOptions(options.file, options.defaults);
 
 		return this.fileEmitter.emitFile(options.file);
 	}
 
 	private mergeFileEmitOptions(
-		fromSettings: FileEmitOptions, 
-		toSettings: FileEmitOptions, 
+		explicitSettings: FileEmitOptions, 
 		defaultSettings: DefaultEmitOptions) 
 	{
-		this.mergeOptions(fromSettings.enumEmitOptions, toSettings.enumEmitOptions, defaultSettings.enumEmitOptions);
+		if(!explicitSettings.classEmitOptions) explicitSettings.classEmitOptions = {};
+		if(!explicitSettings.enumEmitOptions) explicitSettings.enumEmitOptions = {};
+		if(!explicitSettings.interfaceEmitOptions) explicitSettings.interfaceEmitOptions = {};
+		if(!explicitSettings.namespaceEmitOptions) explicitSettings.namespaceEmitOptions = {};
+		if(!explicitSettings.structEmitOptions) explicitSettings.structEmitOptions = {};
 
-		this.mergeClassEmitOptions(
-			fromSettings.classEmitOptions, 
-			toSettings.classEmitOptions, 
-			defaultSettings);
-		this.mergeInterfaceEmitOptions(
-			fromSettings.interfaceEmitOptions, 
-			toSettings.interfaceEmitOptions, 
-			defaultSettings);
-		this.mergeNamespaceEmitOptions(
-			fromSettings.namespaceEmitOptions, 
-			toSettings.namespaceEmitOptions, 
-			defaultSettings);
-		this.mergeStructEmitOptions(
-			fromSettings.structEmitOptions, 
-			toSettings.structEmitOptions, 
-			defaultSettings);
+		this.mergeClassEmitOptions(explicitSettings.classEmitOptions, defaultSettings);
+		this.mergeEnumEmitOptions(explicitSettings.enumEmitOptions, defaultSettings);
+		this.mergeInterfaceEmitOptions(explicitSettings.interfaceEmitOptions, defaultSettings);
+		this.mergeNamespaceEmitOptions(explicitSettings.namespaceEmitOptions, defaultSettings);
+		this.mergeStructEmitOptions(explicitSettings.structEmitOptions, defaultSettings);
+	}
+
+	private mergeNamespaceEmitOptions(
+		explicitSettings: NamespaceEmitOptions, 
+		defaultSettings: DefaultEmitOptions) 
+	{
+		this.mergeOptions(explicitSettings, defaultSettings.namespaceEmitOptions);
+
+		if(!explicitSettings.classEmitOptions) explicitSettings.classEmitOptions = {};
+		if(!explicitSettings.enumEmitOptions) explicitSettings.enumEmitOptions = {};
+		if(!explicitSettings.interfaceEmitOptions) explicitSettings.interfaceEmitOptions = {};
+		if(!explicitSettings.structEmitOptions) explicitSettings.structEmitOptions = {};
+
+		this.mergeClassEmitOptions(explicitSettings.classEmitOptions, defaultSettings);
+		this.mergeEnumEmitOptions(explicitSettings.enumEmitOptions, defaultSettings);
+		this.mergeInterfaceEmitOptions(explicitSettings.interfaceEmitOptions, defaultSettings);
+		this.mergeStructEmitOptions(explicitSettings.structEmitOptions, defaultSettings);
 	}
 
 	private mergeClassEmitOptions(
-		fromSettings: ClassEmitOptions, 
-		toSettings: ClassEmitOptions, 
+		explicitSettings: ClassEmitOptions, 
 		defaultSettings: DefaultEmitOptions) 
 	{
-		this.mergeOptions(fromSettings, toSettings, defaultSettings.classEmitOptions);
-		this.mergeOptions(fromSettings.enumEmitOptions, toSettings.enumEmitOptions, defaultSettings.enumEmitOptions);
-		this.mergeOptions(fromSettings.fieldEmitOptions, toSettings.fieldEmitOptions, defaultSettings.fieldEmitOptions);
-		this.mergeOptions(fromSettings.fieldEmitOptions, toSettings.fieldEmitOptions, defaultSettings.fieldEmitOptions);
+		this.mergeOptions(explicitSettings, defaultSettings.classEmitOptions);
+
+		if(!explicitSettings.enumEmitOptions) explicitSettings.enumEmitOptions = {};
+		if(!explicitSettings.fieldEmitOptions) explicitSettings.fieldEmitOptions = {};
+		if(!explicitSettings.genericParameterTypeEmitOptions) explicitSettings.genericParameterTypeEmitOptions = {};
+		if(!explicitSettings.inheritedTypeEmitOptions) explicitSettings.inheritedTypeEmitOptions = {};
+		if(!explicitSettings.interfaceEmitOptions) explicitSettings.interfaceEmitOptions = {};
+		if(!explicitSettings.methodEmitOptions) explicitSettings.methodEmitOptions = {};
+		if(!explicitSettings.propertyEmitOptions) explicitSettings.propertyEmitOptions = {};
+		if(!explicitSettings.structEmitOptions) explicitSettings.structEmitOptions = {};
+
+		this.mergeEnumEmitOptions(explicitSettings.enumEmitOptions, defaultSettings);
+		this.mergeFieldEmitOptions(explicitSettings.fieldEmitOptions, defaultSettings);
+		this.mergeTypeEmitOptions(explicitSettings.genericParameterTypeEmitOptions, defaultSettings);
+		this.mergeTypeEmitOptions(explicitSettings.inheritedTypeEmitOptions, defaultSettings);
+		this.mergeInterfaceEmitOptions(explicitSettings.interfaceEmitOptions, defaultSettings);
+		this.mergeMethodEmitOptions(explicitSettings.methodEmitOptions, defaultSettings);
+		this.mergePropertyEmitOptions(explicitSettings.propertyEmitOptions, defaultSettings);
+		this.mergeStructEmitOptions(explicitSettings.structEmitOptions, defaultSettings);
+	}
+
+	private mergeEnumEmitOptions(
+		explicitSettings: EnumEmitOptions, 
+		defaultSettings: DefaultEmitOptions) 
+	{
+		this.mergeOptions(explicitSettings, defaultSettings.enumEmitOptions);
+	}
+
+	private mergeFieldEmitOptions(
+		explicitSettings: FieldEmitOptions, 
+		defaultSettings: DefaultEmitOptions) 
+	{
+		this.mergeOptions(explicitSettings, defaultSettings.fieldEmitOptions);
+
+		if(!explicitSettings.typeEmitOptions) explicitSettings.typeEmitOptions = {};
+
+		this.mergeTypeEmitOptions(explicitSettings.typeEmitOptions, defaultSettings);
+	}
+
+	private mergeTypeEmitOptions(
+		explicitSettings: TypeEmitOptions, 
+		defaultSettings: DefaultEmitOptions) 
+	{
+		this.mergeOptions(explicitSettings, defaultSettings.typeEmitOptions);
+	}
+
+	private mergeInterfaceEmitOptions(
+		explicitSettings: InterfaceEmitOptions, 
+		defaultSettings: DefaultEmitOptions) 
+	{
+		this.mergeOptions(explicitSettings, defaultSettings.interfaceEmitOptions);
+
+		if(!explicitSettings.genericParameterTypeEmitOptions) explicitSettings.genericParameterTypeEmitOptions = {};
+		if(!explicitSettings.inheritedTypeEmitOptions) explicitSettings.inheritedTypeEmitOptions = {};
+		if(!explicitSettings.methodEmitOptions) explicitSettings.methodEmitOptions = {};
+		if(!explicitSettings.propertyEmitOptions) explicitSettings.propertyEmitOptions = {};
+
+		this.mergeTypeEmitOptions(explicitSettings.genericParameterTypeEmitOptions, defaultSettings);
+		this.mergeTypeEmitOptions(explicitSettings.inheritedTypeEmitOptions, defaultSettings);
+		this.mergeMethodEmitOptions(explicitSettings.methodEmitOptions, defaultSettings);
+		this.mergePropertyEmitOptions(explicitSettings.propertyEmitOptions, defaultSettings);
 	}
 
 	private mergeMethodEmitOptions(
-		fromSettings: MethodEmitOptions, 
-		toSettings: MethodEmitOptions, 
+		explicitSettings: MethodEmitOptions, 
 		defaultSettings: DefaultEmitOptions) 
 	{
-		this.mergeOptions(fromSettings, toSettings, defaultSettings.methodEmitOptions);
-		this.mergeOptions(fromSettings.returnTypeEmitOptions, toSettings.returnTypeEmitOptions, defaultSettings.typeEmitOptions);
+		this.mergeOptions(explicitSettings, defaultSettings.methodEmitOptions);
+
+		if(!explicitSettings.argumentTypeEmitOptions) explicitSettings.argumentTypeEmitOptions = {};
+		if(!explicitSettings.returnTypeEmitOptions) explicitSettings.returnTypeEmitOptions = {};
+
+		this.mergeTypeEmitOptions(explicitSettings.argumentTypeEmitOptions, defaultSettings);
+		this.mergeTypeEmitOptions(explicitSettings.returnTypeEmitOptions, defaultSettings);
 	}
 
-	private mergeOptions<T>(fromSettings: T, toSettings: T, defaultSettings: T): T {
-		if(!toSettings)
-			toSettings = <T>{};
+	private mergePropertyEmitOptions(
+		explicitSettings: PropertyEmitOptions, 
+		defaultSettings: DefaultEmitOptions) 
+	{
+		this.mergeOptions(explicitSettings, defaultSettings.propertyEmitOptions);
 
+		if(!explicitSettings.typeEmitOptions) explicitSettings.typeEmitOptions = {};
+
+		this.mergeTypeEmitOptions(explicitSettings.typeEmitOptions, defaultSettings);
+	}
+
+	private mergeStructEmitOptions(
+		explicitSettings: StructEmitOptions, 
+		defaultSettings: DefaultEmitOptions) 
+	{
+		this.mergeOptions(explicitSettings, defaultSettings.structEmitOptions);
+	}
+
+	private mergeOptions<T>(explicitSettings: T, defaultSettings: T): T {
 		const properties = Object.getOwnPropertyNames(defaultSettings);
 		for(var propertyName of properties) {
 			const typeName = typeof defaultSettings[propertyName];
-			if(typeName === "function" || typeName === "object")
+			if(typeName === "object")
 				continue;
 
-			if(!(propertyName in toSettings))
-				toSettings[propertyName] = fromSettings[propertyName] || defaultSettings[propertyName];
+			//TODO: handle functions here
+
+			if(!(propertyName in explicitSettings))
+				explicitSettings[propertyName] = defaultSettings[propertyName];
 		}
 
-		return toSettings;
+		return explicitSettings;
 	}
 
 	private prepareEnumEmitOptionDefaults(options: EnumEmitOptions) {

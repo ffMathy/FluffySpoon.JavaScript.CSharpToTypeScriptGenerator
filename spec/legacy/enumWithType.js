@@ -1,4 +1,4 @@
-/// <reference path="../typings/tsd.d.ts" />
+
 // Disables multiline warning, we're fine with ES5
 // jshint -W043
 
@@ -29,7 +29,7 @@ var expectedOutput = "declare enum MyEnum {\n\
     Ultraviolet = 11\n\
 }";
 
-var LegacyAdapter = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('../../dist/spec/legacy/adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function() {
 	it('should ignore an enum\'s explicit type', function() {

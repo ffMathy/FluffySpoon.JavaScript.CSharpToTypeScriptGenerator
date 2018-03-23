@@ -7,22 +7,28 @@
         {
             "type": "node",
             "request": "launch",
+            "stopOnEntry": false,
+            "sourceMaps": true,
             "name": "Run tests",
             "program": "${workspaceFolder}\\node_modules\\jasmine\\bin\\jasmine.js",
             "env": {
-                "NODE_PATH": "."
+                "NODE_PATH": ".",
+                "NODE_ENV": "development"
             }
         },
         {
             "type": "node",
             "request": "launch",
+            "stopOnEntry": false,
+            "sourceMaps": true,
             "name": "Run specific test",
             "program": "${workspaceFolder}\\node_modules\\jasmine\\bin\\jasmine.js",
             "args": [
-                "dist\\spec\\OptionsHelperSpec.js"
+                "spec\\legacy\\typeResolver.js"
             ],
             "env": {
-                "NODE_PATH": "."
+                "NODE_PATH": ".",
+                "NODE_ENV": "development"
             }
         }
     ]

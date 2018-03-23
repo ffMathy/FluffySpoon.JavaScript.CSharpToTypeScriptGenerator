@@ -8,6 +8,7 @@ import ts = require("typescript");
 export interface PropertyEmitOptionsBase {
 	readOnly?: boolean;
 	filter?: (property: CSharpProperty) => boolean;
+	perPropertyEmitOptions?: (property: CSharpProperty) => PerPropertyEmitOptions;
 }
 
 export interface PropertyEmitOptionsLinks {
@@ -15,7 +16,6 @@ export interface PropertyEmitOptionsLinks {
 }
 
 export interface PropertyEmitOptions extends PropertyEmitOptionsBase, PropertyEmitOptionsLinks {
-	perPropertyEmitOptions?: (property: CSharpProperty) => PerPropertyEmitOptions;
 }
 
 export interface PerPropertyEmitOptions extends PropertyEmitOptionsBase, PropertyEmitOptionsLinks {
@@ -47,9 +47,7 @@ export class PropertyEmitter {
 	}
 
 	createTypeScriptPropertyNode(property: CSharpProperty, options: PropertyEmitOptions & PerPropertyEmitOptions) {
-		options = Object.assign(
-			options,
-			options.perPropertyEmitOptions(property));
+		options = { ... options, ...options.perPropertyEmitOptions(property) };
 
 		if (!options.filter(property))
 			return;

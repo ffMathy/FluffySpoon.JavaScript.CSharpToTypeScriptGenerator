@@ -8,6 +8,7 @@ import ts = require("typescript");
 export interface InterfaceEmitOptionsBase {
     declare?: boolean;
     filter?: (method: CSharpInterface) => boolean;
+    perInterfaceEmitOptions?: (interfaceObject: CSharpInterface) => PerInterfaceEmitOptions;
 }
 export interface InterfaceEmitOptionsLinks {
     propertyEmitOptions?: PropertyEmitOptions;
@@ -16,7 +17,6 @@ export interface InterfaceEmitOptionsLinks {
     inheritedTypeEmitOptions?: TypeEmitOptions;
 }
 export interface InterfaceEmitOptions extends InterfaceEmitOptionsBase, InterfaceEmitOptionsLinks {
-    perInterfaceEmitOptions?: (interfaceObject: CSharpInterface) => PerInterfaceEmitOptions;
 }
 export interface PerInterfaceEmitOptions extends InterfaceEmitOptionsBase, InterfaceEmitOptionsLinks {
     name?: string;

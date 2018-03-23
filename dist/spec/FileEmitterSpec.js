@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var fs = require('fs');
-var FileEmitter_1 = require("../src/FileEmitter");
+var Emitter_1 = require("../src/Emitter");
 Error.stackTraceLimit = 100;
 function runCase(caseName, options) {
     it("should be able to handle case " + caseName, function (done) {
@@ -19,7 +19,7 @@ function runCase(caseName, options) {
                     .replace(/\t/g, '  ')
                     .replace(/\n/g, '\\n\n')
                     .trim();
-                var emitter = new FileEmitter_1.FileEmitter(caseInput);
+                var emitter = new Emitter_1.Emitter(caseInput);
                 emitter.logger.setLogMethod(function (message) {
                     var parameters = [];
                     for (var _i = 1; _i < arguments.length; _i++) {
@@ -32,7 +32,7 @@ function runCase(caseName, options) {
                         console.log(emitter.stringEmitter.currentIndentation + message);
                     }
                 });
-                var result = emitter.emitFile(localOptions);
+                var result = emitter.emit(localOptions);
                 result = result
                     .replace(/\r/g, '')
                     .replace(/    /g, '\t')

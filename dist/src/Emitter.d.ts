@@ -11,6 +11,9 @@ import { MethodEmitOptionsBase } from './MethodEmitter';
 import { PropertyEmitOptionsBase } from './PropertyEmitter';
 import { FieldEmitOptionsBase } from './FieldEmitter';
 import { Logger } from './Logger';
+export interface NestingLevelMixin {
+    nestingLevel: number;
+}
 export interface DefaultEmitOptions {
     classEmitOptions?: ClassEmitOptionsBase;
     namespaceEmitOptions?: NamespaceEmitOptionsBase;
@@ -33,10 +36,17 @@ export declare class Emitter {
     private fileEmitter;
     constructor(content: string);
     emit(options?: EmitOptions): string;
-    private mergeFileEmitOptions(fromSettings, toSettings, defaultSettings);
-    private mergeClassEmitOptions(fromSettings, toSettings, defaultSettings);
-    private mergeMethodEmitOptions(fromSettings, toSettings, defaultSettings);
-    private mergeOptions<T>(fromSettings, toSettings, defaultSettings);
+    private mergeFileEmitOptions(explicitSettings, defaultSettings);
+    private mergeNamespaceEmitOptions(explicitSettings, defaultSettings);
+    private mergeClassEmitOptions(explicitSettings, defaultSettings);
+    private mergeEnumEmitOptions(explicitSettings, defaultSettings);
+    private mergeFieldEmitOptions(explicitSettings, defaultSettings);
+    private mergeTypeEmitOptions(explicitSettings, defaultSettings);
+    private mergeInterfaceEmitOptions(explicitSettings, defaultSettings);
+    private mergeMethodEmitOptions(explicitSettings, defaultSettings);
+    private mergePropertyEmitOptions(explicitSettings, defaultSettings);
+    private mergeStructEmitOptions(explicitSettings, defaultSettings);
+    private mergeOptions<T>(explicitSettings, defaultSettings);
     private prepareEnumEmitOptionDefaults(options);
     private prepareTypeEmitOptionDefaults(options);
     private prepareFieldEmitOptionDefaults(options);

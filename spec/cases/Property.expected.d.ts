@@ -1,5 +1,5 @@
 ﻿declare interface Foobar {
     myProperty: string;
-    readOnlyProperty: string;
+    readonly readOnlyProperty: string;
     getSetProperty: string;
 }

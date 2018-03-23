@@ -6,6 +6,7 @@ import { InterfaceEmitOptions } from './InterfaceEmitter';
 import { StructEmitOptions } from './StructEmitter';
 import { Logger } from './Logger';
 import ts = require("typescript");
+import { NestingLevelMixin } from './Emitter';
 export interface NamespaceEmitOptionsBase {
     declare?: boolean;
     skip?: boolean;
@@ -27,7 +28,7 @@ export declare class NamespaceEmitter {
     private interfaceEmitter;
     private structEmitter;
     constructor(stringEmitter: StringEmitter, logger: Logger);
-    emitNamespaces(namespaces: CSharpNamespace[], options: NamespaceEmitOptions): void;
-    emitNamespace(namespace: CSharpNamespace, options: NamespaceEmitOptions): void;
-    createTypeScriptNamespaceNodes(namespace: CSharpNamespace, options: NamespaceEmitOptions): ts.Statement[];
+    emitNamespaces(namespaces: CSharpNamespace[], options: NamespaceEmitOptions & NestingLevelMixin): void;
+    emitNamespace(namespace: CSharpNamespace, options: NamespaceEmitOptions & NestingLevelMixin): void;
+    createTypeScriptNamespaceNodes(namespace: CSharpNamespace, options: NamespaceEmitOptions & NestingLevelMixin): ts.Statement[];
 }

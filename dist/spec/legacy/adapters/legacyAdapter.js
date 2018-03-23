@@ -1,26 +1,52 @@
 "use strict";
-var FileEmitter_1 = require("../../../src/FileEmitter");
-var OptionsHelper_1 = require("../../../src/options/OptionsHelper");
+var Emitter_1 = require("../../../src/Emitter");
 var fluffy_spoon_javascript_csharp_parser_1 = require("fluffy-spoon.javascript.csharp-parser");
 Error.stackTraceLimit = 100;
 function LegacyAdapter(contents, options) {
-    var emitter = new FileEmitter_1.FileEmitter(contents);
-    var optionsHelper = new OptionsHelper_1.OptionsHelper();
-    var emitOptions = OptionsHelper_1.OptionsHelper.prepareFileEmitOptionDefaults({
-        namespaceEmitOptions: {
-            skip: true
+    var emitter = new Emitter_1.Emitter(contents);
+    var emitOptions = {
+        defaults: {
+            namespaceEmitOptions: {
+                skip: true
+            },
+            fieldEmitOptions: {
+                perFieldEmitOptions: function (field) { return ({
+                    readOnly: field.isReadOnly
+                }); }
+            },
+            propertyEmitOptions: {
+                perPropertyEmitOptions: function (property) { return ({
+                    name: property.name
+                }); }
+            },
+            enumEmitOptions: {}
         },
-        fieldEmitOptions: {
-            perFieldEmitOptions: function (field) { return ({
-                readOnly: field.isReadOnly
-            }); }
-        },
-        propertyEmitOptions: {
-            perPropertyEmitOptions: function (property) { return ({
-                name: property.name
-            }); }
+        file: {
+            namespaceEmitOptions: {
+                classEmitOptions: {
+                    propertyEmitOptions: {
+                        typeEmitOptions: {}
+                    },
+                    methodEmitOptions: {
+                        returnTypeEmitOptions: {},
+                        argumentTypeEmitOptions: {}
+                    }
+                }
+            },
+            classEmitOptions: {
+                propertyEmitOptions: {
+                    typeEmitOptions: {}
+                },
+                methodEmitOptions: {
+                    returnTypeEmitOptions: {},
+                    argumentTypeEmitOptions: {}
+                }
+            },
+            interfaceEmitOptions: {
+                propertyEmitOptions: {}
+            }
         }
-    });
+    };
     emitter.logger.setLogMethod(function (message) {
         var parameters = [];
         for (var _i = 1; _i < arguments.length; _i++) {
@@ -35,17 +61,17 @@ function LegacyAdapter(contents, options) {
     });
     if (options) {
         if (options.useStringUnionTypes) {
-            emitOptions.enumEmitOptions.strategy = "string-union";
+            emitOptions.defaults.enumEmitOptions.strategy = "string-union";
         }
         if (options.propertyNameResolver) {
-            emitOptions.classEmitOptions.propertyEmitOptions.perPropertyEmitOptions =
-                emitOptions.interfaceEmitOptions.propertyEmitOptions.perPropertyEmitOptions = function (property) { return ({
+            emitOptions.file.classEmitOptions.propertyEmitOptions.perPropertyEmitOptions =
+                emitOptions.file.interfaceEmitOptions.propertyEmitOptions.perPropertyEmitOptions = function (property) { return ({
                     name: options.propertyNameResolver(property.name)
                 }); };
         }
         if (options.methodNameResolver) {
-            emitOptions.interfaceEmitOptions.methodEmitOptions.perMethodEmitOptions =
-                emitOptions.classEmitOptions.methodEmitOptions.perMethodEmitOptions = function (method) { return ({
+            emitOptions.file.interfaceEmitOptions.methodEmitOptions.perMethodEmitOptions =
+                emitOptions.file.classEmitOptions.methodEmitOptions.perMethodEmitOptions = function (method) { return ({
                     name: options.methodNameResolver(method.name)
                 }); };
         }
@@ -62,8 +88,8 @@ function LegacyAdapter(contents, options) {
                     mapper: function (type, suggestedOutput) { return options.interfaceNameResolver(suggestedOutput); }
                 }
             }); };
-            emitOptions.interfaceEmitOptions.perInterfaceEmitOptions =
-                emitOptions.classEmitOptions.perClassEmitOptions = perInterfaceOrClassOptions;
+            emitOptions.file.interfaceEmitOptions.perInterfaceEmitOptions =
+                emitOptions.file.classEmitOptions.perClassEmitOptions = perInterfaceOrClassOptions;
         }
         if (options.prefixWithI) {
             var prefixWithIPerInterfaceOrClassOptions = perInterfaceOrClassOptions;
@@ -75,38 +101,38 @@ function LegacyAdapter(contents, options) {
                     }
                 }
             }); };
-            emitOptions.classEmitOptions.perClassEmitOptions =
-                emitOptions.interfaceEmitOptions.perInterfaceEmitOptions = perInterfaceOrClassOptions;
+            emitOptions.file.classEmitOptions.perClassEmitOptions =
+                emitOptions.file.interfaceEmitOptions.perInterfaceEmitOptions = perInterfaceOrClassOptions;
         }
         if (options.ignoreVirtual) {
-            emitOptions.classEmitOptions.methodEmitOptions.filter = function (method) { return !method.isVirtual; };
-            emitOptions.classEmitOptions.propertyEmitOptions.filter = function (property) { return !property.isVirtual; };
+            emitOptions.file.classEmitOptions.methodEmitOptions.filter = function (method) { return !method.isVirtual; };
+            emitOptions.file.classEmitOptions.propertyEmitOptions.filter = function (property) { return !property.isVirtual; };
         }
         if (options.ignoreMethods) {
-            emitOptions.classEmitOptions.methodEmitOptions.filter = function (method) { return false; };
+            emitOptions.file.classEmitOptions.methodEmitOptions.filter = function (method) { return false; };
         }
         if (options.stripReadOnly) {
-            emitOptions.fieldEmitOptions.perFieldEmitOptions = function () { return ({
+            emitOptions.defaults.fieldEmitOptions.perFieldEmitOptions = function () { return ({
                 readOnly: false
             }); };
         }
         if (options.ignoreInheritance) {
-            emitOptions.interfaceEmitOptions.filter = function (classObject) { return options.ignoreInheritance.indexOf(classObject.name) === -1; };
-            emitOptions.interfaceEmitOptions.perInterfaceEmitOptions = function (interfaceObject) { return ({
+            emitOptions.file.interfaceEmitOptions.filter = function (classObject) { return options.ignoreInheritance.indexOf(classObject.name) === -1; };
+            emitOptions.file.interfaceEmitOptions.perInterfaceEmitOptions = function (interfaceObject) { return ({
                 inheritedTypeEmitOptions: {
                     filter: function (type) { return options.ignoreInheritance.indexOf(type.name) === -1; }
                 }
             }); };
-            emitOptions.classEmitOptions.filter = function (classObject) { return options.ignoreInheritance.indexOf(classObject.name) === -1; };
-            emitOptions.classEmitOptions.perClassEmitOptions = function (classObject) { return ({
+            emitOptions.file.classEmitOptions.filter = function (classObject) { return options.ignoreInheritance.indexOf(classObject.name) === -1; };
+            emitOptions.file.classEmitOptions.perClassEmitOptions = function (classObject) { return ({
                 inheritedTypeEmitOptions: {
                     filter: function (type) { return options.ignoreInheritance.indexOf(type.name) === -1; }
                 }
             }); };
         }
         if (options.baseNamespace) {
-            emitOptions.namespaceEmitOptions.skip = false;
-            emitOptions.namespaceEmitOptions.declare = true;
+            emitOptions.file.namespaceEmitOptions.skip = false;
+            emitOptions.file.namespaceEmitOptions.declare = true;
             emitOptions.onAfterParsing = function (file) {
                 if (file.namespaces.filter(function (n) { return n.name === options.baseNamespace; })[0])
                     return;
@@ -129,31 +155,46 @@ function LegacyAdapter(contents, options) {
             };
         }
         if (options.dateTimeToDate) {
-            emitOptions.typeEmitOptions = {
+            emitOptions.defaults.typeEmitOptions = {
                 mapper: function (type, suggested) { return type.name === "DateTime" ? "Date" : suggested; }
             };
         }
         if (options.customTypeTranslations) {
-            emitOptions.typeEmitOptions = {
+            emitOptions.defaults.typeEmitOptions = {
                 mapper: function (type, suggested) { return options.customTypeTranslations[type.name] || suggested; }
             };
         }
         if (options.typeResolver) {
-            emitOptions.classEmitOptions
+            emitOptions.file.classEmitOptions
                 .propertyEmitOptions
                 .typeEmitOptions
                 .mapper = function (type, suggested) { return options.typeResolver(suggested, "property-type"); };
-            emitOptions.classEmitOptions
+            emitOptions.file.namespaceEmitOptions
+                .classEmitOptions
+                .propertyEmitOptions
+                .typeEmitOptions
+                .mapper = function (type, suggested) { return options.typeResolver(suggested, "property-type"); };
+            emitOptions.file.classEmitOptions
                 .methodEmitOptions
                 .returnTypeEmitOptions
                 .mapper = function (type, suggested) { return options.typeResolver(suggested, "method-return-type"); };
-            emitOptions.classEmitOptions
+            emitOptions.file.namespaceEmitOptions
+                .classEmitOptions
+                .methodEmitOptions
+                .returnTypeEmitOptions
+                .mapper = function (type, suggested) { return options.typeResolver(suggested, "method-return-type"); };
+            emitOptions.file.classEmitOptions
+                .methodEmitOptions
+                .argumentTypeEmitOptions
+                .mapper = function (type, suggested) { return options.typeResolver(suggested, "method-argument-type"); };
+            emitOptions.file.namespaceEmitOptions
+                .classEmitOptions
                 .methodEmitOptions
                 .argumentTypeEmitOptions
                 .mapper = function (type, suggested) { return options.typeResolver(suggested, "method-argument-type"); };
         }
     }
-    return emitter.emitFile(emitOptions);
+    return emitter.emit(emitOptions);
 }
 module.exports = LegacyAdapter;
 //# sourceMappingURL=legacyAdapter.js.map

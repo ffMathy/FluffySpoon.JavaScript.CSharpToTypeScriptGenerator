@@ -16,43 +16,125 @@ var Emitter = /** @class */ (function () {
         options.defaults = this.prepareEmitOptionDefaults(options.defaults);
         if (!options.file)
             options.file = {};
-        this.mergeOptions({}, options.file.enumEmitOptions, options.defaults.enumEmitOptions);
-        this.mergeOptions({}, options.file.classEmitOptions, options.defaults.classEmitOptions);
-        this.mergeOptions({}, options.file.interfaceEmitOptions, options.defaults.interfaceEmitOptions);
-        this.mergeOptions({}, options.file.namespaceEmitOptions, options.defaults.namespaceEmitOptions);
-        this.mergeOptions({}, options.file.structEmitOptions, options.defaults.structEmitOptions);
+        this.mergeFileEmitOptions(options.file, options.defaults);
         return this.fileEmitter.emitFile(options.file);
     };
-    Emitter.prototype.mergeFileEmitOptions = function (fromSettings, toSettings, defaultSettings) {
-        this.mergeOptions(fromSettings.enumEmitOptions, toSettings.enumEmitOptions, defaultSettings.enumEmitOptions);
-        this.mergeClassEmitOptions(fromSettings.classEmitOptions, toSettings.classEmitOptions, defaultSettings);
-        this.mergeInterfaceEmitOptions(fromSettings.interfaceEmitOptions, toSettings.interfaceEmitOptions, defaultSettings);
-        this.mergeNamespaceEmitOptions(fromSettings.namespaceEmitOptions, toSettings.namespaceEmitOptions, defaultSettings);
-        this.mergeStructEmitOptions(fromSettings.structEmitOptions, toSettings.structEmitOptions, defaultSettings);
+    Emitter.prototype.mergeFileEmitOptions = function (explicitSettings, defaultSettings) {
+        if (!explicitSettings.classEmitOptions)
+            explicitSettings.classEmitOptions = {};
+        if (!explicitSettings.enumEmitOptions)
+            explicitSettings.enumEmitOptions = {};
+        if (!explicitSettings.interfaceEmitOptions)
+            explicitSettings.interfaceEmitOptions = {};
+        if (!explicitSettings.namespaceEmitOptions)
+            explicitSettings.namespaceEmitOptions = {};
+        if (!explicitSettings.structEmitOptions)
+            explicitSettings.structEmitOptions = {};
+        this.mergeClassEmitOptions(explicitSettings.classEmitOptions, defaultSettings);
+        this.mergeEnumEmitOptions(explicitSettings.enumEmitOptions, defaultSettings);
+        this.mergeInterfaceEmitOptions(explicitSettings.interfaceEmitOptions, defaultSettings);
+        this.mergeNamespaceEmitOptions(explicitSettings.namespaceEmitOptions, defaultSettings);
+        this.mergeStructEmitOptions(explicitSettings.structEmitOptions, defaultSettings);
     };
-    Emitter.prototype.mergeClassEmitOptions = function (fromSettings, toSettings, defaultSettings) {
-        this.mergeOptions(fromSettings, toSettings, defaultSettings.classEmitOptions);
-        this.mergeOptions(fromSettings.enumEmitOptions, toSettings.enumEmitOptions, defaultSettings.enumEmitOptions);
-        this.mergeOptions(fromSettings.fieldEmitOptions, toSettings.fieldEmitOptions, defaultSettings.fieldEmitOptions);
-        this.mergeOptions(fromSettings.fieldEmitOptions, toSettings.fieldEmitOptions, defaultSettings.fieldEmitOptions);
+    Emitter.prototype.mergeNamespaceEmitOptions = function (explicitSettings, defaultSettings) {
+        this.mergeOptions(explicitSettings, defaultSettings.namespaceEmitOptions);
+        if (!explicitSettings.classEmitOptions)
+            explicitSettings.classEmitOptions = {};
+        if (!explicitSettings.enumEmitOptions)
+            explicitSettings.enumEmitOptions = {};
+        if (!explicitSettings.interfaceEmitOptions)
+            explicitSettings.interfaceEmitOptions = {};
+        if (!explicitSettings.structEmitOptions)
+            explicitSettings.structEmitOptions = {};
+        this.mergeClassEmitOptions(explicitSettings.classEmitOptions, defaultSettings);
+        this.mergeEnumEmitOptions(explicitSettings.enumEmitOptions, defaultSettings);
+        this.mergeInterfaceEmitOptions(explicitSettings.interfaceEmitOptions, defaultSettings);
+        this.mergeStructEmitOptions(explicitSettings.structEmitOptions, defaultSettings);
     };
-    Emitter.prototype.mergeMethodEmitOptions = function (fromSettings, toSettings, defaultSettings) {
-        this.mergeOptions(fromSettings, toSettings, defaultSettings.methodEmitOptions);
-        this.mergeOptions(fromSettings.returnTypeEmitOptions, toSettings.returnTypeEmitOptions, defaultSettings.typeEmitOptions);
+    Emitter.prototype.mergeClassEmitOptions = function (explicitSettings, defaultSettings) {
+        this.mergeOptions(explicitSettings, defaultSettings.classEmitOptions);
+        if (!explicitSettings.enumEmitOptions)
+            explicitSettings.enumEmitOptions = {};
+        if (!explicitSettings.fieldEmitOptions)
+            explicitSettings.fieldEmitOptions = {};
+        if (!explicitSettings.genericParameterTypeEmitOptions)
+            explicitSettings.genericParameterTypeEmitOptions = {};
+        if (!explicitSettings.inheritedTypeEmitOptions)
+            explicitSettings.inheritedTypeEmitOptions = {};
+        if (!explicitSettings.interfaceEmitOptions)
+            explicitSettings.interfaceEmitOptions = {};
+        if (!explicitSettings.methodEmitOptions)
+            explicitSettings.methodEmitOptions = {};
+        if (!explicitSettings.propertyEmitOptions)
+            explicitSettings.propertyEmitOptions = {};
+        if (!explicitSettings.structEmitOptions)
+            explicitSettings.structEmitOptions = {};
+        this.mergeEnumEmitOptions(explicitSettings.enumEmitOptions, defaultSettings);
+        this.mergeFieldEmitOptions(explicitSettings.fieldEmitOptions, defaultSettings);
+        this.mergeTypeEmitOptions(explicitSettings.genericParameterTypeEmitOptions, defaultSettings);
+        this.mergeTypeEmitOptions(explicitSettings.inheritedTypeEmitOptions, defaultSettings);
+        this.mergeInterfaceEmitOptions(explicitSettings.interfaceEmitOptions, defaultSettings);
+        this.mergeMethodEmitOptions(explicitSettings.methodEmitOptions, defaultSettings);
+        this.mergePropertyEmitOptions(explicitSettings.propertyEmitOptions, defaultSettings);
+        this.mergeStructEmitOptions(explicitSettings.structEmitOptions, defaultSettings);
     };
-    Emitter.prototype.mergeOptions = function (fromSettings, toSettings, defaultSettings) {
-        if (!toSettings)
-            toSettings = {};
+    Emitter.prototype.mergeEnumEmitOptions = function (explicitSettings, defaultSettings) {
+        this.mergeOptions(explicitSettings, defaultSettings.enumEmitOptions);
+    };
+    Emitter.prototype.mergeFieldEmitOptions = function (explicitSettings, defaultSettings) {
+        this.mergeOptions(explicitSettings, defaultSettings.fieldEmitOptions);
+        if (!explicitSettings.typeEmitOptions)
+            explicitSettings.typeEmitOptions = {};
+        this.mergeTypeEmitOptions(explicitSettings.typeEmitOptions, defaultSettings);
+    };
+    Emitter.prototype.mergeTypeEmitOptions = function (explicitSettings, defaultSettings) {
+        this.mergeOptions(explicitSettings, defaultSettings.typeEmitOptions);
+    };
+    Emitter.prototype.mergeInterfaceEmitOptions = function (explicitSettings, defaultSettings) {
+        this.mergeOptions(explicitSettings, defaultSettings.interfaceEmitOptions);
+        if (!explicitSettings.genericParameterTypeEmitOptions)
+            explicitSettings.genericParameterTypeEmitOptions = {};
+        if (!explicitSettings.inheritedTypeEmitOptions)
+            explicitSettings.inheritedTypeEmitOptions = {};
+        if (!explicitSettings.methodEmitOptions)
+            explicitSettings.methodEmitOptions = {};
+        if (!explicitSettings.propertyEmitOptions)
+            explicitSettings.propertyEmitOptions = {};
+        this.mergeTypeEmitOptions(explicitSettings.genericParameterTypeEmitOptions, defaultSettings);
+        this.mergeTypeEmitOptions(explicitSettings.inheritedTypeEmitOptions, defaultSettings);
+        this.mergeMethodEmitOptions(explicitSettings.methodEmitOptions, defaultSettings);
+        this.mergePropertyEmitOptions(explicitSettings.propertyEmitOptions, defaultSettings);
+    };
+    Emitter.prototype.mergeMethodEmitOptions = function (explicitSettings, defaultSettings) {
+        this.mergeOptions(explicitSettings, defaultSettings.methodEmitOptions);
+        if (!explicitSettings.argumentTypeEmitOptions)
+            explicitSettings.argumentTypeEmitOptions = {};
+        if (!explicitSettings.returnTypeEmitOptions)
+            explicitSettings.returnTypeEmitOptions = {};
+        this.mergeTypeEmitOptions(explicitSettings.argumentTypeEmitOptions, defaultSettings);
+        this.mergeTypeEmitOptions(explicitSettings.returnTypeEmitOptions, defaultSettings);
+    };
+    Emitter.prototype.mergePropertyEmitOptions = function (explicitSettings, defaultSettings) {
+        this.mergeOptions(explicitSettings, defaultSettings.propertyEmitOptions);
+        if (!explicitSettings.typeEmitOptions)
+            explicitSettings.typeEmitOptions = {};
+        this.mergeTypeEmitOptions(explicitSettings.typeEmitOptions, defaultSettings);
+    };
+    Emitter.prototype.mergeStructEmitOptions = function (explicitSettings, defaultSettings) {
+        this.mergeOptions(explicitSettings, defaultSettings.structEmitOptions);
+    };
+    Emitter.prototype.mergeOptions = function (explicitSettings, defaultSettings) {
         var properties = Object.getOwnPropertyNames(defaultSettings);
         for (var _i = 0, properties_1 = properties; _i < properties_1.length; _i++) {
             var propertyName = properties_1[_i];
             var typeName = typeof defaultSettings[propertyName];
-            if (typeName === "function" || typeName === "object")
+            if (typeName === "object")
                 continue;
-            if (!(propertyName in toSettings))
-                toSettings[propertyName] = fromSettings[propertyName] || defaultSettings[propertyName];
+            //TODO: handle functions here
+            if (!(propertyName in explicitSettings))
+                explicitSettings[propertyName] = defaultSettings[propertyName];
         }
-        return toSettings;
+        return explicitSettings;
     };
     Emitter.prototype.prepareEnumEmitOptionDefaults = function (options) {
         if (!options.filter)

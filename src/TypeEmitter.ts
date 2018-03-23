@@ -26,12 +26,12 @@ export class TypeEmitter {
 		this.regexHelper = new RegExHelper();
 
 		this.defaultTypeMap = {
-			"IList<T>": "T[]",
-			"List<T>": "T[]",
-			"IEnumerable<T>": "T[]",
-			"ICollection<T>": "T[]",
-			"Array<T>": "T[]",
-			"HashSet<T>": "T[]",
+			"IList<T>": "Array<T>",
+			"List<T>": "Array<T>",
+			"IEnumerable<T>": "Array<T>",
+			"ICollection<T>": "Array<T>",
+			"Array<T>": "Array<T>",
+			"HashSet<T>": "Array<T>",
 			"IDictionary<T,K>": "{ [key: T]: K }",
 			"Task<T>": "Promise<T>",
 			"Task": "Promise<void>",
@@ -77,6 +77,7 @@ export class TypeEmitter {
 	}
 
 	createTypeScriptTypeReferenceNode(type: CSharpType, options: TypeEmitOptions) {
+		debugger;
 		if (!this.canEmitType(type, options))
 			return null;
 
@@ -153,7 +154,7 @@ export class TypeEmitter {
 			this.logger.log("mapping", type, mappedValue);
 			if(mappedValue)
 				return mappedValue;
-		}
+		} 
         
 		for (var mappingKey in this.defaultTypeMap) {
 			if (!this.defaultTypeMap.hasOwnProperty(mappingKey))

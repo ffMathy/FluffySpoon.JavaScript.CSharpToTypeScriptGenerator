@@ -10,12 +10,12 @@ var TypeEmitter = /** @class */ (function () {
         this.typeParser = new fluffy_spoon_javascript_csharp_parser_1.TypeParser();
         this.regexHelper = new RegExHelper_1.RegExHelper();
         this.defaultTypeMap = {
-            "IList<T>": "T[]",
-            "List<T>": "T[]",
-            "IEnumerable<T>": "T[]",
-            "ICollection<T>": "T[]",
-            "Array<T>": "T[]",
-            "HashSet<T>": "T[]",
+            "IList<T>": "Array<T>",
+            "List<T>": "Array<T>",
+            "IEnumerable<T>": "Array<T>",
+            "ICollection<T>": "Array<T>",
+            "Array<T>": "Array<T>",
+            "HashSet<T>": "Array<T>",
             "IDictionary<T,K>": "{ [key: T]: K }",
             "Task<T>": "Promise<T>",
             "Task": "Promise<void>",
@@ -51,6 +51,7 @@ var TypeEmitter = /** @class */ (function () {
         return ts.createExpressionWithTypeArguments(this.createTypeScriptTypeReferenceNodes(type.genericParameters || [], options), ts.createIdentifier(typeName));
     };
     TypeEmitter.prototype.createTypeScriptTypeReferenceNode = function (type, options) {
+        debugger;
         if (!this.canEmitType(type, options))
             return null;
         this.logger.log("Emitting type", type);

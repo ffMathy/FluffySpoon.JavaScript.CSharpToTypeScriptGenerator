@@ -13,6 +13,7 @@ import ts = require("typescript");
 export interface InterfaceEmitOptionsBase {
 	declare?: boolean;
 	filter?: (method: CSharpInterface) => boolean;
+	perInterfaceEmitOptions?: (interfaceObject: CSharpInterface) => PerInterfaceEmitOptions;
 }
 
 export interface InterfaceEmitOptionsLinks {
@@ -23,7 +24,6 @@ export interface InterfaceEmitOptionsLinks {
 }
 
 export interface InterfaceEmitOptions extends InterfaceEmitOptionsBase, InterfaceEmitOptionsLinks {
-	perInterfaceEmitOptions?: (interfaceObject: CSharpInterface) => PerInterfaceEmitOptions;
 }
 
 export interface PerInterfaceEmitOptions extends InterfaceEmitOptionsBase, InterfaceEmitOptionsLinks {
@@ -63,9 +63,7 @@ export class InterfaceEmitter {
 	}
 
 	createTypeScriptInterfaceNodes(interfaceObject: CSharpInterface, options: InterfaceEmitOptions & PerInterfaceEmitOptions) {
-		options = Object.assign(
-			options,
-			options.perInterfaceEmitOptions(interfaceObject));
+		options = {...options, ...options.perInterfaceEmitOptions(interfaceObject)};
 
 		if (!options.filter(interfaceObject))
 			return [];

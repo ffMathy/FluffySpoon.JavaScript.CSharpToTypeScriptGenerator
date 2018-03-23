@@ -12,10 +12,12 @@ import { StructEmitter, StructEmitOptions } from './StructEmitter';
 import { Logger } from './Logger';
 
 import ts = require("typescript");
+import { NestingLevelMixin } from './Emitter';
 
 export interface ClassEmitOptionsBase {
 	declare?: boolean;
 	filter?: (classObject: CSharpClass) => boolean;
+	perClassEmitOptions?: (classObject: CSharpClass) => PerClassEmitOptions;
 }
 
 export interface ClassEmitOptionsLinks {
@@ -30,7 +32,6 @@ export interface ClassEmitOptionsLinks {
 }
 
 export interface ClassEmitOptions extends ClassEmitOptionsBase, ClassEmitOptionsLinks {
-	perClassEmitOptions?: (classObject: CSharpClass) => PerClassEmitOptions;
 }
 
 export interface PerClassEmitOptions extends ClassEmitOptionsBase, ClassEmitOptionsLinks {
@@ -57,7 +58,7 @@ export class ClassEmitter {
 		this.interfaceEmitter = new InterfaceEmitter(stringEmitter, logger);
 	}
 
-	emitClasses(classes: CSharpClass[], options: ClassEmitOptions) {
+	emitClasses(classes: CSharpClass[], options: ClassEmitOptions & NestingLevelMixin) {
 		this.logger.log("Emitting classes", classes);
 
 		for (var classObject of classes) {
@@ -67,16 +68,14 @@ export class ClassEmitter {
 		this.logger.log("Done emitting classes", classes);
 	}
 
-	emitClass(classObject: CSharpClass, options: ClassEmitOptions) {
+	emitClass(classObject: CSharpClass, options: ClassEmitOptions & NestingLevelMixin) {
 		var nodes = this.createTypeScriptClassNodes(classObject, options);
 		for (var node of nodes)
 			this.stringEmitter.emitTypeScriptNode(node);
 	}
 
-	createTypeScriptClassNodes(classObject: CSharpClass, options: ClassEmitOptions & PerClassEmitOptions) {
-		options = Object.assign(
-			options,
-			options.perClassEmitOptions(classObject));
+	createTypeScriptClassNodes(classObject: CSharpClass, options: ClassEmitOptions & PerClassEmitOptions & NestingLevelMixin) {
+		options = {...options, ...options.perClassEmitOptions(classObject)};
 			
 		if (!options.filter(classObject)) {
 			return [];
@@ -171,19 +170,28 @@ export class ClassEmitter {
 			classObject.parent = wrappedNamespace;
 
 			var namespaceEmitter = new NamespaceEmitter(this.stringEmitter, this.logger);
-			var falseDeclare = { 
+
+			var declareObject = { 
 				declare: false
 			};
+			var namespaceOptions = <NamespaceEmitOptions & NestingLevelMixin>{
+				classEmitOptions: <ClassEmitOptions & NestingLevelMixin>{
+					...options, 
+					declare: false,
+					nestingLevel: options.nestingLevel + 1
+				},
+				enumEmitOptions: {...options.enumEmitOptions, declare: false},
+				interfaceEmitOptions: {...options.interfaceEmitOptions, declare: false},
+				structEmitOptions: {...options.structEmitOptions, declare: false},
+				filter: () => true,
+				skip: false,
+				declare: options.nestingLevel === 0 ? options.declare : false,
+				nestingLevel: options.nestingLevel,
+			};
+
 			var namespaceNodes = namespaceEmitter.createTypeScriptNamespaceNodes(
 				wrappedNamespace,
-				Object.assign(options, {
-					classEmitOptions: Object.assign(options, falseDeclare),
-					enumEmitOptions: Object.assign(options.enumEmitOptions, falseDeclare),
-					interfaceEmitOptions: Object.assign(options.interfaceEmitOptions, falseDeclare),
-					structEmitOptions: Object.assign(options.structEmitOptions, falseDeclare),
-					skip: false,
-					declare: true
-				}));
+				namespaceOptions);
 			for (var namespaceNode of namespaceNodes)
 				nodes.push(namespaceNode);
 		}

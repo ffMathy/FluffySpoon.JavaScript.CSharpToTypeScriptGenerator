@@ -13,6 +13,7 @@ import { FieldEmitOptions } from './FieldEmitter';
 import { Logger } from './Logger';
 
 import ts = require("typescript");
+import { NestingLevelMixin } from './Emitter';
 
 export interface FileEmitOptions {
 	classEmitOptions?: ClassEmitOptions,
@@ -61,18 +62,18 @@ export class FileEmitter {
 		for (let enumObject of file.enums) {
 			let enumNode = this.enumEmitter.createTypeScriptEnumNode(
 				enumObject,
-				Object.assign(
-					{ declare: true },
-					options.enumEmitOptions));
+				{ declare: true, ...options.enumEmitOptions});
 			nodes.push(enumNode);
 		}
 
 		for (let namespace of file.namespaces) {
 			var namespaceNodes = this.namespaceEmitter.createTypeScriptNamespaceNodes(
 				namespace,
-				Object.assign(
-					{ declare: true },
-					options.namespaceEmitOptions));
+				<NamespaceEmitOptions & NestingLevelMixin>{ 
+					declare: true, 
+					nestingLevel: 0, 
+					...options.namespaceEmitOptions
+				});
 			for (var namespaceNode of namespaceNodes)
 				nodes.push(namespaceNode);
 		}
@@ -80,9 +81,7 @@ export class FileEmitter {
 		for (let interfaceObject of file.interfaces) {
 			let interfaceNodes = this.interfaceEmitter.createTypeScriptInterfaceNodes(
 				interfaceObject,
-				Object.assign(
-					{ declare: true },
-					options.classEmitOptions));
+				<InterfaceEmitOptions>{ declare: true, ...options.interfaceEmitOptions });
 			for (let interfaceNode of interfaceNodes)
 				nodes.push(interfaceNode);
 		}
@@ -90,9 +89,11 @@ export class FileEmitter {
 		for (let classObject of file.classes) {
 			let classNodes = this.classEmitter.createTypeScriptClassNodes(
 				classObject,
-				Object.assign(
-					{ declare: true },
-					options.classEmitOptions));
+				<ClassEmitOptions & NestingLevelMixin>{ 
+					declare: true, 
+					nestingLevel: 0,
+					...options.classEmitOptions
+				});
 			for (let classNode of classNodes)
 				nodes.push(classNode);
 		}
@@ -100,44 +101,9 @@ export class FileEmitter {
 		for (let structObject of file.structs) {
 			let structNode = this.structEmitter.createTypeScriptStructNode(
 				structObject,
-				Object.assign(
-					{ declare: true },
-					options.structEmitOptions));
+				<StructEmitOptions>{ declare: true, ...options.structEmitOptions });
 			nodes.push(structNode);
 		}
-
-		/*if (file.enums.length > 0) {
-			this.enumEmitter.emitEnums(file.enums, Object.assign({ declare: true }, options.enumEmitOptions));
-			this.stringEmitter.ensureNewParagraph();
-		}
-
-		if (file.namespaces.length > 0) {
-			this.namespaceEmitter.emitNamespaces(
-				file.namespaces, 
-				Object.assign({ declare: true }, options.namespaceEmitOptions));
-			this.stringEmitter.ensureNewParagraph();
-		}
-
-		if (file.interfaces.length > 0) {
-			this.interfaceEmitter.emitInterfaces(
-				file.interfaces, 
-				Object.assign({ declare: true }, options.interfaceEmitOptions));
-			this.stringEmitter.ensureNewParagraph();
-        }
-
-		if (file.classes.length > 0) {
-			this.classEmitter.emitClasses(
-				file.classes, 
-				Object.assign({ declare: true }, options.classEmitOptions));
-			this.stringEmitter.ensureNewParagraph();
-        }
-
-        if (file.structs.length > 0) {
-            this.structEmitter.emitStructs(
-				file.structs, 
-				Object.assign({ declare: true }, options.structEmitOptions));
-            this.stringEmitter.ensureNewParagraph();
-		}*/
 
 		this.stringEmitter.emitTypeScriptNodes(nodes);
 

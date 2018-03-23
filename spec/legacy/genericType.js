@@ -1,4 +1,4 @@
-/// <reference path="../typings/tsd.d.ts" />
+
 // Disabled multiline warning, we're fine with ES5
 // jshint -W043
 
@@ -15,7 +15,7 @@ declare interface Profile {\n\
     Value: Entry<boolean>;\n\
 }";
 
-var LegacyAdapter = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('../../dist/spec/legacy/adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function() {
     it('should convert a generic property correctly', function() {

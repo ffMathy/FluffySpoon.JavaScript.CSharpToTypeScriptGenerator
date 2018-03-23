@@ -1,4 +1,12 @@
 "use strict";
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var fluffy_spoon_javascript_csharp_parser_1 = require("fluffy-spoon.javascript.csharp-parser");
 var EnumEmitter_1 = require("./EnumEmitter");
@@ -37,7 +45,7 @@ var ClassEmitter = /** @class */ (function () {
     };
     ClassEmitter.prototype.createTypeScriptClassNodes = function (classObject, options) {
         var _this = this;
-        options = Object.assign(options, options.perClassEmitOptions(classObject));
+        options = __assign({}, options, options.perClassEmitOptions(classObject));
         if (!options.filter(classObject)) {
             return [];
         }
@@ -101,17 +109,20 @@ var ClassEmitter = /** @class */ (function () {
             classObject.structs = [];
             classObject.parent = wrappedNamespace;
             var namespaceEmitter = new NamespaceEmitter_1.NamespaceEmitter(this.stringEmitter, this.logger);
-            var falseDeclare = {
+            var declareObject = {
                 declare: false
             };
-            var namespaceNodes = namespaceEmitter.createTypeScriptNamespaceNodes(wrappedNamespace, Object.assign(options, {
-                classEmitOptions: Object.assign(options, falseDeclare),
-                enumEmitOptions: Object.assign(options.enumEmitOptions, falseDeclare),
-                interfaceEmitOptions: Object.assign(options.interfaceEmitOptions, falseDeclare),
-                structEmitOptions: Object.assign(options.structEmitOptions, falseDeclare),
+            var namespaceOptions = {
+                classEmitOptions: __assign({}, options, { declare: false, nestingLevel: options.nestingLevel + 1 }),
+                enumEmitOptions: __assign({}, options.enumEmitOptions, { declare: false }),
+                interfaceEmitOptions: __assign({}, options.interfaceEmitOptions, { declare: false }),
+                structEmitOptions: __assign({}, options.structEmitOptions, { declare: false }),
+                filter: function () { return true; },
                 skip: false,
-                declare: true
-            }));
+                declare: options.nestingLevel === 0 ? options.declare : false,
+                nestingLevel: options.nestingLevel,
+            };
+            var namespaceNodes = namespaceEmitter.createTypeScriptNamespaceNodes(wrappedNamespace, namespaceOptions);
             for (var _i = 0, namespaceNodes_1 = namespaceNodes; _i < namespaceNodes_1.length; _i++) {
                 var namespaceNode = namespaceNodes_1[_i];
                 nodes.push(namespaceNode);

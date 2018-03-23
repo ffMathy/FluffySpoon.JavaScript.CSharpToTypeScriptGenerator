@@ -9,9 +9,11 @@ import { MethodEmitOptions } from './MethodEmitter';
 import { StructEmitOptions } from './StructEmitter';
 import { Logger } from './Logger';
 import ts = require("typescript");
+import { NestingLevelMixin } from './Emitter';
 export interface ClassEmitOptionsBase {
     declare?: boolean;
     filter?: (classObject: CSharpClass) => boolean;
+    perClassEmitOptions?: (classObject: CSharpClass) => PerClassEmitOptions;
 }
 export interface ClassEmitOptionsLinks {
     enumEmitOptions?: EnumEmitOptions;
@@ -24,7 +26,6 @@ export interface ClassEmitOptionsLinks {
     inheritedTypeEmitOptions?: TypeEmitOptions;
 }
 export interface ClassEmitOptions extends ClassEmitOptionsBase, ClassEmitOptionsLinks {
-    perClassEmitOptions?: (classObject: CSharpClass) => PerClassEmitOptions;
 }
 export interface PerClassEmitOptions extends ClassEmitOptionsBase, ClassEmitOptionsLinks {
     name?: string;
@@ -39,7 +40,7 @@ export declare class ClassEmitter {
     private interfaceEmitter;
     private typeEmitter;
     constructor(stringEmitter: StringEmitter, logger: Logger);
-    emitClasses(classes: CSharpClass[], options: ClassEmitOptions): void;
-    emitClass(classObject: CSharpClass, options: ClassEmitOptions): void;
-    createTypeScriptClassNodes(classObject: CSharpClass, options: ClassEmitOptions & PerClassEmitOptions): ts.Statement[];
+    emitClasses(classes: CSharpClass[], options: ClassEmitOptions & NestingLevelMixin): void;
+    emitClass(classObject: CSharpClass, options: ClassEmitOptions & NestingLevelMixin): void;
+    createTypeScriptClassNodes(classObject: CSharpClass, options: ClassEmitOptions & PerClassEmitOptions & NestingLevelMixin): ts.Statement[];
 }

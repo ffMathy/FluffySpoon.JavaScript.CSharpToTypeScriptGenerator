@@ -1,4 +1,4 @@
-﻿/// <reference path="../typings/tsd.d.ts" />
+﻿
 
 /* jshint -W043 */
 
@@ -73,7 +73,7 @@ declare interface MyStruct {\n\
     SomeIntField: number;\n\
 }";
 
-var LegacyAdapter = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('../../dist/spec/legacy/adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function() {
 	it('should handle multiple classes in the same file', function() {

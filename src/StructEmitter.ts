@@ -13,6 +13,7 @@ import ts = require("typescript");
 export interface StructEmitOptionsBase {
 	declare?: boolean;
 	filter?: (struct: CSharpStruct) => boolean;
+	perStructEmitOptions?: (struct: CSharpStruct) => PerStructEmitOptions;
 }
 
 export interface StructEmitOptionsLinks {
@@ -22,7 +23,6 @@ export interface StructEmitOptionsLinks {
 }
 
 export interface StructEmitOptions extends StructEmitOptionsBase, StructEmitOptionsLinks {
-	perStructEmitOptions?: (struct: CSharpStruct) => PerStructEmitOptions;
 }
 
 export interface PerStructEmitOptions extends StructEmitOptionsBase, StructEmitOptionsLinks {
@@ -68,9 +68,7 @@ export class StructEmitter {
 	}
 
 	createTypeScriptStructNode(struct: CSharpStruct, options: StructEmitOptions & PerStructEmitOptions) {
-		options = Object.assign(
-			options,
-			options.perStructEmitOptions(struct));
+		options = { ...options, ...options.perStructEmitOptions(struct) };
 
 		if (struct.properties.length === 0 && struct.methods.length === 0 && struct.fields.length === 0) {
 			this.logger.log("Skipping interface " + struct.name + " because it contains no properties, fields or methods");

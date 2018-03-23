@@ -9,6 +9,7 @@ import ts = require("typescript");
 export interface FieldEmitOptionsBase {
 	readOnly?: boolean;
 	filter?: (field: CSharpField) => boolean;
+	perFieldEmitOptions?: (field: CSharpField) => PerFieldEmitOptions;
 }
 
 export interface FieldEmitOptionsLinks {
@@ -16,7 +17,6 @@ export interface FieldEmitOptionsLinks {
 }
 
 export interface FieldEmitOptions extends FieldEmitOptionsBase, FieldEmitOptionsLinks {
-	perFieldEmitOptions?: (field: CSharpField) => PerFieldEmitOptions;
 }
 
 export interface PerFieldEmitOptions extends FieldEmitOptionsBase, FieldEmitOptionsLinks {
@@ -50,9 +50,7 @@ export class FieldEmitter {
 	}
 
 	createTypeScriptFieldNode(field: CSharpField, options: FieldEmitOptions & PerFieldEmitOptions) {
-		options = Object.assign(
-			options,
-			options.perFieldEmitOptions(field));
+		options = {...options, ...options.perFieldEmitOptions(field)};
 
 		if (!options.filter(field))
 			return null;

@@ -1,4 +1,4 @@
-/// <reference path="../typings/tsd.d.ts" />
+
 
 /* jshint -W043 */
 
@@ -65,7 +65,7 @@ declare interface MyPoco {\n\
     SomeDecimal: number;\n\
     SomeGuid: string;\n\
 }";
-var LegacyAdapter = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('../../dist/spec/legacy/adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function() {
 	it('should handle enums and classes in the same file', function() {

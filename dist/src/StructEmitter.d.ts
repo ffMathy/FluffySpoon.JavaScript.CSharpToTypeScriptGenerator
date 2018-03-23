@@ -8,6 +8,7 @@ import ts = require("typescript");
 export interface StructEmitOptionsBase {
     declare?: boolean;
     filter?: (struct: CSharpStruct) => boolean;
+    perStructEmitOptions?: (struct: CSharpStruct) => PerStructEmitOptions;
 }
 export interface StructEmitOptionsLinks {
     propertyEmitOptions?: PropertyEmitOptions;
@@ -15,7 +16,6 @@ export interface StructEmitOptionsLinks {
     fieldEmitOptions?: FieldEmitOptions;
 }
 export interface StructEmitOptions extends StructEmitOptionsBase, StructEmitOptionsLinks {
-    perStructEmitOptions?: (struct: CSharpStruct) => PerStructEmitOptions;
 }
 export interface PerStructEmitOptions extends StructEmitOptionsBase, StructEmitOptionsLinks {
     name?: string;

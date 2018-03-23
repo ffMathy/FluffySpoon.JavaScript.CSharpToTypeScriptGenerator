@@ -6,12 +6,12 @@ import ts = require("typescript");
 export interface PropertyEmitOptionsBase {
     readOnly?: boolean;
     filter?: (property: CSharpProperty) => boolean;
+    perPropertyEmitOptions?: (property: CSharpProperty) => PerPropertyEmitOptions;
 }
 export interface PropertyEmitOptionsLinks {
     typeEmitOptions?: TypeEmitOptions;
 }
 export interface PropertyEmitOptions extends PropertyEmitOptionsBase, PropertyEmitOptionsLinks {
-    perPropertyEmitOptions?: (property: CSharpProperty) => PerPropertyEmitOptions;
 }
 export interface PerPropertyEmitOptions extends PropertyEmitOptionsBase, PropertyEmitOptionsLinks {
     name?: string;

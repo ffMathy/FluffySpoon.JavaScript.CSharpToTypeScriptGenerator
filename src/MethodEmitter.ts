@@ -8,6 +8,7 @@ import ts = require("typescript");
 
 export interface MethodEmitOptionsBase {
 	filter?: (method: CSharpMethod) => boolean;
+	perMethodEmitOptions?: (method: CSharpMethod) => PerMethodEmitOptions;
 }
 
 export interface MethodEmitOptionsLinks {
@@ -16,7 +17,6 @@ export interface MethodEmitOptionsLinks {
 }
 
 export interface MethodEmitOptions extends MethodEmitOptionsBase, MethodEmitOptionsLinks {
-	perMethodEmitOptions?: (method: CSharpMethod) => PerMethodEmitOptions;
 }
 
 export interface PerMethodEmitOptions extends MethodEmitOptionsBase, MethodEmitOptionsLinks {
@@ -48,9 +48,7 @@ export class MethodEmitter {
 	}
 
 	createTypeScriptMethodNode(method: CSharpMethod, options: MethodEmitOptions & PerMethodEmitOptions) {
-		options = Object.assign(
-			options,
-			options.perMethodEmitOptions(method));
+		options = { ...options, ...options.perMethodEmitOptions(method) };
 
 		if (!options.filter(method))
 			return null;

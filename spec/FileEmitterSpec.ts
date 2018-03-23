@@ -1,11 +1,11 @@
 ﻿var fs = require('fs');
 
-import { FileEmitter, FileEmitOptions } from '../src/FileEmitter';
+import { Emitter, EmitOptions } from '../src/Emitter';
 import { Logger } from '../src/Logger';
 
 Error.stackTraceLimit = 100;
 
-function runCase(caseName: string, options?: FileEmitOptions) {
+function runCase(caseName: string, options?: EmitOptions) {
 	it("should be able to handle case " + caseName, function (done) {
 		let localCaseName = caseName;
 		let localOptions = options;
@@ -24,7 +24,7 @@ function runCase(caseName: string, options?: FileEmitOptions) {
 					.replace(/\n/g, '\\n\n')
 					.trim();
 
-				let emitter = new FileEmitter(caseInput);
+				let emitter = new Emitter(caseInput);
 				emitter.logger.setLogMethod((message, ...parameters) => {
 					if (parameters.length > 0) {
 						console.log(
@@ -36,7 +36,7 @@ function runCase(caseName: string, options?: FileEmitOptions) {
 					}
 				});
                 
-				let result = emitter.emitFile(localOptions);
+				let result = emitter.emit(localOptions);
 				result = result
 					.replace(/\r/g, '')
 					.replace(/    /g, '\t')

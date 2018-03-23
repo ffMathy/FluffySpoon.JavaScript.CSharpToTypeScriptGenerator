@@ -5,13 +5,13 @@ import { Logger } from './Logger';
 import ts = require("typescript");
 export interface MethodEmitOptionsBase {
     filter?: (method: CSharpMethod) => boolean;
+    perMethodEmitOptions?: (method: CSharpMethod) => PerMethodEmitOptions;
 }
 export interface MethodEmitOptionsLinks {
     returnTypeEmitOptions?: TypeEmitOptions;
     argumentTypeEmitOptions?: TypeEmitOptions;
 }
 export interface MethodEmitOptions extends MethodEmitOptionsBase, MethodEmitOptionsLinks {
-    perMethodEmitOptions?: (method: CSharpMethod) => PerMethodEmitOptions;
 }
 export interface PerMethodEmitOptions extends MethodEmitOptionsBase, MethodEmitOptionsLinks {
     name?: string;

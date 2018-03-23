@@ -1,2 +1,2 @@
-declare function LegacyAdapter(contents: any, options: any): any;
+declare function LegacyAdapter(contents: any, options: any): string;
 export = LegacyAdapter;
