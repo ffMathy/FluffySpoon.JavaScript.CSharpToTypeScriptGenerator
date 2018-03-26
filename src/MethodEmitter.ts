@@ -5,6 +5,7 @@ import { TypeEmitter, TypeEmitOptions } from './TypeEmitter';
 import { Logger } from './Logger';
 
 import ts = require("typescript");
+import { OptionsHelper } from './OptionsHelper';
 
 export interface MethodEmitOptionsBase {
 	filter?: (method: CSharpMethod) => boolean;
@@ -24,6 +25,7 @@ export interface PerMethodEmitOptions extends MethodEmitOptionsBase, MethodEmitO
 }
 
 export class MethodEmitter {
+	private optionsHelper: OptionsHelper;
 	private typeEmitter: TypeEmitter;
 
 	constructor(
@@ -31,6 +33,7 @@ export class MethodEmitter {
 		private logger: Logger
 	) {
 		this.typeEmitter = new TypeEmitter(stringEmitter, logger);
+		this.optionsHelper = new OptionsHelper();
 	}
 
 	emitMethods(methods: CSharpMethod[], options: MethodEmitOptions & PerMethodEmitOptions) {
@@ -48,7 +51,9 @@ export class MethodEmitter {
 	}
 
 	createTypeScriptMethodNode(method: CSharpMethod, options: MethodEmitOptions & PerMethodEmitOptions) {
-		options = { ...options, ...options.perMethodEmitOptions(method) };
+		options = this.optionsHelper.mergeOptionsRecursively<any>(
+			options.perMethodEmitOptions(method), 
+			options);
 
 		if (!options.filter(method))
 			return null;

@@ -28,6 +28,7 @@ export declare class StructEmitter {
     private fieldEmitter;
     private methodEmitter;
     private typeEmitter;
+    private optionsHelper;
     constructor(stringEmitter: StringEmitter, logger: Logger);
     emitStructs(structs: CSharpStruct[], options: StructEmitOptions): void;
     emitStruct(struct: CSharpStruct, options: StructEmitOptions): void;

@@ -13,6 +13,7 @@ import { Logger } from './Logger';
 
 import ts = require("typescript");
 import { NestingLevelMixin } from './Emitter';
+import { OptionsHelper } from './OptionsHelper';
 
 export interface ClassEmitOptionsBase {
 	declare?: boolean;
@@ -45,6 +46,7 @@ export class ClassEmitter {
 	private methodEmitter: MethodEmitter;
 	private interfaceEmitter: InterfaceEmitter;
 	private typeEmitter: TypeEmitter;
+	private optionsHelper: OptionsHelper;
 
 	constructor(
 		private stringEmitter: StringEmitter,
@@ -56,6 +58,7 @@ export class ClassEmitter {
 		this.methodEmitter = new MethodEmitter(stringEmitter, logger);
 		this.typeEmitter = new TypeEmitter(stringEmitter, logger);
 		this.interfaceEmitter = new InterfaceEmitter(stringEmitter, logger);
+		this.optionsHelper = new OptionsHelper();
 	}
 
 	emitClasses(classes: CSharpClass[], options: ClassEmitOptions & NestingLevelMixin) {
@@ -75,8 +78,10 @@ export class ClassEmitter {
 	}
 
 	createTypeScriptClassNodes(classObject: CSharpClass, options: ClassEmitOptions & PerClassEmitOptions & NestingLevelMixin) {
-		options = {...options, ...options.perClassEmitOptions(classObject)};
-			
+		options = this.optionsHelper.mergeOptionsRecursively<any>(
+			options.perClassEmitOptions(classObject), 
+			options);
+		
 		if (!options.filter(classObject)) {
 			return [];
 		}

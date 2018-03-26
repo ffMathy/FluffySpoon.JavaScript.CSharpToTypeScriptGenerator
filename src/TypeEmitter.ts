@@ -77,7 +77,6 @@ export class TypeEmitter {
 	}
 
 	createTypeScriptTypeReferenceNode(type: CSharpType, options: TypeEmitOptions) {
-		debugger;
 		if (!this.canEmitType(type, options))
 			return null;
 
@@ -148,9 +147,7 @@ export class TypeEmitter {
 		if (options && options.mapper) {
 			let mappedValue: string = options.mapper(
 				type, 
-				this.getMatchingTypeMappingAsString(
-					type,
-					options));
+				this.defaultTypeMap[type.name] || type.name);
 			this.logger.log("mapping", type, mappedValue);
 			if(mappedValue)
 				return mappedValue;

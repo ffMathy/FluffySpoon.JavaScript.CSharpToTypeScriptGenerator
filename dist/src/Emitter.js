@@ -3,11 +3,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var StringEmitter_1 = require("./StringEmitter");
 var FileEmitter_1 = require("./FileEmitter");
 var Logger_1 = require("./Logger");
+var OptionsHelper_1 = require("./OptionsHelper");
 var Emitter = /** @class */ (function () {
     function Emitter(content) {
         this.logger = new Logger_1.Logger();
         this.stringEmitter = new StringEmitter_1.StringEmitter(this.logger);
         this.fileEmitter = new FileEmitter_1.FileEmitter(this.logger, this.stringEmitter, content);
+        this.optionsHelper = new OptionsHelper_1.OptionsHelper();
     }
     Emitter.prototype.emit = function (options) {
         if (!options)
@@ -37,7 +39,7 @@ var Emitter = /** @class */ (function () {
         this.mergeStructEmitOptions(explicitSettings.structEmitOptions, defaultSettings);
     };
     Emitter.prototype.mergeNamespaceEmitOptions = function (explicitSettings, defaultSettings) {
-        this.mergeOptions(explicitSettings, defaultSettings.namespaceEmitOptions);
+        this.optionsHelper.mergeOptions(explicitSettings, defaultSettings.namespaceEmitOptions);
         if (!explicitSettings.classEmitOptions)
             explicitSettings.classEmitOptions = {};
         if (!explicitSettings.enumEmitOptions)
@@ -52,7 +54,7 @@ var Emitter = /** @class */ (function () {
         this.mergeStructEmitOptions(explicitSettings.structEmitOptions, defaultSettings);
     };
     Emitter.prototype.mergeClassEmitOptions = function (explicitSettings, defaultSettings) {
-        this.mergeOptions(explicitSettings, defaultSettings.classEmitOptions);
+        this.optionsHelper.mergeOptions(explicitSettings, defaultSettings.classEmitOptions);
         if (!explicitSettings.enumEmitOptions)
             explicitSettings.enumEmitOptions = {};
         if (!explicitSettings.fieldEmitOptions)
@@ -79,19 +81,19 @@ var Emitter = /** @class */ (function () {
         this.mergeStructEmitOptions(explicitSettings.structEmitOptions, defaultSettings);
     };
     Emitter.prototype.mergeEnumEmitOptions = function (explicitSettings, defaultSettings) {
-        this.mergeOptions(explicitSettings, defaultSettings.enumEmitOptions);
+        this.optionsHelper.mergeOptions(explicitSettings, defaultSettings.enumEmitOptions);
     };
     Emitter.prototype.mergeFieldEmitOptions = function (explicitSettings, defaultSettings) {
-        this.mergeOptions(explicitSettings, defaultSettings.fieldEmitOptions);
+        this.optionsHelper.mergeOptions(explicitSettings, defaultSettings.fieldEmitOptions);
         if (!explicitSettings.typeEmitOptions)
             explicitSettings.typeEmitOptions = {};
         this.mergeTypeEmitOptions(explicitSettings.typeEmitOptions, defaultSettings);
     };
     Emitter.prototype.mergeTypeEmitOptions = function (explicitSettings, defaultSettings) {
-        this.mergeOptions(explicitSettings, defaultSettings.typeEmitOptions);
+        this.optionsHelper.mergeOptions(explicitSettings, defaultSettings.typeEmitOptions);
     };
     Emitter.prototype.mergeInterfaceEmitOptions = function (explicitSettings, defaultSettings) {
-        this.mergeOptions(explicitSettings, defaultSettings.interfaceEmitOptions);
+        this.optionsHelper.mergeOptions(explicitSettings, defaultSettings.interfaceEmitOptions);
         if (!explicitSettings.genericParameterTypeEmitOptions)
             explicitSettings.genericParameterTypeEmitOptions = {};
         if (!explicitSettings.inheritedTypeEmitOptions)
@@ -106,7 +108,7 @@ var Emitter = /** @class */ (function () {
         this.mergePropertyEmitOptions(explicitSettings.propertyEmitOptions, defaultSettings);
     };
     Emitter.prototype.mergeMethodEmitOptions = function (explicitSettings, defaultSettings) {
-        this.mergeOptions(explicitSettings, defaultSettings.methodEmitOptions);
+        this.optionsHelper.mergeOptions(explicitSettings, defaultSettings.methodEmitOptions);
         if (!explicitSettings.argumentTypeEmitOptions)
             explicitSettings.argumentTypeEmitOptions = {};
         if (!explicitSettings.returnTypeEmitOptions)
@@ -115,26 +117,13 @@ var Emitter = /** @class */ (function () {
         this.mergeTypeEmitOptions(explicitSettings.returnTypeEmitOptions, defaultSettings);
     };
     Emitter.prototype.mergePropertyEmitOptions = function (explicitSettings, defaultSettings) {
-        this.mergeOptions(explicitSettings, defaultSettings.propertyEmitOptions);
+        this.optionsHelper.mergeOptions(explicitSettings, defaultSettings.propertyEmitOptions);
         if (!explicitSettings.typeEmitOptions)
             explicitSettings.typeEmitOptions = {};
         this.mergeTypeEmitOptions(explicitSettings.typeEmitOptions, defaultSettings);
     };
     Emitter.prototype.mergeStructEmitOptions = function (explicitSettings, defaultSettings) {
-        this.mergeOptions(explicitSettings, defaultSettings.structEmitOptions);
-    };
-    Emitter.prototype.mergeOptions = function (explicitSettings, defaultSettings) {
-        var properties = Object.getOwnPropertyNames(defaultSettings);
-        for (var _i = 0, properties_1 = properties; _i < properties_1.length; _i++) {
-            var propertyName = properties_1[_i];
-            var typeName = typeof defaultSettings[propertyName];
-            if (typeName === "object")
-                continue;
-            //TODO: handle functions here
-            if (!(propertyName in explicitSettings))
-                explicitSettings[propertyName] = defaultSettings[propertyName];
-        }
-        return explicitSettings;
+        this.optionsHelper.mergeOptions(explicitSettings, defaultSettings.structEmitOptions);
     };
     Emitter.prototype.prepareEnumEmitOptionDefaults = function (options) {
         if (!options.filter)

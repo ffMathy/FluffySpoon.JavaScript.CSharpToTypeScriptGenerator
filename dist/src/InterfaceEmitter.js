@@ -1,17 +1,10 @@
 "use strict";
-var __assign = (this && this.__assign) || Object.assign || function(t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-        s = arguments[i];
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-            t[p] = s[p];
-    }
-    return t;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 var TypeEmitter_1 = require("./TypeEmitter");
 var PropertyEmitter_1 = require("./PropertyEmitter");
 var MethodEmitter_1 = require("./MethodEmitter");
 var ts = require("typescript");
+var OptionsHelper_1 = require("./OptionsHelper");
 var InterfaceEmitter = /** @class */ (function () {
     function InterfaceEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
@@ -19,6 +12,7 @@ var InterfaceEmitter = /** @class */ (function () {
         this.propertyEmitter = new PropertyEmitter_1.PropertyEmitter(stringEmitter, logger);
         this.methodEmitter = new MethodEmitter_1.MethodEmitter(stringEmitter, logger);
         this.typeEmitter = new TypeEmitter_1.TypeEmitter(stringEmitter, logger);
+        this.optionsHelper = new OptionsHelper_1.OptionsHelper();
     }
     InterfaceEmitter.prototype.emitInterfaces = function (interfaces, options) {
         this.logger.log("Emitting interfaces", interfaces);
@@ -38,7 +32,7 @@ var InterfaceEmitter = /** @class */ (function () {
     };
     InterfaceEmitter.prototype.createTypeScriptInterfaceNodes = function (interfaceObject, options) {
         var _this = this;
-        options = __assign({}, options, options.perInterfaceEmitOptions(interfaceObject));
+        options = this.optionsHelper.mergeOptionsRecursively(options.perInterfaceEmitOptions(interfaceObject), options);
         if (!options.filter(interfaceObject))
             return [];
         if (interfaceObject.properties.length === 0 && interfaceObject.methods.length === 0) {

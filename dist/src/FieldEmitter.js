@@ -1,20 +1,14 @@
 "use strict";
-var __assign = (this && this.__assign) || Object.assign || function(t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-        s = arguments[i];
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-            t[p] = s[p];
-    }
-    return t;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 var TypeEmitter_1 = require("./TypeEmitter");
 var ts = require("typescript");
+var OptionsHelper_1 = require("./OptionsHelper");
 var FieldEmitter = /** @class */ (function () {
     function FieldEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
         this.logger = logger;
         this.typeEmitter = new TypeEmitter_1.TypeEmitter(stringEmitter, logger);
+        this.optionsHelper = new OptionsHelper_1.OptionsHelper();
     }
     FieldEmitter.prototype.emitFields = function (fields, options) {
         for (var _i = 0, fields_1 = fields; _i < fields_1.length; _i++) {
@@ -30,7 +24,7 @@ var FieldEmitter = /** @class */ (function () {
         this.stringEmitter.emitTypeScriptNode(node);
     };
     FieldEmitter.prototype.createTypeScriptFieldNode = function (field, options) {
-        options = __assign({}, options, options.perFieldEmitOptions(field));
+        options = this.optionsHelper.mergeOptionsRecursively(options.perFieldEmitOptions(field), options);
         if (!options.filter(field))
             return null;
         this.logger.log("Emitting field", field);

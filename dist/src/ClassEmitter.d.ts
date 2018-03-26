@@ -39,6 +39,7 @@ export declare class ClassEmitter {
     private methodEmitter;
     private interfaceEmitter;
     private typeEmitter;
+    private optionsHelper;
     constructor(stringEmitter: StringEmitter, logger: Logger);
     emitClasses(classes: CSharpClass[], options: ClassEmitOptions & NestingLevelMixin): void;
     emitClass(classObject: CSharpClass, options: ClassEmitOptions & NestingLevelMixin): void;

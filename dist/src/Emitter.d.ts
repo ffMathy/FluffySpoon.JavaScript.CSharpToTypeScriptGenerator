@@ -34,6 +34,7 @@ export declare class Emitter {
     readonly stringEmitter: StringEmitter;
     readonly logger: Logger;
     private fileEmitter;
+    private optionsHelper;
     constructor(content: string);
     emit(options?: EmitOptions): string;
     private mergeFileEmitOptions(explicitSettings, defaultSettings);
@@ -46,7 +47,6 @@ export declare class Emitter {
     private mergeMethodEmitOptions(explicitSettings, defaultSettings);
     private mergePropertyEmitOptions(explicitSettings, defaultSettings);
     private mergeStructEmitOptions(explicitSettings, defaultSettings);
-    private mergeOptions<T>(explicitSettings, defaultSettings);
     private prepareEnumEmitOptionDefaults(options);
     private prepareTypeEmitOptionDefaults(options);
     private prepareFieldEmitOptionDefaults(options);

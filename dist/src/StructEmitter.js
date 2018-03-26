@@ -1,12 +1,4 @@
 "use strict";
-var __assign = (this && this.__assign) || Object.assign || function(t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-        s = arguments[i];
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-            t[p] = s[p];
-    }
-    return t;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 var EnumEmitter_1 = require("./EnumEmitter");
 var TypeEmitter_1 = require("./TypeEmitter");
@@ -14,6 +6,7 @@ var PropertyEmitter_1 = require("./PropertyEmitter");
 var FieldEmitter_1 = require("./FieldEmitter");
 var MethodEmitter_1 = require("./MethodEmitter");
 var ts = require("typescript");
+var OptionsHelper_1 = require("./OptionsHelper");
 var StructEmitter = /** @class */ (function () {
     function StructEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
@@ -23,6 +16,7 @@ var StructEmitter = /** @class */ (function () {
         this.fieldEmitter = new FieldEmitter_1.FieldEmitter(stringEmitter, logger);
         this.methodEmitter = new MethodEmitter_1.MethodEmitter(stringEmitter, logger);
         this.typeEmitter = new TypeEmitter_1.TypeEmitter(stringEmitter, logger);
+        this.optionsHelper = new OptionsHelper_1.OptionsHelper();
     }
     StructEmitter.prototype.emitStructs = function (structs, options) {
         this.logger.log("Emitting structs", structs);
@@ -41,7 +35,7 @@ var StructEmitter = /** @class */ (function () {
     };
     StructEmitter.prototype.createTypeScriptStructNode = function (struct, options) {
         var _this = this;
-        options = __assign({}, options, options.perStructEmitOptions(struct));
+        options = this.optionsHelper.mergeOptionsRecursively(options.perStructEmitOptions(struct), options);
         if (struct.properties.length === 0 && struct.methods.length === 0 && struct.fields.length === 0) {
             this.logger.log("Skipping interface " + struct.name + " because it contains no properties, fields or methods");
             return null;

@@ -19,6 +19,7 @@ export interface PerMethodEmitOptions extends MethodEmitOptionsBase, MethodEmitO
 export declare class MethodEmitter {
     private stringEmitter;
     private logger;
+    private optionsHelper;
     private typeEmitter;
     constructor(stringEmitter: StringEmitter, logger: Logger);
     emitMethods(methods: CSharpMethod[], options: MethodEmitOptions & PerMethodEmitOptions): void;

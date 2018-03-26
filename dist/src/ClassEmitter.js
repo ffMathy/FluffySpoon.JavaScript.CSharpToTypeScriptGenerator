@@ -17,6 +17,7 @@ var FieldEmitter_1 = require("./FieldEmitter");
 var MethodEmitter_1 = require("./MethodEmitter");
 var NamespaceEmitter_1 = require("./NamespaceEmitter");
 var ts = require("typescript");
+var OptionsHelper_1 = require("./OptionsHelper");
 var ClassEmitter = /** @class */ (function () {
     function ClassEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
@@ -27,6 +28,7 @@ var ClassEmitter = /** @class */ (function () {
         this.methodEmitter = new MethodEmitter_1.MethodEmitter(stringEmitter, logger);
         this.typeEmitter = new TypeEmitter_1.TypeEmitter(stringEmitter, logger);
         this.interfaceEmitter = new InterfaceEmitter_1.InterfaceEmitter(stringEmitter, logger);
+        this.optionsHelper = new OptionsHelper_1.OptionsHelper();
     }
     ClassEmitter.prototype.emitClasses = function (classes, options) {
         this.logger.log("Emitting classes", classes);
@@ -45,7 +47,7 @@ var ClassEmitter = /** @class */ (function () {
     };
     ClassEmitter.prototype.createTypeScriptClassNodes = function (classObject, options) {
         var _this = this;
-        options = __assign({}, options, options.perClassEmitOptions(classObject));
+        options = this.optionsHelper.mergeOptionsRecursively(options.perClassEmitOptions(classObject), options);
         if (!options.filter(classObject)) {
             return [];
         }

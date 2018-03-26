@@ -14,6 +14,7 @@ import { FieldEmitOptions, FieldEmitOptionsBase } from './FieldEmitter';
 import { Logger } from './Logger';
 
 import ts = require("typescript");
+import { OptionsHelper } from './OptionsHelper';
 
 export interface NestingLevelMixin {
 	nestingLevel: number;
@@ -42,12 +43,14 @@ export class Emitter {
 	public readonly logger: Logger;
 
 	private fileEmitter: FileEmitter;
+	private optionsHelper: OptionsHelper;
 
 	constructor(content: string) {
 		this.logger = new Logger();
 		this.stringEmitter = new StringEmitter(this.logger);
 
 		this.fileEmitter = new FileEmitter(this.logger, this.stringEmitter, content);
+		this.optionsHelper = new OptionsHelper();
 	}
 
 	emit(options?: EmitOptions) {
@@ -86,7 +89,7 @@ export class Emitter {
 		explicitSettings: NamespaceEmitOptions, 
 		defaultSettings: DefaultEmitOptions) 
 	{
-		this.mergeOptions(explicitSettings, defaultSettings.namespaceEmitOptions);
+		this.optionsHelper.mergeOptions(explicitSettings, defaultSettings.namespaceEmitOptions);
 
 		if(!explicitSettings.classEmitOptions) explicitSettings.classEmitOptions = {};
 		if(!explicitSettings.enumEmitOptions) explicitSettings.enumEmitOptions = {};
@@ -103,7 +106,7 @@ export class Emitter {
 		explicitSettings: ClassEmitOptions, 
 		defaultSettings: DefaultEmitOptions) 
 	{
-		this.mergeOptions(explicitSettings, defaultSettings.classEmitOptions);
+		this.optionsHelper.mergeOptions(explicitSettings, defaultSettings.classEmitOptions);
 
 		if(!explicitSettings.enumEmitOptions) explicitSettings.enumEmitOptions = {};
 		if(!explicitSettings.fieldEmitOptions) explicitSettings.fieldEmitOptions = {};
@@ -128,14 +131,14 @@ export class Emitter {
 		explicitSettings: EnumEmitOptions, 
 		defaultSettings: DefaultEmitOptions) 
 	{
-		this.mergeOptions(explicitSettings, defaultSettings.enumEmitOptions);
+		this.optionsHelper.mergeOptions(explicitSettings, defaultSettings.enumEmitOptions);
 	}
 
 	private mergeFieldEmitOptions(
 		explicitSettings: FieldEmitOptions, 
 		defaultSettings: DefaultEmitOptions) 
 	{
-		this.mergeOptions(explicitSettings, defaultSettings.fieldEmitOptions);
+		this.optionsHelper.mergeOptions(explicitSettings, defaultSettings.fieldEmitOptions);
 
 		if(!explicitSettings.typeEmitOptions) explicitSettings.typeEmitOptions = {};
 
@@ -146,14 +149,14 @@ export class Emitter {
 		explicitSettings: TypeEmitOptions, 
 		defaultSettings: DefaultEmitOptions) 
 	{
-		this.mergeOptions(explicitSettings, defaultSettings.typeEmitOptions);
+		this.optionsHelper.mergeOptions(explicitSettings, defaultSettings.typeEmitOptions);
 	}
 
 	private mergeInterfaceEmitOptions(
 		explicitSettings: InterfaceEmitOptions, 
 		defaultSettings: DefaultEmitOptions) 
 	{
-		this.mergeOptions(explicitSettings, defaultSettings.interfaceEmitOptions);
+		this.optionsHelper.mergeOptions(explicitSettings, defaultSettings.interfaceEmitOptions);
 
 		if(!explicitSettings.genericParameterTypeEmitOptions) explicitSettings.genericParameterTypeEmitOptions = {};
 		if(!explicitSettings.inheritedTypeEmitOptions) explicitSettings.inheritedTypeEmitOptions = {};
@@ -170,7 +173,7 @@ export class Emitter {
 		explicitSettings: MethodEmitOptions, 
 		defaultSettings: DefaultEmitOptions) 
 	{
-		this.mergeOptions(explicitSettings, defaultSettings.methodEmitOptions);
+		this.optionsHelper.mergeOptions(explicitSettings, defaultSettings.methodEmitOptions);
 
 		if(!explicitSettings.argumentTypeEmitOptions) explicitSettings.argumentTypeEmitOptions = {};
 		if(!explicitSettings.returnTypeEmitOptions) explicitSettings.returnTypeEmitOptions = {};
@@ -183,7 +186,7 @@ export class Emitter {
 		explicitSettings: PropertyEmitOptions, 
 		defaultSettings: DefaultEmitOptions) 
 	{
-		this.mergeOptions(explicitSettings, defaultSettings.propertyEmitOptions);
+		this.optionsHelper.mergeOptions(explicitSettings, defaultSettings.propertyEmitOptions);
 
 		if(!explicitSettings.typeEmitOptions) explicitSettings.typeEmitOptions = {};
 
@@ -194,23 +197,7 @@ export class Emitter {
 		explicitSettings: StructEmitOptions, 
 		defaultSettings: DefaultEmitOptions) 
 	{
-		this.mergeOptions(explicitSettings, defaultSettings.structEmitOptions);
-	}
-
-	private mergeOptions<T>(explicitSettings: T, defaultSettings: T): T {
-		const properties = Object.getOwnPropertyNames(defaultSettings);
-		for(var propertyName of properties) {
-			const typeName = typeof defaultSettings[propertyName];
-			if(typeName === "object")
-				continue;
-
-			//TODO: handle functions here
-
-			if(!(propertyName in explicitSettings))
-				explicitSettings[propertyName] = defaultSettings[propertyName];
-		}
-
-		return explicitSettings;
+		this.optionsHelper.mergeOptions(explicitSettings, defaultSettings.structEmitOptions);
 	}
 
 	private prepareEnumEmitOptionDefaults(options: EnumEmitOptions) {

@@ -5,6 +5,7 @@ import { TypeEmitter, TypeEmitOptions } from './TypeEmitter';
 import { Logger } from './Logger';
 
 import ts = require("typescript");
+import { OptionsHelper } from './OptionsHelper';
 
 export interface FieldEmitOptionsBase {
 	readOnly?: boolean;
@@ -24,6 +25,7 @@ export interface PerFieldEmitOptions extends FieldEmitOptionsBase, FieldEmitOpti
 }
 
 export class FieldEmitter {
+	private optionsHelper: OptionsHelper;
 	private typeEmitter: TypeEmitter;
 
 	constructor(
@@ -31,6 +33,7 @@ export class FieldEmitter {
 		private logger: Logger
 	) {
 		this.typeEmitter = new TypeEmitter(stringEmitter, logger);
+		this.optionsHelper = new OptionsHelper();
 	}
 
 	emitFields(fields: CSharpField[], options: FieldEmitOptions) {
@@ -50,7 +53,9 @@ export class FieldEmitter {
 	}
 
 	createTypeScriptFieldNode(field: CSharpField, options: FieldEmitOptions & PerFieldEmitOptions) {
-		options = {...options, ...options.perFieldEmitOptions(field)};
+		options = this.optionsHelper.mergeOptionsRecursively<any>(
+			options.perFieldEmitOptions(field), 
+			options);
 
 		if (!options.filter(field))
 			return null;

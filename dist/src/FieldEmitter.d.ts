@@ -19,6 +19,7 @@ export interface PerFieldEmitOptions extends FieldEmitOptionsBase, FieldEmitOpti
 export declare class FieldEmitter {
     private stringEmitter;
     private logger;
+    private optionsHelper;
     private typeEmitter;
     constructor(stringEmitter: StringEmitter, logger: Logger);
     emitFields(fields: CSharpField[], options: FieldEmitOptions): void;

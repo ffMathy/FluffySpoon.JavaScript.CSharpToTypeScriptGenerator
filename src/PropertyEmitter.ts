@@ -4,6 +4,7 @@ import { TypeEmitter, TypeEmitOptions } from './TypeEmitter';
 import { Logger } from './Logger';
 
 import ts = require("typescript");
+import { OptionsHelper } from './OptionsHelper';
 
 export interface PropertyEmitOptionsBase {
 	readOnly?: boolean;
@@ -24,12 +25,14 @@ export interface PerPropertyEmitOptions extends PropertyEmitOptionsBase, Propert
 
 export class PropertyEmitter {
 	private typeEmitter: TypeEmitter;
+	private optionsHelper: OptionsHelper;
 
 	constructor(
 		private stringEmitter: StringEmitter,
 		private logger: Logger
 	) {
 		this.typeEmitter = new TypeEmitter(stringEmitter, logger);
+		this.optionsHelper = new OptionsHelper();
 	}
 
 	emitProperties(properties: CSharpProperty[], options: PropertyEmitOptions & PerPropertyEmitOptions) {
@@ -47,7 +50,9 @@ export class PropertyEmitter {
 	}
 
 	createTypeScriptPropertyNode(property: CSharpProperty, options: PropertyEmitOptions & PerPropertyEmitOptions) {
-		options = { ... options, ...options.perPropertyEmitOptions(property) };
+		options = this.optionsHelper.mergeOptionsRecursively<any>(
+			options.perPropertyEmitOptions(property), 
+			options);
 
 		if (!options.filter(property))
 			return;

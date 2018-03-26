@@ -1,20 +1,14 @@
 "use strict";
-var __assign = (this && this.__assign) || Object.assign || function(t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-        s = arguments[i];
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-            t[p] = s[p];
-    }
-    return t;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 var TypeEmitter_1 = require("./TypeEmitter");
 var ts = require("typescript");
+var OptionsHelper_1 = require("./OptionsHelper");
 var PropertyEmitter = /** @class */ (function () {
     function PropertyEmitter(stringEmitter, logger) {
         this.stringEmitter = stringEmitter;
         this.logger = logger;
         this.typeEmitter = new TypeEmitter_1.TypeEmitter(stringEmitter, logger);
+        this.optionsHelper = new OptionsHelper_1.OptionsHelper();
     }
     PropertyEmitter.prototype.emitProperties = function (properties, options) {
         for (var _i = 0, properties_1 = properties; _i < properties_1.length; _i++) {
@@ -29,7 +23,7 @@ var PropertyEmitter = /** @class */ (function () {
         this.stringEmitter.emitTypeScriptNode(node);
     };
     PropertyEmitter.prototype.createTypeScriptPropertyNode = function (property, options) {
-        options = __assign({}, options, options.perPropertyEmitOptions(property));
+        options = this.optionsHelper.mergeOptionsRecursively(options.perPropertyEmitOptions(property), options);
         if (!options.filter(property))
             return;
         var modifiers = new Array();

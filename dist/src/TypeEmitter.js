@@ -51,7 +51,6 @@ var TypeEmitter = /** @class */ (function () {
         return ts.createExpressionWithTypeArguments(this.createTypeScriptTypeReferenceNodes(type.genericParameters || [], options), ts.createIdentifier(typeName));
     };
     TypeEmitter.prototype.createTypeScriptTypeReferenceNode = function (type, options) {
-        debugger;
         if (!this.canEmitType(type, options))
             return null;
         this.logger.log("Emitting type", type);
@@ -94,7 +93,7 @@ var TypeEmitter = /** @class */ (function () {
     };
     TypeEmitter.prototype.getMatchingTypeMappingAsString = function (type, options) {
         if (options && options.mapper) {
-            var mappedValue_1 = options.mapper(type, this.getMatchingTypeMappingAsString(type, options));
+            var mappedValue_1 = options.mapper(type, this.defaultTypeMap[type.name] || type.name);
             this.logger.log("mapping", type, mappedValue_1);
             if (mappedValue_1)
                 return mappedValue_1;

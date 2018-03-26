@@ -9,6 +9,7 @@ import { MethodEmitter, MethodEmitOptions } from './MethodEmitter';
 import { Logger } from './Logger';
 
 import ts = require("typescript");
+import { OptionsHelper } from './OptionsHelper';
 
 export interface InterfaceEmitOptionsBase {
 	declare?: boolean;
@@ -31,6 +32,7 @@ export interface PerInterfaceEmitOptions extends InterfaceEmitOptionsBase, Inter
 }
 
 export class InterfaceEmitter {
+	private optionsHelper: OptionsHelper;
 	private propertyEmitter: PropertyEmitter;
 	private methodEmitter: MethodEmitter;
 	private typeEmitter: TypeEmitter;
@@ -42,6 +44,7 @@ export class InterfaceEmitter {
 		this.propertyEmitter = new PropertyEmitter(stringEmitter, logger);
 		this.methodEmitter = new MethodEmitter(stringEmitter, logger);
 		this.typeEmitter = new TypeEmitter(stringEmitter, logger);
+		this.optionsHelper = new OptionsHelper();
 	}
 
 	emitInterfaces(interfaces: CSharpInterface[], options: InterfaceEmitOptions) {
@@ -63,7 +66,9 @@ export class InterfaceEmitter {
 	}
 
 	createTypeScriptInterfaceNodes(interfaceObject: CSharpInterface, options: InterfaceEmitOptions & PerInterfaceEmitOptions) {
-		options = {...options, ...options.perInterfaceEmitOptions(interfaceObject)};
+		options = this.optionsHelper.mergeOptionsRecursively<any>(
+			options.perInterfaceEmitOptions(interfaceObject), 
+			options);
 
 		if (!options.filter(interfaceObject))
 			return [];

@@ -24,6 +24,7 @@ export interface PerInterfaceEmitOptions extends InterfaceEmitOptionsBase, Inter
 export declare class InterfaceEmitter {
     private stringEmitter;
     private logger;
+    private optionsHelper;
     private propertyEmitter;
     private methodEmitter;
     private typeEmitter;

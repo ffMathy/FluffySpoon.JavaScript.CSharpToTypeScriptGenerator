@@ -20,6 +20,7 @@ export declare class PropertyEmitter {
     private stringEmitter;
     private logger;
     private typeEmitter;
+    private optionsHelper;
     constructor(stringEmitter: StringEmitter, logger: Logger);
     emitProperties(properties: CSharpProperty[], options: PropertyEmitOptions & PerPropertyEmitOptions): void;
     emitProperty(property: CSharpProperty, options: PropertyEmitOptions & PerPropertyEmitOptions): void;

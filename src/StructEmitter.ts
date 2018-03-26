@@ -9,6 +9,7 @@ import { MethodEmitter, MethodEmitOptions } from './MethodEmitter';
 import { Logger } from './Logger';
 
 import ts = require("typescript");
+import { OptionsHelper } from './OptionsHelper';
 
 export interface StructEmitOptionsBase {
 	declare?: boolean;
@@ -35,6 +36,7 @@ export class StructEmitter {
 	private fieldEmitter: FieldEmitter;
 	private methodEmitter: MethodEmitter;
 	private typeEmitter: TypeEmitter;
+	private optionsHelper: OptionsHelper;
 
 	constructor(
 		private stringEmitter: StringEmitter,
@@ -45,6 +47,7 @@ export class StructEmitter {
 		this.fieldEmitter = new FieldEmitter(stringEmitter, logger);
 		this.methodEmitter = new MethodEmitter(stringEmitter, logger);
 		this.typeEmitter = new TypeEmitter(stringEmitter, logger);
+		this.optionsHelper = new OptionsHelper();
 	}
 
 	emitStructs(structs: CSharpStruct[], options: StructEmitOptions) {
@@ -68,7 +71,9 @@ export class StructEmitter {
 	}
 
 	createTypeScriptStructNode(struct: CSharpStruct, options: StructEmitOptions & PerStructEmitOptions) {
-		options = { ...options, ...options.perStructEmitOptions(struct) };
+		options = this.optionsHelper.mergeOptionsRecursively<any>(
+			options.perStructEmitOptions(struct), 
+			options);
 
 		if (struct.properties.length === 0 && struct.methods.length === 0 && struct.fields.length === 0) {
 			this.logger.log("Skipping interface " + struct.name + " because it contains no properties, fields or methods");
