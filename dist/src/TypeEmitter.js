@@ -74,6 +74,8 @@ var TypeEmitter = /** @class */ (function () {
         return nodes;
     };
     TypeEmitter.prototype.getNonGenericTypeName = function (type) {
+        if (type === null)
+            return null;
         var typeName = type.name;
         if (type.genericParameters) {
             var lastArrowIndex = typeName.lastIndexOf("<");
@@ -88,6 +90,8 @@ var TypeEmitter = /** @class */ (function () {
     };
     TypeEmitter.prototype.getMatchingTypeMappingAsType = function (type, options) {
         var mapping = this.getMatchingTypeMappingAsString(type, options);
+        if (mapping.startsWith('{') && mapping.endsWith('}'))
+            return null;
         var type = this.typeParser.parseType(mapping);
         return type;
     };

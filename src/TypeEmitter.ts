@@ -113,6 +113,9 @@ export class TypeEmitter {
 	}
 
 	private getNonGenericTypeName(type: CSharpType) {
+		if(type === null)
+			return null;
+
 		var typeName = type.name;
 		if (type.genericParameters) {
 			var lastArrowIndex = typeName.lastIndexOf("<");
@@ -136,6 +139,9 @@ export class TypeEmitter {
 		options: TypeEmitOptions) {
 
 		var mapping = this.getMatchingTypeMappingAsString(type, options);
+		if(mapping.startsWith('{') && mapping.endsWith('}'))
+			return null;
+		
 		var type = this.typeParser.parseType(mapping);
 		return type;
 	}
