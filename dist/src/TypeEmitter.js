@@ -54,8 +54,23 @@ var TypeEmitter = /** @class */ (function () {
         if (!this.canEmitType(type, options))
             return null;
         this.logger.log("Emitting type", type);
-        var type = this.getMatchingTypeMappingAsType(type, options);
-        var node = this.createTypeScriptTypeReferenceNodes([type], options)[0];
+        var node;
+        var typeMappingAsType = this.getMatchingTypeMappingAsType(type, options);
+        if (!typeMappingAsType) {
+            var typeFile = ts.createSourceFile("", this.getMatchingTypeMappingAsString(type, options), ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+            var syntaxList = typeFile.getChildAt(0);
+            ts.createTypeLiteralNode([ts.createIndexSignature([], [], [])]);
+            var block = syntaxList.getChildAt(0);
+            var statement1 = block.getChildAt(0); //openBraceToken
+            var statement2 = block.getChildAt(1);
+            var statement2Expression1 = statement2.getChildAt(0);
+            var statement2Colon = statement2.getChildAt(1);
+            var statement2Expression2 = statement2.getChildAt(2);
+            debugger;
+        }
+        else {
+            node = this.createTypeScriptTypeReferenceNodes([typeMappingAsType], options)[0];
+        }
         this.logger.log("Done emitting type", type);
         return node;
     };
@@ -68,7 +83,7 @@ var TypeEmitter = /** @class */ (function () {
             return nodes;
         for (var _i = 0, types_1 = types; _i < types_1.length; _i++) {
             var type = types_1[_i];
-            var node = ts.createTypeReferenceNode(this.getNonGenericTypeName(type), this.createTypeScriptTypeReferenceNodes(type.genericParameters, options));
+            var node = ts.createTypeReferenceNode(this.getNonGenericTypeName(type), type === null ? [] : this.createTypeScriptTypeReferenceNodes(type.genericParameters, options));
             nodes.push(node);
         }
         return nodes;

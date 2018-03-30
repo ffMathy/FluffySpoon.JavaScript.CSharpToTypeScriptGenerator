@@ -82,10 +82,29 @@ export class TypeEmitter {
 
 		this.logger.log("Emitting type", type);
 
-		var type = this.getMatchingTypeMappingAsType(type, options);
-		var node = this.createTypeScriptTypeReferenceNodes(
-			[type], 
-			options)[0];
+		var node: ts.Node;
+
+		var typeMappingAsType = this.getMatchingTypeMappingAsType(type, options);
+		if(!typeMappingAsType) {
+			const typeFile = ts.createSourceFile(
+				"", this.getMatchingTypeMappingAsString(type, options), 
+				ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+			var syntaxList = typeFile.getChildAt(0) as ts.SyntaxList;
+			ts.createTypeLiteralNode([ts.createIndexSignature(
+				[], [], [],
+			)]);
+			var block = syntaxList.getChildAt(0) as ts.Block;
+			var statement1 = block.getChildAt(0); //openBraceToken
+			var statement2 = block.getChildAt(1) as ts.SyntaxList;
+			var statement2Expression1 = statement2.getChildAt(0) as ts.Expression;
+			var statement2Colon = statement2.getChildAt(1) as ts.ColonToken;
+			var statement2Expression2 = statement2.getChildAt(2) as ts.Expression;
+			debugger;
+		} else {
+			node = this.createTypeScriptTypeReferenceNodes(
+				[typeMappingAsType], 
+				options)[0];
+		}
 
 		this.logger.log("Done emitting type", type);
 
@@ -105,7 +124,7 @@ export class TypeEmitter {
 		for(var type of types) {
 			var node = ts.createTypeReferenceNode(
 				this.getNonGenericTypeName(type),
-				this.createTypeScriptTypeReferenceNodes(type.genericParameters, options));
+				type === null ? [] : this.createTypeScriptTypeReferenceNodes(type.genericParameters, options));
 			nodes.push(node);
 		}
 
