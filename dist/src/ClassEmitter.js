@@ -47,7 +47,8 @@ var ClassEmitter = /** @class */ (function () {
     };
     ClassEmitter.prototype.createTypeScriptClassNodes = function (classObject, options) {
         var _this = this;
-        options = this.optionsHelper.mergeOptionsRecursively(options.perClassEmitOptions(classObject), options);
+        if (options.perClassEmitOptions)
+            options = this.optionsHelper.mergeOptionsRecursively(options.perClassEmitOptions(classObject), options);
         if (!options.filter(classObject)) {
             return [];
         }

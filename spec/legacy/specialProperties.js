@@ -42,7 +42,7 @@ describe('typescript-cs-poco', function() {
         var result = LegacyAdapter(sampleFile);
             
         expect(result).toEqual(expectedOutput);
-	});
+	});                                                                                                                                                                              
 
 	it('should not include properties marked as virtual if option is set', function() {
         var r = LegacyAdapter(sampleFile, { ignoreVirtual: true, debug: true });

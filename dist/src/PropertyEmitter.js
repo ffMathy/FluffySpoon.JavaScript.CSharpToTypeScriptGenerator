@@ -23,7 +23,8 @@ var PropertyEmitter = /** @class */ (function () {
         this.stringEmitter.emitTypeScriptNode(node);
     };
     PropertyEmitter.prototype.createTypeScriptPropertyNode = function (property, options) {
-        options = this.optionsHelper.mergeOptionsRecursively(options.perPropertyEmitOptions(property), options);
+        if (options.perPropertyEmitOptions)
+            options = this.optionsHelper.mergeOptionsRecursively(options.perPropertyEmitOptions(property), options);
         if (!options.filter(property))
             return;
         var modifiers = new Array();

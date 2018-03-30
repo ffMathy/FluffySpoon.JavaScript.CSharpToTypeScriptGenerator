@@ -66,9 +66,10 @@ export class InterfaceEmitter {
 	}
 
 	createTypeScriptInterfaceNodes(interfaceObject: CSharpInterface, options: InterfaceEmitOptions & PerInterfaceEmitOptions) {
-		options = this.optionsHelper.mergeOptionsRecursively<any>(
-			options.perInterfaceEmitOptions(interfaceObject), 
-			options);
+		if(options.perInterfaceEmitOptions)
+			options = this.optionsHelper.mergeOptionsRecursively<any>(
+				options.perInterfaceEmitOptions(interfaceObject), 
+				options);
 
 		if (!options.filter(interfaceObject))
 			return [];

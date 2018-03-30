@@ -51,9 +51,10 @@ export class MethodEmitter {
 	}
 
 	createTypeScriptMethodNode(method: CSharpMethod, options: MethodEmitOptions & PerMethodEmitOptions) {
-		options = this.optionsHelper.mergeOptionsRecursively<any>(
-			options.perMethodEmitOptions(method), 
-			options);
+		if(options.perMethodEmitOptions)
+			options = this.optionsHelper.mergeOptionsRecursively<any>(
+				options.perMethodEmitOptions(method), 
+				options);
 
 		if (!options.filter(method))
 			return null;

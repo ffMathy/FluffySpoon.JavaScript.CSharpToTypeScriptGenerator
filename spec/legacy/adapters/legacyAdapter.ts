@@ -4,7 +4,7 @@ import { PerPropertyEmitOptions } from '../../../src/PropertyEmitter';
 import { PerClassEmitOptions } from '../../../src/ClassEmitter';
 import { PerInterfaceEmitOptions } from '../../../src/InterfaceEmitter';
 import { PerMethodEmitOptions } from '../../../src/MethodEmitter';
-import { PerStructEmitOptions } from '../../../src/StructEmitter';
+import { PerStructEmitOptions, StructEmitOptions } from '../../../src/StructEmitter';
 import { TypeEmitOptions } from '../../../src/TypeEmitter';
 
 import {
@@ -12,7 +12,8 @@ import {
 	CSharpInterface,
 	CSharpNamespace,
 	CSharpField,
-	CSharpProperty
+	CSharpProperty,
+	CSharpStruct
 } from 'fluffy-spoon.javascript.csharp-parser';
 
 Error.stackTraceLimit = 100;
@@ -27,7 +28,8 @@ function LegacyAdapter(contents: any, options: any) {
 			},
 			fieldEmitOptions: {
 				perFieldEmitOptions: (field: CSharpField) => <PerFieldEmitOptions>{
-					readOnly: field.isReadOnly
+					readOnly: field.isReadOnly,
+					name: field.name
 				}
 			},
 			propertyEmitOptions: {
@@ -35,7 +37,17 @@ function LegacyAdapter(contents: any, options: any) {
 					name: property.name
 				}
 			},
-			enumEmitOptions: {}
+			structEmitOptions: {
+				perStructEmitOptions: (struct: CSharpStruct) => <PerStructEmitOptions>{
+					name: struct.name
+				}
+			},
+			methodEmitOptions: {},
+			enumEmitOptions: {},
+			interfaceEmitOptions: {
+				filter: (interfaceObject) => false
+			},
+			classEmitOptions: {}
 		},
 		file: {
 			namespaceEmitOptions: {
@@ -46,6 +58,11 @@ function LegacyAdapter(contents: any, options: any) {
 					methodEmitOptions: {
 						returnTypeEmitOptions: {},
 						argumentTypeEmitOptions: {}
+					},
+					structEmitOptions: {
+						fieldEmitOptions: {},
+						methodEmitOptions: {},
+						propertyEmitOptions: {}
 					}
 				}
 			},
@@ -56,10 +73,20 @@ function LegacyAdapter(contents: any, options: any) {
 				methodEmitOptions: {
 					returnTypeEmitOptions: {},
 					argumentTypeEmitOptions: {}
+				},
+				structEmitOptions: {
+					fieldEmitOptions: {},
+					methodEmitOptions: {},
+					propertyEmitOptions: {}
 				}
 			},
 			interfaceEmitOptions: {
 				propertyEmitOptions: {}
+			},
+			structEmitOptions: {
+				propertyEmitOptions: {},
+				methodEmitOptions: {},
+				fieldEmitOptions: {}
 			}
 		}
 	};
@@ -76,20 +103,24 @@ function LegacyAdapter(contents: any, options: any) {
 	});
 
 	if (options) {
+		if(options.includeInterfaces) {
+			emitOptions.defaults.interfaceEmitOptions.filter = () => true;
+		}
+
 		if (options.useStringUnionTypes) {
 			emitOptions.defaults.enumEmitOptions.strategy = "string-union";
 		}
 
 		if (options.propertyNameResolver) {
-			emitOptions.file.classEmitOptions.propertyEmitOptions.perPropertyEmitOptions =
-				emitOptions.file.interfaceEmitOptions.propertyEmitOptions.perPropertyEmitOptions = (property) => <PerPropertyEmitOptions>{
+			emitOptions.defaults.propertyEmitOptions.perPropertyEmitOptions =
+				emitOptions.defaults.propertyEmitOptions.perPropertyEmitOptions = (property) => <PerPropertyEmitOptions>{
 					name: options.propertyNameResolver(property.name)
 				};
 		}
 
 		if (options.methodNameResolver) {
-			emitOptions.file.interfaceEmitOptions.methodEmitOptions.perMethodEmitOptions =
-				emitOptions.file.classEmitOptions.methodEmitOptions.perMethodEmitOptions = (method) => <PerMethodEmitOptions>{
+			emitOptions.defaults.methodEmitOptions.perMethodEmitOptions =
+				emitOptions.defaults.methodEmitOptions.perMethodEmitOptions = (method) => <PerMethodEmitOptions>{
 					name: options.methodNameResolver(method.name)
 				};
 		}
@@ -108,8 +139,8 @@ function LegacyAdapter(contents: any, options: any) {
 				}
 			};
 
-			emitOptions.file.interfaceEmitOptions.perInterfaceEmitOptions =
-				emitOptions.file.classEmitOptions.perClassEmitOptions = <any>perInterfaceOrClassOptions;
+			emitOptions.defaults.interfaceEmitOptions.perInterfaceEmitOptions =
+				emitOptions.defaults.classEmitOptions.perClassEmitOptions = <any>perInterfaceOrClassOptions;
 		}
 
 		if (options.prefixWithI) {
@@ -122,17 +153,17 @@ function LegacyAdapter(contents: any, options: any) {
 				}
 			};
 
-			emitOptions.file.classEmitOptions.perClassEmitOptions =
-				emitOptions.file.interfaceEmitOptions.perInterfaceEmitOptions = <any>perInterfaceOrClassOptions;
+			emitOptions.defaults.classEmitOptions.perClassEmitOptions =
+				emitOptions.defaults.interfaceEmitOptions.perInterfaceEmitOptions = <any>perInterfaceOrClassOptions;
 		}
 
 		if (options.ignoreVirtual) {
-			emitOptions.file.classEmitOptions.methodEmitOptions.filter = (method) => !method.isVirtual;
-			emitOptions.file.classEmitOptions.propertyEmitOptions.filter = (property) => !property.isVirtual;
+			emitOptions.defaults.methodEmitOptions.filter = (method) => !method.isVirtual;
+			emitOptions.defaults.propertyEmitOptions.filter = (property) => !property.isVirtual;
 		}
 
 		if (options.ignoreMethods) {
-			emitOptions.file.classEmitOptions.methodEmitOptions.filter = (method) => false;
+			emitOptions.defaults.methodEmitOptions.filter = (method) => false;
 		}
 
 		if (options.stripReadOnly) {

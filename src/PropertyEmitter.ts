@@ -50,9 +50,10 @@ export class PropertyEmitter {
 	}
 
 	createTypeScriptPropertyNode(property: CSharpProperty, options: PropertyEmitOptions & PerPropertyEmitOptions) {
-		options = this.optionsHelper.mergeOptionsRecursively<any>(
-			options.perPropertyEmitOptions(property), 
-			options);
+		if(options.perPropertyEmitOptions)
+			options = this.optionsHelper.mergeOptionsRecursively<any>(
+				options.perPropertyEmitOptions(property), 
+				options);
 
 		if (!options.filter(property))
 			return;

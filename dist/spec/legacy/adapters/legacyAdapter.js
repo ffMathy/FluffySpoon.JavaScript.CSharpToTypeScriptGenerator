@@ -11,7 +11,8 @@ function LegacyAdapter(contents, options) {
             },
             fieldEmitOptions: {
                 perFieldEmitOptions: function (field) { return ({
-                    readOnly: field.isReadOnly
+                    readOnly: field.isReadOnly,
+                    name: field.name
                 }); }
             },
             propertyEmitOptions: {
@@ -19,7 +20,17 @@ function LegacyAdapter(contents, options) {
                     name: property.name
                 }); }
             },
-            enumEmitOptions: {}
+            structEmitOptions: {
+                perStructEmitOptions: function (struct) { return ({
+                    name: struct.name
+                }); }
+            },
+            methodEmitOptions: {},
+            enumEmitOptions: {},
+            interfaceEmitOptions: {
+                filter: function (interfaceObject) { return false; }
+            },
+            classEmitOptions: {}
         },
         file: {
             namespaceEmitOptions: {
@@ -30,6 +41,11 @@ function LegacyAdapter(contents, options) {
                     methodEmitOptions: {
                         returnTypeEmitOptions: {},
                         argumentTypeEmitOptions: {}
+                    },
+                    structEmitOptions: {
+                        fieldEmitOptions: {},
+                        methodEmitOptions: {},
+                        propertyEmitOptions: {}
                     }
                 }
             },
@@ -40,10 +56,20 @@ function LegacyAdapter(contents, options) {
                 methodEmitOptions: {
                     returnTypeEmitOptions: {},
                     argumentTypeEmitOptions: {}
+                },
+                structEmitOptions: {
+                    fieldEmitOptions: {},
+                    methodEmitOptions: {},
+                    propertyEmitOptions: {}
                 }
             },
             interfaceEmitOptions: {
                 propertyEmitOptions: {}
+            },
+            structEmitOptions: {
+                propertyEmitOptions: {},
+                methodEmitOptions: {},
+                fieldEmitOptions: {}
             }
         }
     };
@@ -60,18 +86,21 @@ function LegacyAdapter(contents, options) {
         }
     });
     if (options) {
+        if (options.includeInterfaces) {
+            emitOptions.defaults.interfaceEmitOptions.filter = function () { return true; };
+        }
         if (options.useStringUnionTypes) {
             emitOptions.defaults.enumEmitOptions.strategy = "string-union";
         }
         if (options.propertyNameResolver) {
-            emitOptions.file.classEmitOptions.propertyEmitOptions.perPropertyEmitOptions =
-                emitOptions.file.interfaceEmitOptions.propertyEmitOptions.perPropertyEmitOptions = function (property) { return ({
+            emitOptions.defaults.propertyEmitOptions.perPropertyEmitOptions =
+                emitOptions.defaults.propertyEmitOptions.perPropertyEmitOptions = function (property) { return ({
                     name: options.propertyNameResolver(property.name)
                 }); };
         }
         if (options.methodNameResolver) {
-            emitOptions.file.interfaceEmitOptions.methodEmitOptions.perMethodEmitOptions =
-                emitOptions.file.classEmitOptions.methodEmitOptions.perMethodEmitOptions = function (method) { return ({
+            emitOptions.defaults.methodEmitOptions.perMethodEmitOptions =
+                emitOptions.defaults.methodEmitOptions.perMethodEmitOptions = function (method) { return ({
                     name: options.methodNameResolver(method.name)
                 }); };
         }
@@ -88,8 +117,8 @@ function LegacyAdapter(contents, options) {
                     mapper: function (type, suggestedOutput) { return options.interfaceNameResolver(suggestedOutput); }
                 }
             }); };
-            emitOptions.file.interfaceEmitOptions.perInterfaceEmitOptions =
-                emitOptions.file.classEmitOptions.perClassEmitOptions = perInterfaceOrClassOptions;
+            emitOptions.defaults.interfaceEmitOptions.perInterfaceEmitOptions =
+                emitOptions.defaults.classEmitOptions.perClassEmitOptions = perInterfaceOrClassOptions;
         }
         if (options.prefixWithI) {
             var prefixWithIPerInterfaceOrClassOptions = perInterfaceOrClassOptions;
@@ -101,15 +130,15 @@ function LegacyAdapter(contents, options) {
                     }
                 }
             }); };
-            emitOptions.file.classEmitOptions.perClassEmitOptions =
-                emitOptions.file.interfaceEmitOptions.perInterfaceEmitOptions = perInterfaceOrClassOptions;
+            emitOptions.defaults.classEmitOptions.perClassEmitOptions =
+                emitOptions.defaults.interfaceEmitOptions.perInterfaceEmitOptions = perInterfaceOrClassOptions;
         }
         if (options.ignoreVirtual) {
-            emitOptions.file.classEmitOptions.methodEmitOptions.filter = function (method) { return !method.isVirtual; };
-            emitOptions.file.classEmitOptions.propertyEmitOptions.filter = function (property) { return !property.isVirtual; };
+            emitOptions.defaults.methodEmitOptions.filter = function (method) { return !method.isVirtual; };
+            emitOptions.defaults.propertyEmitOptions.filter = function (property) { return !property.isVirtual; };
         }
         if (options.ignoreMethods) {
-            emitOptions.file.classEmitOptions.methodEmitOptions.filter = function (method) { return false; };
+            emitOptions.defaults.methodEmitOptions.filter = function (method) { return false; };
         }
         if (options.stripReadOnly) {
             emitOptions.defaults.fieldEmitOptions.perFieldEmitOptions = function () { return ({

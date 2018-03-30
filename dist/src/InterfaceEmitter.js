@@ -32,7 +32,8 @@ var InterfaceEmitter = /** @class */ (function () {
     };
     InterfaceEmitter.prototype.createTypeScriptInterfaceNodes = function (interfaceObject, options) {
         var _this = this;
-        options = this.optionsHelper.mergeOptionsRecursively(options.perInterfaceEmitOptions(interfaceObject), options);
+        if (options.perInterfaceEmitOptions)
+            options = this.optionsHelper.mergeOptionsRecursively(options.perInterfaceEmitOptions(interfaceObject), options);
         if (!options.filter(interfaceObject))
             return [];
         if (interfaceObject.properties.length === 0 && interfaceObject.methods.length === 0) {

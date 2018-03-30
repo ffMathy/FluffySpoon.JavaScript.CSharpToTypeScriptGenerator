@@ -23,7 +23,8 @@ var MethodEmitter = /** @class */ (function () {
         this.stringEmitter.emitTypeScriptNode(node);
     };
     MethodEmitter.prototype.createTypeScriptMethodNode = function (method, options) {
-        options = this.optionsHelper.mergeOptionsRecursively(options.perMethodEmitOptions(method), options);
+        if (options.perMethodEmitOptions)
+            options = this.optionsHelper.mergeOptionsRecursively(options.perMethodEmitOptions(method), options);
         if (!options.filter(method))
             return null;
         if (method.isConstructor)

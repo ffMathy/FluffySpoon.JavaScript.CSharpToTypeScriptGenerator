@@ -7,7 +7,7 @@ using System;\n\
 \n\
 public interface IPoco\n\
 {\n\
-  public int Id {get; set; }\n\
+  public int Id { get; set; }\n\
 }\n\
 \n\
 public class MyPoco : IPoco\n\

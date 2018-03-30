@@ -14,6 +14,9 @@ export class OptionsHelper {
 	}
 
 	mergeOptionsRecursively<T>(explicitSettings: T, defaultSettings: T): T {
+		if(!explicitSettings)
+			return defaultSettings;
+
 		const properties = [
 			...Object.getOwnPropertyNames(explicitSettings),
 			...Object.getOwnPropertyNames(defaultSettings)

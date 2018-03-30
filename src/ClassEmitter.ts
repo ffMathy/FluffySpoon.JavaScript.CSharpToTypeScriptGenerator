@@ -78,9 +78,10 @@ export class ClassEmitter {
 	}
 
 	createTypeScriptClassNodes(classObject: CSharpClass, options: ClassEmitOptions & PerClassEmitOptions & NestingLevelMixin) {
-		options = this.optionsHelper.mergeOptionsRecursively<any>(
-			options.perClassEmitOptions(classObject), 
-			options);
+		if(options.perClassEmitOptions)
+			options = this.optionsHelper.mergeOptionsRecursively<any>(
+				options.perClassEmitOptions(classObject), 
+				options);
 		
 		if (!options.filter(classObject)) {
 			return [];

@@ -71,9 +71,10 @@ export class StructEmitter {
 	}
 
 	createTypeScriptStructNode(struct: CSharpStruct, options: StructEmitOptions & PerStructEmitOptions) {
-		options = this.optionsHelper.mergeOptionsRecursively<any>(
-			options.perStructEmitOptions(struct), 
-			options);
+		if(options.perStructEmitOptions)
+			options = this.optionsHelper.mergeOptionsRecursively<any>(
+				options.perStructEmitOptions(struct), 
+				options);
 
 		if (struct.properties.length === 0 && struct.methods.length === 0 && struct.fields.length === 0) {
 			this.logger.log("Skipping interface " + struct.name + " because it contains no properties, fields or methods");

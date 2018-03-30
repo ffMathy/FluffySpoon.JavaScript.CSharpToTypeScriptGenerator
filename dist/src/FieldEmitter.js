@@ -24,7 +24,8 @@ var FieldEmitter = /** @class */ (function () {
         this.stringEmitter.emitTypeScriptNode(node);
     };
     FieldEmitter.prototype.createTypeScriptFieldNode = function (field, options) {
-        options = this.optionsHelper.mergeOptionsRecursively(options.perFieldEmitOptions(field), options);
+        if (options.perFieldEmitOptions)
+            options = this.optionsHelper.mergeOptionsRecursively(options.perFieldEmitOptions(field), options);
         if (!options.filter(field))
             return null;
         this.logger.log("Emitting field", field);

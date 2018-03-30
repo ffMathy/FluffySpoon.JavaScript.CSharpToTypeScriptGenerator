@@ -16,6 +16,8 @@ var OptionsHelper = /** @class */ (function () {
         return explicitSettings;
     };
     OptionsHelper.prototype.mergeOptionsRecursively = function (explicitSettings, defaultSettings) {
+        if (!explicitSettings)
+            return defaultSettings;
         var properties = Object.getOwnPropertyNames(explicitSettings).concat(Object.getOwnPropertyNames(defaultSettings));
         for (var _i = 0, properties_2 = properties; _i < properties_2.length; _i++) {
             var property = properties_2[_i];

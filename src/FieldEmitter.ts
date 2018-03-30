@@ -53,9 +53,10 @@ export class FieldEmitter {
 	}
 
 	createTypeScriptFieldNode(field: CSharpField, options: FieldEmitOptions & PerFieldEmitOptions) {
-		options = this.optionsHelper.mergeOptionsRecursively<any>(
-			options.perFieldEmitOptions(field), 
-			options);
+		if(options.perFieldEmitOptions)
+			options = this.optionsHelper.mergeOptionsRecursively<any>(
+				options.perFieldEmitOptions(field), 
+				options);
 
 		if (!options.filter(field))
 			return null;

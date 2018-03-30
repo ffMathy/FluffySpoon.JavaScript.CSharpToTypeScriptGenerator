@@ -48,6 +48,8 @@ export class FileEmitter {
 	}
 
 	emitFile(options?: FileEmitOptions) {
+		debugger;
+
 		if(!options)
 			options = {};
 

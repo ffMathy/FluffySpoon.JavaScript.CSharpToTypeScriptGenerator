@@ -124,6 +124,15 @@ var Emitter = /** @class */ (function () {
     };
     Emitter.prototype.mergeStructEmitOptions = function (explicitSettings, defaultSettings) {
         this.optionsHelper.mergeOptions(explicitSettings, defaultSettings.structEmitOptions);
+        if (!explicitSettings.fieldEmitOptions)
+            explicitSettings.fieldEmitOptions = {};
+        if (!explicitSettings.methodEmitOptions)
+            explicitSettings.methodEmitOptions = {};
+        if (!explicitSettings.propertyEmitOptions)
+            explicitSettings.propertyEmitOptions = {};
+        this.mergeFieldEmitOptions(explicitSettings.fieldEmitOptions, defaultSettings);
+        this.mergeMethodEmitOptions(explicitSettings.methodEmitOptions, defaultSettings);
+        this.mergePropertyEmitOptions(explicitSettings.propertyEmitOptions, defaultSettings);
     };
     Emitter.prototype.prepareEnumEmitOptionDefaults = function (options) {
         if (!options.filter)
