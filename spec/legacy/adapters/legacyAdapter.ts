@@ -1,7 +1,7 @@
 ﻿import { Emitter, EmitOptions } from '../../../src/Emitter';
 import { PerFieldEmitOptions } from '../../../src/FieldEmitter';
 import { PerPropertyEmitOptions } from '../../../src/PropertyEmitter';
-import { PerClassEmitOptions } from '../../../src/ClassEmitter';
+import { PerClassEmitOptions, ClassEmitOptions } from '../../../src/ClassEmitter';
 import { PerInterfaceEmitOptions } from '../../../src/InterfaceEmitter';
 import { PerMethodEmitOptions } from '../../../src/MethodEmitter';
 import { PerStructEmitOptions, StructEmitOptions } from '../../../src/StructEmitter';
@@ -47,7 +47,11 @@ function LegacyAdapter(contents: any, options: any) {
 			interfaceEmitOptions: {
 				filter: (interfaceObject) => false
 			},
-			classEmitOptions: {}
+			classEmitOptions: <ClassEmitOptions>{
+				inheritedTypeEmitOptions: {
+					mapper: () => null
+				}
+			}
 		},
 		file: {
 			namespaceEmitOptions: {
@@ -173,16 +177,22 @@ function LegacyAdapter(contents: any, options: any) {
 		}
 
 		if (options.ignoreInheritance) {
-			emitOptions.file.interfaceEmitOptions.filter = (classObject) => options.ignoreInheritance.indexOf(classObject.name) === -1;
-			emitOptions.file.interfaceEmitOptions.perInterfaceEmitOptions = (interfaceObject) => <PerInterfaceEmitOptions>{
+			emitOptions.defaults.interfaceEmitOptions.filter = (classObject) =>
+				options.ignoreInheritance === true || 
+				options.ignoreInheritance.indexOf(classObject.name) === -1;
+			emitOptions.defaults.interfaceEmitOptions.perInterfaceEmitOptions = (interfaceObject) => <PerInterfaceEmitOptions>{
 				inheritedTypeEmitOptions: {
-					filter: (type) => options.ignoreInheritance.indexOf(type.name) === -1
+					filter: (type) => 
+						options.ignoreInheritance === true ||
+						options.ignoreInheritance.indexOf(type.name) === -1
 				}
 			};
-			emitOptions.file.classEmitOptions.filter = (classObject) => options.ignoreInheritance.indexOf(classObject.name) === -1;
-			emitOptions.file.classEmitOptions.perClassEmitOptions = (classObject) => <PerClassEmitOptions>{
+			emitOptions.defaults.classEmitOptions.filter = (classObject) => options.ignoreInheritance.indexOf(classObject.name) === -1;
+			emitOptions.defaults.classEmitOptions.perClassEmitOptions = (classObject) => <PerClassEmitOptions>{
 				inheritedTypeEmitOptions: {
-					filter: (type) => options.ignoreInheritance.indexOf(type.name) === -1
+					filter: (type) => 
+						options.ignoreInheritance === true ||
+						options.ignoreInheritance.indexOf(type.name) === -1
 				}
 			};
 		}

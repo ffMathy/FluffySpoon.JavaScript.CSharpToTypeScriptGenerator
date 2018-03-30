@@ -234,10 +234,6 @@ export class Emitter {
 			options.filter = (field) => !!field.isPublic;
 		}
 
-		if (!options.perFieldEmitOptions) {
-			options.perFieldEmitOptions = () => options;
-		}
-
 		options.typeEmitOptions = this.prepareTypeEmitOptionDefaults(options.typeEmitOptions);
 
 		return options;
@@ -289,10 +285,6 @@ export class Emitter {
 			options.filter = (method) => !!method.isPublic;
 		}
 
-		if (!options.perMethodEmitOptions) {
-			options.perMethodEmitOptions = () => options;
-		}
-
 		options.argumentTypeEmitOptions = this.prepareTypeEmitOptionDefaults(options.argumentTypeEmitOptions);
 		options.returnTypeEmitOptions = this.prepareTypeEmitOptionDefaults(options.returnTypeEmitOptions);
 
@@ -307,10 +299,6 @@ export class Emitter {
 
 		if (!options.filter) {
 			options.filter = (interfaceObject) => !!interfaceObject.isPublic;
-		}
-
-		if (!options.perInterfaceEmitOptions) {
-			options.perInterfaceEmitOptions = () => options;
 		}
 
 		options.genericParameterTypeEmitOptions = this.prepareTypeEmitOptionDefaults(options.genericParameterTypeEmitOptions);
@@ -351,9 +339,6 @@ export class Emitter {
 
 		if (!options.filter)
 			options.filter = (classObject) => !!classObject.isPublic;
-
-		if (!options.perClassEmitOptions)
-			options.perClassEmitOptions = () => <Object>{};
 
 		options.enumEmitOptions = this.prepareEnumEmitOptionDefaults(options.enumEmitOptions);
 		options.fieldEmitOptions = this.prepareFieldEmitOptionDefaults(options.fieldEmitOptions);

@@ -30,7 +30,11 @@ function LegacyAdapter(contents, options) {
             interfaceEmitOptions: {
                 filter: function (interfaceObject) { return false; }
             },
-            classEmitOptions: {}
+            classEmitOptions: {
+                inheritedTypeEmitOptions: {
+                    mapper: function () { return null; }
+                }
+            }
         },
         file: {
             namespaceEmitOptions: {
@@ -146,16 +150,25 @@ function LegacyAdapter(contents, options) {
             }); };
         }
         if (options.ignoreInheritance) {
-            emitOptions.file.interfaceEmitOptions.filter = function (classObject) { return options.ignoreInheritance.indexOf(classObject.name) === -1; };
-            emitOptions.file.interfaceEmitOptions.perInterfaceEmitOptions = function (interfaceObject) { return ({
+            emitOptions.defaults.interfaceEmitOptions.filter = function (classObject) {
+                return options.ignoreInheritance === true ||
+                    options.ignoreInheritance.indexOf(classObject.name) === -1;
+            };
+            emitOptions.defaults.interfaceEmitOptions.perInterfaceEmitOptions = function (interfaceObject) { return ({
                 inheritedTypeEmitOptions: {
-                    filter: function (type) { return options.ignoreInheritance.indexOf(type.name) === -1; }
+                    filter: function (type) {
+                        return options.ignoreInheritance === true ||
+                            options.ignoreInheritance.indexOf(type.name) === -1;
+                    }
                 }
             }); };
-            emitOptions.file.classEmitOptions.filter = function (classObject) { return options.ignoreInheritance.indexOf(classObject.name) === -1; };
-            emitOptions.file.classEmitOptions.perClassEmitOptions = function (classObject) { return ({
+            emitOptions.defaults.classEmitOptions.filter = function (classObject) { return options.ignoreInheritance.indexOf(classObject.name) === -1; };
+            emitOptions.defaults.classEmitOptions.perClassEmitOptions = function (classObject) { return ({
                 inheritedTypeEmitOptions: {
-                    filter: function (type) { return options.ignoreInheritance.indexOf(type.name) === -1; }
+                    filter: function (type) {
+                        return options.ignoreInheritance === true ||
+                            options.ignoreInheritance.indexOf(type.name) === -1;
+                    }
                 }
             }); };
         }

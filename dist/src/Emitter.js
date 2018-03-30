@@ -154,9 +154,6 @@ var Emitter = /** @class */ (function () {
         if (!options.filter) {
             options.filter = function (field) { return !!field.isPublic; };
         }
-        if (!options.perFieldEmitOptions) {
-            options.perFieldEmitOptions = function () { return options; };
-        }
         options.typeEmitOptions = this.prepareTypeEmitOptionDefaults(options.typeEmitOptions);
         return options;
     };
@@ -200,9 +197,6 @@ var Emitter = /** @class */ (function () {
         if (!options.filter) {
             options.filter = function (method) { return !!method.isPublic; };
         }
-        if (!options.perMethodEmitOptions) {
-            options.perMethodEmitOptions = function () { return options; };
-        }
         options.argumentTypeEmitOptions = this.prepareTypeEmitOptionDefaults(options.argumentTypeEmitOptions);
         options.returnTypeEmitOptions = this.prepareTypeEmitOptionDefaults(options.returnTypeEmitOptions);
         return options;
@@ -218,9 +212,6 @@ var Emitter = /** @class */ (function () {
             options.propertyEmitOptions = {};
         if (!options.filter) {
             options.filter = function (interfaceObject) { return !!interfaceObject.isPublic; };
-        }
-        if (!options.perInterfaceEmitOptions) {
-            options.perInterfaceEmitOptions = function () { return options; };
         }
         options.genericParameterTypeEmitOptions = this.prepareTypeEmitOptionDefaults(options.genericParameterTypeEmitOptions);
         options.inheritedTypeEmitOptions = this.prepareTypeEmitOptionDefaults(options.inheritedTypeEmitOptions);
@@ -265,8 +256,6 @@ var Emitter = /** @class */ (function () {
             options.structEmitOptions = {};
         if (!options.filter)
             options.filter = function (classObject) { return !!classObject.isPublic; };
-        if (!options.perClassEmitOptions)
-            options.perClassEmitOptions = function () { return ({}); };
         options.enumEmitOptions = this.prepareEnumEmitOptionDefaults(options.enumEmitOptions);
         options.fieldEmitOptions = this.prepareFieldEmitOptionDefaults(options.fieldEmitOptions);
         options.genericParameterTypeEmitOptions = this.prepareTypeEmitOptionDefaults(options.genericParameterTypeEmitOptions);

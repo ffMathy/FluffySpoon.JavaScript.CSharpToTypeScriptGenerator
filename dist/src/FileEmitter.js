@@ -26,7 +26,6 @@ var FileEmitter = /** @class */ (function () {
         this.structEmitter = new StructEmitter_1.StructEmitter(this.stringEmitter, this.logger);
     }
     FileEmitter.prototype.emitFile = function (options) {
-        debugger;
         if (!options)
             options = {};
         this.logger.log("Emitting file.");

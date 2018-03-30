@@ -48,6 +48,7 @@ var InterfaceEmitter = /** @class */ (function () {
         var heritageClauses = new Array();
         if (interfaceObject.inheritsFrom && this.typeEmitter.canEmitType(interfaceObject.inheritsFrom, options.inheritedTypeEmitOptions))
             heritageClauses.push(ts.createHeritageClause(ts.SyntaxKind.ExtendsKeyword, [this.typeEmitter.createTypeScriptExpressionWithTypeArguments(interfaceObject.inheritsFrom, options.inheritedTypeEmitOptions)]));
+        debugger;
         var properties = interfaceObject
             .properties
             .map(function (x) { return _this
