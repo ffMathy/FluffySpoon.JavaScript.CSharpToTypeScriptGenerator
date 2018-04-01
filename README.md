@@ -32,24 +32,42 @@ To see pre-made examples designed for frameworks like Angular and ASP .NET Core 
 
 ## How settings work
 The `EmitOptions` are the root options. These contain just two properties:
-- `defaults` **[DefaultEmitOptions]** makes it easy to treat specific C# constructs in a specific way per default if no other settings are explicitly specified (for instance, lower-casing all property names). This settings hieracy is flat.
-  - `classEmitOptions` **[ClassEmitOptions]**
-  - `namespaceEmitOptions` **[NamespaceEmitOptions]**
-  - `enumEmitOptions` **[EnumEmitOptions]**
-  - `structEmitOptions` **[StructEmitOptions]**
-  - `interfaceEmitOptions` **[InterfaceEmitOptions]**
-  - `typeEmitOptions` **[TypeEmitOptions]**
-  - `propertyEmitOptions` **[PropertyEmitOptions]**
-  - `fieldEmitOptions` **[FieldEmitOptions]**
-  - `methodEmitOptions` **[MethodEmitOptions]**
-- `file` **[FileEmitOptions]** configures file-level settings. This is a nested configuration hierachy. Every property defined here overrides the default one. This structure is recursive.
-  - `classEmitOptions` **[ClassEmitOptions]**
-  - `namespaceEmitOptions` **[NamespaceEmitOptions]**
-  - `enumEmitOptions` **[EnumEmitOptions]**
-  - `structEmitOptions` **[StructEmitOptions]**
-  - `interfaceEmitOptions` **[InterfaceEmitOptions]**
-  - `onAfterParse`
-  - `onBeforeEmit`
+- `defaults` **DefaultEmitOptions** makes it easy to treat specific C# constructs in a specific way per default if no other settings are explicitly specified (for instance, lower-casing all property names). This settings hieracy is flat.
+  - `classEmitOptions` **ClassEmitOptions** configures default class settings. This settings hierachy is flat.
+  - `namespaceEmitOptions` **NamespaceEmitOptions** configures default namespace settings. This settings hierachy is flat.
+  - `enumEmitOptions` **EnumEmitOptions** configures default enum settings. This settings hierachy is flat.
+  - `structEmitOptions` **StructEmitOptions** configures default struct settings. This settings hierachy is flat.
+  - `interfaceEmitOptions` **InterfaceEmitOptions** configures default interfaces settings. This settings hierachy is flat.
+  - `typeEmitOptions` **TypeEmitOptions** configures default type settings. This settings hierachy is flat.
+  - `propertyEmitOptions` **PropertyEmitOptions** configures default property settings. This settings hierachy is flat.
+  - `fieldEmitOptions` **FieldEmitOptions** configures default field settings. This settings hierachy is flat.
+  - `methodEmitOptions` **MethodEmitOptions** configures default method settings. This settings hierachy is flat.
+- `file` **FileEmitOptions** configures file-level settings. This is a nested configuration hierachy. Every property defined here overrides the default one. This structure is recursive.
+  - `classEmitOptions` **ClassEmitOptions** configures classes found within the file.
+    - `declare` **boolean** determines whether or not the class should be declared (using the `declare` keyword in TypeScript).
+    - `filter` **(classObject: CSharpClass) => boolean** decides (for every `CSharpClass` considered) whether or not it should be included in the emit.
+    - `perClassEmitOptions` **(classObject: CSharpClass) => PerClassEmitOptions**
+    - `enumEmitOptions` **EnumEmitOptions** configures enums found within the class.
+    - `propertyEmitOptions` **PropertyEmitOptions** configures properties found within the class.
+    - `interfaceEmitOptions` **InterfaceEmitOptions** configures interfaces found within the class.
+    - `methodEmitOptions` **MethodEmitOptions** configures methods found within the class.
+    - `fieldEmitOptions` **FieldEmitOptions** configures fields found within the class.
+    - `structEmitOptions` **StructEmitOptions** configures structs found within the class.
+    - `genericParameterTypeEmitOptions` **TypeEmitOptions** configures generic type parameters of the class (for instance settings for `T` and `K` in the class `Foo<T, K>`).
+    - `inheritedTypeEmitOptions` **TypeEmitOptions** configures the inherited type of the class (for instance `MyBaseClass` for the class `MyClass : MyBaseClass`).
+  - `namespaceEmitOptions` **NamespaceEmitOptions** configures namespaces found within the file.
+	  - `declare` **boolean** determines whether or not the namespace should be declared (using the `declare` keyword in TypeScript).
+	  - `skip` **boolean** determines whether or not the namespace should be skipped (in other words, emitting its contents directly without the enclosing namespace declaration).
+	  - `filter` **(namespace: CSharpNamespace) => boolean** decides (for every `CSharpNamespace` considered) whether or not it should be included in the emit.
+	  - `classEmitOptions` **ClassEmitOptions** is exactly like the `ClassEmitOptions` defined above, but only applies to the classes found within namespaces.
+	  - `interfaceEmitOptions` **InterfaceEmitOptions** configures interfaces found within the namespace.
+	  - `structEmitOptions` **StructEmitOptions** configures structs found within the namespace.
+	  - `enumEmitOptions` **EnumEmitOptions** configures enums found within the namespace.
+  - `enumEmitOptions` **EnumEmitOptions** configures enums found within the file.
+  - `structEmitOptions` **StructEmitOptions** configures structs found within the file.
+  - `interfaceEmitOptions` **InterfaceEmitOptions** configures interfaces found within the file.
+	- `onAfterParse` **(file: CSharpFile) => void** fires right after the C# code has been parsed, but before the TypeScript code has been emitted. `file` here contains the parsed C# code.
+	- `onBeforeEmit` **(file: CSharpFile, typeScriptEmitter: TypeScriptEmitter) => void** fires right after the C# code has been parsed, but before the TypeScript code has been emitted. `file` here contains the parsed C# code, and `typeScriptEmitter` allows for more fine-grained control over the file emission (directly emitting strings into the file) compared to the `onAfterParse` variant.
 
 ## Default settings
 ```typescript
