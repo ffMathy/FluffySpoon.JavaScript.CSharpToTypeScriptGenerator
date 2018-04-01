@@ -15,15 +15,15 @@ var ClassEmitter_1 = require("./ClassEmitter");
 var InterfaceEmitter_1 = require("./InterfaceEmitter");
 var NamespaceEmitter_1 = require("./NamespaceEmitter");
 var FileEmitter = /** @class */ (function () {
-    function FileEmitter(logger, stringEmitter, content) {
+    function FileEmitter(logger, typeScriptEmitter, content) {
         this.logger = logger;
-        this.stringEmitter = stringEmitter;
+        this.typeScriptEmitter = typeScriptEmitter;
         this.fileParser = new fluffy_spoon_javascript_csharp_parser_1.FileParser(content);
-        this.enumEmitter = new EnumEmitter_1.EnumEmitter(this.stringEmitter, this.logger);
-        this.classEmitter = new ClassEmitter_1.ClassEmitter(this.stringEmitter, this.logger);
-        this.interfaceEmitter = new InterfaceEmitter_1.InterfaceEmitter(this.stringEmitter, this.logger);
-        this.namespaceEmitter = new NamespaceEmitter_1.NamespaceEmitter(this.stringEmitter, this.logger);
-        this.structEmitter = new StructEmitter_1.StructEmitter(this.stringEmitter, this.logger);
+        this.enumEmitter = new EnumEmitter_1.EnumEmitter(this.typeScriptEmitter, this.logger);
+        this.classEmitter = new ClassEmitter_1.ClassEmitter(this.typeScriptEmitter, this.logger);
+        this.interfaceEmitter = new InterfaceEmitter_1.InterfaceEmitter(this.typeScriptEmitter, this.logger);
+        this.namespaceEmitter = new NamespaceEmitter_1.NamespaceEmitter(this.typeScriptEmitter, this.logger);
+        this.structEmitter = new StructEmitter_1.StructEmitter(this.typeScriptEmitter, this.logger);
     }
     FileEmitter.prototype.emitFile = function (options) {
         if (!options)
@@ -67,9 +67,10 @@ var FileEmitter = /** @class */ (function () {
             var structNode = this.structEmitter.createTypeScriptStructNode(structObject, __assign({ declare: true }, options.structEmitOptions));
             nodes.push(structNode);
         }
+        this.typeScriptEmitter.emitTypeScriptNodes(nodes);
         if (options.onBeforeEmit)
-            options.onBeforeEmit(file, nodes);
-        return nodes;
+            options.onBeforeEmit(file, this.typeScriptEmitter);
+        return this.typeScriptEmitter.output;
     };
     return FileEmitter;
 }());

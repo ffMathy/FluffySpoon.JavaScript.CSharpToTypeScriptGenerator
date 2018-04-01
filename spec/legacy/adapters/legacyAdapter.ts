@@ -98,11 +98,11 @@ function LegacyAdapter(contents: any, options: any) {
 	emitter.logger.setLogMethod((message, ...parameters) => {
 		if (parameters.length > 0) {
 			console.log(
-				emitter.stringEmitter.currentIndentation + message,
+				emitter.typeScriptEmitter.currentIndentation + message,
 				parameters);
 		} else {
 			console.log(
-				emitter.stringEmitter.currentIndentation + message);
+				emitter.typeScriptEmitter.currentIndentation + message);
 		}
 	});
 

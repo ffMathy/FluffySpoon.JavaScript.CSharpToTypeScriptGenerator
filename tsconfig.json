@@ -1,11 +1,11 @@
 {
   "compileOnSave": true,
   "exclude": [
-	"./spec/**/*.d.ts"
+	  "./spec/cases/**/*.ts"
   ],
   "include": [
-	"./src/**/*.ts",
-	"./spec/**/*.ts"
+	  "./src/**/*.ts",
+	  "./spec/**/*.ts"
   ],
   "compilerOptions": {
     "target": "es5",

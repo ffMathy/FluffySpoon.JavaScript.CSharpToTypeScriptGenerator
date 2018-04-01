@@ -2,6 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var fs = require('fs');
 var Emitter_1 = require("../src/Emitter");
+var Logger_1 = require("../src/Logger");
+var Index_1 = require("../src/Index");
 Error.stackTraceLimit = 100;
 function runCase(caseName, options) {
     it("should be able to handle case " + caseName, function (done) {
@@ -26,13 +28,13 @@ function runCase(caseName, options) {
                         parameters[_i - 1] = arguments[_i];
                     }
                     if (parameters.length > 0) {
-                        console.log(emitter.stringEmitter.currentIndentation + message, parameters);
+                        console.log(emitter.typeScriptEmitter.currentIndentation + message, parameters);
                     }
                     else {
-                        console.log(emitter.stringEmitter.currentIndentation + message);
+                        console.log(emitter.typeScriptEmitter.currentIndentation + message);
                     }
                 });
-                var result = emitter.emit(localOptions);
+                var result = emitter.emit(localOptions ? localOptions() : null);
                 result = result
                     .replace(/\r/g, '')
                     .replace(/    /g, '\t')
@@ -49,5 +51,103 @@ describe("UseCases", function () {
     runCase("Enum");
     runCase("Property");
     runCase("Class");
+    runCase("AspNetCoreControllerToAngularClient", function () {
+        var controllerClassFilter = function (classObject) {
+            //we are only interested in classes that are considered controllers as per: https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/actions#what-is-a-controller
+            var inheritsFromController = classObject.name.endsWith("Controller") || (classObject.inheritsFrom && classObject.inheritsFrom.name.endsWith("Controller"));
+            var hasControllerAttribute = !!classObject.attributes.filter(function (a) { return a.name === "Controller"; })[0];
+            var hasNonControllerAttribute = !!classObject.attributes.filter(function (a) { return a.name === "NonController"; })[0];
+            return (inheritsFromController || hasControllerAttribute) && !hasNonControllerAttribute;
+        };
+        var actionMethodFilter = function (methodObject) {
+            //we are only interested in the methods considered actions as per: https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/actions#defining-actions
+            var hasNonActionAttribute = !!methodObject.attributes.filter(function (a) { return a.name === "NonAction"; })[0];
+            return methodObject.isPublic && !hasNonActionAttribute;
+        };
+        return {
+            file: {
+                onBeforeEmit: function (file, typescriptEmitter) {
+                    typescriptEmitter.clear(); //we clear all code the emitter would have normally written and take control ourselves
+                    typescriptEmitter.writeLine("import { Injectable } from '@angular/core';");
+                    typescriptEmitter.writeLine("import { HttpClient, HttpParams } from '@angular/common/http';");
+                    typescriptEmitter.writeLine();
+                    var controllerClasses = file
+                        .getAllClassesRecursively()
+                        .filter(controllerClassFilter);
+                    for (var _i = 0, controllerClasses_1 = controllerClasses; _i < controllerClasses_1.length; _i++) {
+                        var controllerClass = controllerClasses_1[_i];
+                        var controllerNameWithoutSuffix = controllerClass.name;
+                        if (controllerNameWithoutSuffix.endsWith("Controller"))
+                            controllerNameWithoutSuffix = controllerNameWithoutSuffix.substr(0, controllerNameWithoutSuffix.lastIndexOf("Controller"));
+                        typescriptEmitter.writeLine("@Injectable()");
+                        typescriptEmitter.writeLine("export class " + controllerNameWithoutSuffix + "Client {");
+                        typescriptEmitter.increaseIndentation();
+                        typescriptEmitter.writeLine("constructor(private http: HttpClient) { }");
+                        typescriptEmitter.writeLine();
+                        var actionMethods = controllerClass
+                            .methods
+                            .filter(actionMethodFilter);
+                        for (var _a = 0, actionMethods_1 = actionMethods; _a < actionMethods_1.length; _a++) {
+                            var actionMethod = actionMethods_1[_a];
+                            typescriptEmitter.write(typescriptEmitter.currentIndentation);
+                            var actionNameCamelCase = actionMethod.name.substr(0, 1).toLowerCase() + actionMethod.name.substr(1);
+                            typescriptEmitter.write("async " + actionNameCamelCase + "(");
+                            var typeEmitter = new Index_1.TypeEmitter(typescriptEmitter, new Logger_1.Logger());
+                            var parameterOffset = 0;
+                            for (var _b = 0, _c = actionMethod.parameters; _b < _c.length; _b++) {
+                                var parameter = _c[_b];
+                                if (parameterOffset > 0)
+                                    typescriptEmitter.write(", ");
+                                typescriptEmitter.write(parameter.name + ": ");
+                                typeEmitter.emitType(parameter.type);
+                                parameterOffset++;
+                            }
+                            typescriptEmitter.write("): ");
+                            typeEmitter.emitType(actionMethod.returnType, {
+                                mapper: function (type, suggested) {
+                                    if (type.name !== "Task<>")
+                                        return "Promise<" + suggested + ">";
+                                    return suggested;
+                                }
+                            });
+                            typescriptEmitter.write(" {");
+                            typescriptEmitter.writeLine();
+                            typescriptEmitter.increaseIndentation();
+                            typescriptEmitter.write(typescriptEmitter.currentIndentation);
+                            var method = "get";
+                            for (var _d = 0, _e = actionMethod.attributes; _d < _e.length; _d++) {
+                                var actionAttribute = _e[_d];
+                                switch (actionAttribute.name) {
+                                    case "HttpPost":
+                                        method = "post";
+                                        break;
+                                    case "HttpPut":
+                                        method = "put";
+                                        break;
+                                    case "HttpPatch":
+                                        method = "patch";
+                                        break;
+                                }
+                            }
+                            typescriptEmitter.write("return this.http." + method + "('/api/" + controllerNameWithoutSuffix.toLowerCase() + "/" + actionMethod.name.toLowerCase() + "', new HttpParams()");
+                            for (var _f = 0, _g = actionMethod.parameters; _f < _g.length; _f++) {
+                                var parameter = _g[_f];
+                                typescriptEmitter.write(".append('" + parameter.name + "', " + parameter.name + ")");
+                            }
+                            typescriptEmitter.write(").toPromise();");
+                            typescriptEmitter.writeLine();
+                            typescriptEmitter.decreaseIndentation();
+                            typescriptEmitter.writeLine("}");
+                            typescriptEmitter.writeLine();
+                        }
+                        typescriptEmitter.removeLastNewLines();
+                        typescriptEmitter.writeLine();
+                        typescriptEmitter.decreaseIndentation();
+                        typescriptEmitter.writeLine("}");
+                    }
+                }
+            }
+        };
+    });
 });
 //# sourceMappingURL=FileEmitterSpec.js.map

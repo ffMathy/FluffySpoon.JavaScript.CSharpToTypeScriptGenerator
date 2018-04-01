@@ -8,14 +8,14 @@ var MethodEmitter_1 = require("./MethodEmitter");
 var ts = require("typescript");
 var OptionsHelper_1 = require("./OptionsHelper");
 var StructEmitter = /** @class */ (function () {
-    function StructEmitter(stringEmitter, logger) {
-        this.stringEmitter = stringEmitter;
+    function StructEmitter(typeScriptEmitter, logger) {
+        this.typeScriptEmitter = typeScriptEmitter;
         this.logger = logger;
-        this.enumEmitter = new EnumEmitter_1.EnumEmitter(stringEmitter, logger);
-        this.propertyEmitter = new PropertyEmitter_1.PropertyEmitter(stringEmitter, logger);
-        this.fieldEmitter = new FieldEmitter_1.FieldEmitter(stringEmitter, logger);
-        this.methodEmitter = new MethodEmitter_1.MethodEmitter(stringEmitter, logger);
-        this.typeEmitter = new TypeEmitter_1.TypeEmitter(stringEmitter, logger);
+        this.enumEmitter = new EnumEmitter_1.EnumEmitter(typeScriptEmitter, logger);
+        this.propertyEmitter = new PropertyEmitter_1.PropertyEmitter(typeScriptEmitter, logger);
+        this.fieldEmitter = new FieldEmitter_1.FieldEmitter(typeScriptEmitter, logger);
+        this.methodEmitter = new MethodEmitter_1.MethodEmitter(typeScriptEmitter, logger);
+        this.typeEmitter = new TypeEmitter_1.TypeEmitter(typeScriptEmitter, logger);
         this.optionsHelper = new OptionsHelper_1.OptionsHelper();
     }
     StructEmitter.prototype.emitStructs = function (structs, options) {
@@ -30,7 +30,7 @@ var StructEmitter = /** @class */ (function () {
         this.logger.log("Emitting struct", struct);
         var node = this.createTypeScriptStructNode(struct, options);
         if (node)
-            this.stringEmitter.emitTypeScriptNode(node);
+            this.typeScriptEmitter.emitTypeScriptNode(node);
         this.logger.log("Done emitting struct", struct);
     };
     StructEmitter.prototype.createTypeScriptStructNode = function (struct, options) {

@@ -1,5 +1,5 @@
 import { CSharpNamespace } from 'fluffy-spoon.javascript.csharp-parser';
-import { StringEmitter } from './StringEmitter';
+import { TypeScriptEmitter } from './TypeScriptEmitter';
 import { EnumEmitOptions } from './EnumEmitter';
 import { ClassEmitOptions } from './ClassEmitter';
 import { InterfaceEmitOptions } from './InterfaceEmitter';
@@ -21,13 +21,13 @@ export interface NamespaceEmitOptionsLinks {
 export interface NamespaceEmitOptions extends NamespaceEmitOptionsBase, NamespaceEmitOptionsLinks {
 }
 export declare class NamespaceEmitter {
-    private stringEmitter;
+    private typeScriptEmitter;
     private logger;
     private enumEmitter;
     private classEmitter;
     private interfaceEmitter;
     private structEmitter;
-    constructor(stringEmitter: StringEmitter, logger: Logger);
+    constructor(typeScriptEmitter: TypeScriptEmitter, logger: Logger);
     emitNamespaces(namespaces: CSharpNamespace[], options: NamespaceEmitOptions & NestingLevelMixin): void;
     emitNamespace(namespace: CSharpNamespace, options: NamespaceEmitOptions & NestingLevelMixin): void;
     createTypeScriptNamespaceNodes(namespace: CSharpNamespace, options: NamespaceEmitOptions & NestingLevelMixin): ts.Statement[];

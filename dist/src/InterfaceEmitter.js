@@ -6,12 +6,12 @@ var MethodEmitter_1 = require("./MethodEmitter");
 var ts = require("typescript");
 var OptionsHelper_1 = require("./OptionsHelper");
 var InterfaceEmitter = /** @class */ (function () {
-    function InterfaceEmitter(stringEmitter, logger) {
-        this.stringEmitter = stringEmitter;
+    function InterfaceEmitter(typeScriptEmitter, logger) {
+        this.typeScriptEmitter = typeScriptEmitter;
         this.logger = logger;
-        this.propertyEmitter = new PropertyEmitter_1.PropertyEmitter(stringEmitter, logger);
-        this.methodEmitter = new MethodEmitter_1.MethodEmitter(stringEmitter, logger);
-        this.typeEmitter = new TypeEmitter_1.TypeEmitter(stringEmitter, logger);
+        this.propertyEmitter = new PropertyEmitter_1.PropertyEmitter(typeScriptEmitter, logger);
+        this.methodEmitter = new MethodEmitter_1.MethodEmitter(typeScriptEmitter, logger);
+        this.typeEmitter = new TypeEmitter_1.TypeEmitter(typeScriptEmitter, logger);
         this.optionsHelper = new OptionsHelper_1.OptionsHelper();
     }
     InterfaceEmitter.prototype.emitInterfaces = function (interfaces, options) {
@@ -20,14 +20,14 @@ var InterfaceEmitter = /** @class */ (function () {
             var interfaceObject = interfaces_1[_i];
             this.emitInterface(interfaceObject, options);
         }
-        this.stringEmitter.removeLastNewLines();
+        this.typeScriptEmitter.removeLastNewLines();
         this.logger.log("Done emitting interfaces", interfaces);
     };
     InterfaceEmitter.prototype.emitInterface = function (interfaceObject, options) {
         var nodes = this.createTypeScriptInterfaceNodes(interfaceObject, options);
         for (var _i = 0, nodes_1 = nodes; _i < nodes_1.length; _i++) {
             var node = nodes_1[_i];
-            this.stringEmitter.emitTypeScriptNode(node);
+            this.typeScriptEmitter.emitTypeScriptNode(node);
         }
     };
     InterfaceEmitter.prototype.createTypeScriptInterfaceNodes = function (interfaceObject, options) {

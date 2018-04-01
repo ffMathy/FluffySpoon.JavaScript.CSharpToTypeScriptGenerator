@@ -1,5 +1,5 @@
 ﻿import { CSharpProperty } from 'fluffy-spoon.javascript.csharp-parser';
-import { StringEmitter } from './StringEmitter';
+import { TypeScriptEmitter } from './TypeScriptEmitter';
 import { TypeEmitter, TypeEmitOptions } from './TypeEmitter';
 import { Logger } from './Logger';
 
@@ -28,10 +28,10 @@ export class PropertyEmitter {
 	private optionsHelper: OptionsHelper;
 
 	constructor(
-		private stringEmitter: StringEmitter,
+		private typeScriptEmitter: TypeScriptEmitter,
 		private logger: Logger
 	) {
-		this.typeEmitter = new TypeEmitter(stringEmitter, logger);
+		this.typeEmitter = new TypeEmitter(typeScriptEmitter, logger);
 		this.optionsHelper = new OptionsHelper();
 	}
 
@@ -46,7 +46,7 @@ export class PropertyEmitter {
 		if(!node)
 			return;
 
-		this.stringEmitter.emitTypeScriptNode(node);
+		this.typeScriptEmitter.emitTypeScriptNode(node);
 	}
 
 	createTypeScriptPropertyNode(property: CSharpProperty, options: PropertyEmitOptions & PerPropertyEmitOptions) {

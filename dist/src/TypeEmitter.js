@@ -4,8 +4,8 @@ var fluffy_spoon_javascript_csharp_parser_1 = require("fluffy-spoon.javascript.c
 var RegExHelper_1 = require("./RegExHelper");
 var ts = require("typescript");
 var TypeEmitter = /** @class */ (function () {
-    function TypeEmitter(stringEmitter, logger) {
-        this.stringEmitter = stringEmitter;
+    function TypeEmitter(typeScriptEmitter, logger) {
+        this.typeScriptEmitter = typeScriptEmitter;
         this.logger = logger;
         this.typeParser = new fluffy_spoon_javascript_csharp_parser_1.TypeParser();
         this.regexHelper = new RegExHelper_1.RegExHelper();
@@ -35,29 +35,31 @@ var TypeEmitter = /** @class */ (function () {
         };
     }
     TypeEmitter.prototype.canEmitType = function (type, options) {
-        return options.filter(type);
+        return !options.filter || options.filter(type);
     };
     TypeEmitter.prototype.emitType = function (type, options) {
         var node = this.createTypeScriptTypeReferenceNode(type, options);
         if (!node)
             return;
-        this.stringEmitter.emitTypeScriptNode(node);
+        this.typeScriptEmitter.emitTypeScriptNode(node);
     };
     TypeEmitter.prototype.emitGenericParameters = function (genericParameters, options) {
-        this.stringEmitter.write(this.generateGenericParametersString(genericParameters, options));
+        this.typeScriptEmitter.write(this.generateGenericParametersString(genericParameters, options));
     };
     TypeEmitter.prototype.createTypeScriptExpressionWithTypeArguments = function (type, options) {
         var typeName = this.getNonGenericMatchingTypeMappingAsString(type, options);
         return ts.createExpressionWithTypeArguments(this.createTypeScriptTypeReferenceNodes(type.genericParameters || [], options), ts.createIdentifier(typeName));
     };
     TypeEmitter.prototype.createTypeScriptTypeReferenceNode = function (type, options) {
+        if (!options)
+            options = {};
         if (!this.canEmitType(type, options))
             return null;
         this.logger.log("Emitting type", type);
         var node;
         var typeMappingAsType = this.getMatchingTypeMappingAsType(type, options);
         if (!typeMappingAsType) {
-            var typeString = this.getMatchingTypeMappingAsString(type, options);
+            var typeString = this.convertTypeToTypeScript(type, options);
             var typeFile = ts.createSourceFile("", "let tmp: " + typeString, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
             var literalNode = typeFile.statements[0].declarationList.declarations[0].type;
             node = literalNode;
@@ -82,32 +84,9 @@ var TypeEmitter = /** @class */ (function () {
         }
         return nodes;
     };
-    TypeEmitter.prototype.getNonGenericTypeName = function (type) {
-        if (type === null)
-            return null;
-        var typeName = type.name;
-        if (type.genericParameters) {
-            var lastArrowIndex = typeName.lastIndexOf("<");
-            typeName = typeName.substr(0, lastArrowIndex);
-        }
-        return typeName;
-    };
-    TypeEmitter.prototype.getNonGenericMatchingTypeMappingAsString = function (type, options) {
-        var mapping = this.getMatchingTypeMappingAsType(type, options);
-        var typeName = this.getNonGenericTypeName(mapping);
-        return typeName;
-    };
-    TypeEmitter.prototype.getMatchingTypeMappingAsType = function (type, options) {
-        var mapping = this.getMatchingTypeMappingAsString(type, options);
-        if (mapping.startsWith('{') && mapping.endsWith('}'))
-            return null;
-        var type = this.typeParser.parseType(mapping);
-        return type;
-    };
-    TypeEmitter.prototype.getMatchingTypeMappingAsString = function (type, options) {
+    TypeEmitter.prototype.convertTypeToTypeScript = function (type, options) {
         if (options && options.mapper) {
-            var mappedValue_1 = options.mapper(type, this.defaultTypeMap[type.name] || type.name);
-            this.logger.log("mapping", type, mappedValue_1);
+            var mappedValue_1 = options.mapper(type, this.defaultTypeMap[type.name] || this.convertTypeToTypeScript(type));
             if (mappedValue_1)
                 return mappedValue_1;
         }
@@ -129,11 +108,33 @@ var TypeEmitter = /** @class */ (function () {
         }
         return mappedValue;
     };
+    TypeEmitter.prototype.getNonGenericTypeName = function (type) {
+        if (type === null)
+            return null;
+        var typeName = type.name;
+        if (type.genericParameters) {
+            var lastArrowIndex = typeName.lastIndexOf("<");
+            typeName = typeName.substr(0, lastArrowIndex);
+        }
+        return typeName;
+    };
+    TypeEmitter.prototype.getNonGenericMatchingTypeMappingAsString = function (type, options) {
+        var mapping = this.getMatchingTypeMappingAsType(type, options);
+        var typeName = this.getNonGenericTypeName(mapping);
+        return typeName;
+    };
+    TypeEmitter.prototype.getMatchingTypeMappingAsType = function (type, options) {
+        var mapping = this.convertTypeToTypeScript(type, options);
+        if (mapping.startsWith('{') && mapping.endsWith('}'))
+            return null;
+        var type = this.typeParser.parseType(mapping);
+        return type;
+    };
     TypeEmitter.prototype.generateGenericParametersString = function (genericParameters, options) {
         var mapping = "<";
         for (var _i = 0, genericParameters_1 = genericParameters; _i < genericParameters_1.length; _i++) {
             var genericParameter = genericParameters_1[_i];
-            mapping += this.getMatchingTypeMappingAsString(genericParameter, options);
+            mapping += this.convertTypeToTypeScript(genericParameter, options);
             if (genericParameter !== genericParameters[genericParameters.length - 1])
                 mapping += ", ";
         }
@@ -152,7 +153,7 @@ var TypeEmitter = /** @class */ (function () {
         return mapping;
     };
     TypeEmitter.prototype.substituteGenericReferenceIntoMapping = function (referenceType, realType, mapping, options) {
-        var realTypeMapping = this.getMatchingTypeMappingAsString(realType, options);
+        var realTypeMapping = this.convertTypeToTypeScript(realType, options);
         var referenceNameInput = this.regexHelper.escape(referenceType.name);
         var pattern = new RegExp("((?:[^\\w]|^)+)(" + referenceNameInput + ")((?:[^\\w]|$)+)", "g");
         mapping = mapping.replace(pattern, "$1" + realTypeMapping + "$3");

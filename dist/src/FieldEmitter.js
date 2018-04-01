@@ -4,10 +4,10 @@ var TypeEmitter_1 = require("./TypeEmitter");
 var ts = require("typescript");
 var OptionsHelper_1 = require("./OptionsHelper");
 var FieldEmitter = /** @class */ (function () {
-    function FieldEmitter(stringEmitter, logger) {
-        this.stringEmitter = stringEmitter;
+    function FieldEmitter(typeScriptEmitter, logger) {
+        this.typeScriptEmitter = typeScriptEmitter;
         this.logger = logger;
-        this.typeEmitter = new TypeEmitter_1.TypeEmitter(stringEmitter, logger);
+        this.typeEmitter = new TypeEmitter_1.TypeEmitter(typeScriptEmitter, logger);
         this.optionsHelper = new OptionsHelper_1.OptionsHelper();
     }
     FieldEmitter.prototype.emitFields = function (fields, options) {
@@ -15,13 +15,13 @@ var FieldEmitter = /** @class */ (function () {
             var property = fields_1[_i];
             this.emitField(property, options);
         }
-        this.stringEmitter.removeLastNewLines();
+        this.typeScriptEmitter.removeLastNewLines();
     };
     FieldEmitter.prototype.emitField = function (field, options) {
         var node = this.createTypeScriptFieldNode(field, options);
         if (!node)
             return;
-        this.stringEmitter.emitTypeScriptNode(node);
+        this.typeScriptEmitter.emitTypeScriptNode(node);
     };
     FieldEmitter.prototype.createTypeScriptFieldNode = function (field, options) {
         if (options.perFieldEmitOptions)

@@ -1,6 +1,6 @@
-import { CSharpField, FieldParser } from 'fluffy-spoon.javascript.csharp-parser';
+﻿import { CSharpField, FieldParser } from 'fluffy-spoon.javascript.csharp-parser';
 
-import { StringEmitter } from './StringEmitter';
+import { TypeScriptEmitter } from './TypeScriptEmitter';
 import { TypeEmitter, TypeEmitOptions } from './TypeEmitter';
 import { Logger } from './Logger';
 
@@ -29,10 +29,10 @@ export class FieldEmitter {
 	private typeEmitter: TypeEmitter;
 
 	constructor(
-		private stringEmitter: StringEmitter,
+		private typeScriptEmitter: TypeScriptEmitter,
 		private logger: Logger
 	) {
-		this.typeEmitter = new TypeEmitter(stringEmitter, logger);
+		this.typeEmitter = new TypeEmitter(typeScriptEmitter, logger);
 		this.optionsHelper = new OptionsHelper();
 	}
 
@@ -41,7 +41,7 @@ export class FieldEmitter {
 			this.emitField(property, options);
 		}
 
-		this.stringEmitter.removeLastNewLines();
+		this.typeScriptEmitter.removeLastNewLines();
 	}
 
 	emitField(field: CSharpField, options: FieldEmitOptions & PerFieldEmitOptions) {
@@ -49,7 +49,7 @@ export class FieldEmitter {
 		if(!node) 
 			return;
 
-		this.stringEmitter.emitTypeScriptNode(node);
+		this.typeScriptEmitter.emitTypeScriptNode(node);
 	}
 
 	createTypeScriptFieldNode(field: CSharpField, options: FieldEmitOptions & PerFieldEmitOptions) {

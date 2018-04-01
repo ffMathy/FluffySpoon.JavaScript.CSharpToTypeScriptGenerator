@@ -14,13 +14,13 @@ var InterfaceEmitter_1 = require("./InterfaceEmitter");
 var StructEmitter_1 = require("./StructEmitter");
 var ts = require("typescript");
 var NamespaceEmitter = /** @class */ (function () {
-    function NamespaceEmitter(stringEmitter, logger) {
-        this.stringEmitter = stringEmitter;
+    function NamespaceEmitter(typeScriptEmitter, logger) {
+        this.typeScriptEmitter = typeScriptEmitter;
         this.logger = logger;
-        this.enumEmitter = new EnumEmitter_1.EnumEmitter(stringEmitter, logger);
-        this.classEmitter = new ClassEmitter_1.ClassEmitter(stringEmitter, logger);
-        this.interfaceEmitter = new InterfaceEmitter_1.InterfaceEmitter(stringEmitter, logger);
-        this.structEmitter = new StructEmitter_1.StructEmitter(stringEmitter, logger);
+        this.enumEmitter = new EnumEmitter_1.EnumEmitter(typeScriptEmitter, logger);
+        this.classEmitter = new ClassEmitter_1.ClassEmitter(typeScriptEmitter, logger);
+        this.interfaceEmitter = new InterfaceEmitter_1.InterfaceEmitter(typeScriptEmitter, logger);
+        this.structEmitter = new StructEmitter_1.StructEmitter(typeScriptEmitter, logger);
     }
     NamespaceEmitter.prototype.emitNamespaces = function (namespaces, options) {
         this.logger.log("Emitting namespaces", namespaces);
@@ -32,7 +32,7 @@ var NamespaceEmitter = /** @class */ (function () {
     };
     NamespaceEmitter.prototype.emitNamespace = function (namespace, options) {
         var nodes = this.createTypeScriptNamespaceNodes(namespace, options);
-        this.stringEmitter.emitTypeScriptNodes(nodes);
+        this.typeScriptEmitter.emitTypeScriptNodes(nodes);
     };
     NamespaceEmitter.prototype.createTypeScriptNamespaceNodes = function (namespace, options) {
         if (!options.filter(namespace))

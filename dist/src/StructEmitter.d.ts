@@ -1,5 +1,5 @@
 import { CSharpStruct } from 'fluffy-spoon.javascript.csharp-parser';
-import { StringEmitter } from './StringEmitter';
+import { TypeScriptEmitter } from './TypeScriptEmitter';
 import { PropertyEmitOptions } from './PropertyEmitter';
 import { FieldEmitOptions } from './FieldEmitter';
 import { MethodEmitOptions } from './MethodEmitter';
@@ -21,7 +21,7 @@ export interface PerStructEmitOptions extends StructEmitOptionsBase, StructEmitO
     name?: string;
 }
 export declare class StructEmitter {
-    private stringEmitter;
+    private typeScriptEmitter;
     private logger;
     private enumEmitter;
     private propertyEmitter;
@@ -29,7 +29,7 @@ export declare class StructEmitter {
     private methodEmitter;
     private typeEmitter;
     private optionsHelper;
-    constructor(stringEmitter: StringEmitter, logger: Logger);
+    constructor(typeScriptEmitter: TypeScriptEmitter, logger: Logger);
     emitStructs(structs: CSharpStruct[], options: StructEmitOptions): void;
     emitStruct(struct: CSharpStruct, options: StructEmitOptions): void;
     createTypeScriptStructNode(struct: CSharpStruct, options: StructEmitOptions & PerStructEmitOptions): ts.InterfaceDeclaration;

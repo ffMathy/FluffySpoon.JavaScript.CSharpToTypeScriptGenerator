@@ -1,6 +1,6 @@
 ﻿import { FileParser, CSharpClass, CSharpInterface } from 'fluffy-spoon.javascript.csharp-parser';
 
-import { StringEmitter } from './StringEmitter';
+import { TypeScriptEmitter } from './TypeScriptEmitter';
 import { EnumEmitter, EnumEmitOptions } from './EnumEmitter';
 import { TypeEmitter, TypeEmitOptions } from './TypeEmitter';
 import { PropertyEmitter, PropertyEmitOptions } from './PropertyEmitter';
@@ -38,12 +38,12 @@ export class InterfaceEmitter {
 	private typeEmitter: TypeEmitter;
 
 	constructor(
-		private stringEmitter: StringEmitter,
+		private typeScriptEmitter: TypeScriptEmitter,
 		private logger: Logger
 	) {
-		this.propertyEmitter = new PropertyEmitter(stringEmitter, logger);
-		this.methodEmitter = new MethodEmitter(stringEmitter, logger);
-		this.typeEmitter = new TypeEmitter(stringEmitter, logger);
+		this.propertyEmitter = new PropertyEmitter(typeScriptEmitter, logger);
+		this.methodEmitter = new MethodEmitter(typeScriptEmitter, logger);
+		this.typeEmitter = new TypeEmitter(typeScriptEmitter, logger);
 		this.optionsHelper = new OptionsHelper();
 	}
 
@@ -54,7 +54,7 @@ export class InterfaceEmitter {
 			this.emitInterface(interfaceObject, options);
 		}
 
-		this.stringEmitter.removeLastNewLines();
+		this.typeScriptEmitter.removeLastNewLines();
 
 		this.logger.log("Done emitting interfaces", interfaces);
 	}
@@ -62,7 +62,7 @@ export class InterfaceEmitter {
 	emitInterface(interfaceObject: CSharpInterface, options: InterfaceEmitOptions) {
 		var nodes = this.createTypeScriptInterfaceNodes(interfaceObject, options);
 		for (var node of nodes)
-			this.stringEmitter.emitTypeScriptNode(node);
+			this.typeScriptEmitter.emitTypeScriptNode(node);
 	}
 
 	createTypeScriptInterfaceNodes(interfaceObject: CSharpInterface, options: InterfaceEmitOptions & PerInterfaceEmitOptions) {

@@ -1,5 +1,5 @@
 import { CSharpMethod } from 'fluffy-spoon.javascript.csharp-parser';
-import { StringEmitter } from './StringEmitter';
+import { TypeScriptEmitter } from './TypeScriptEmitter';
 import { TypeEmitOptions } from './TypeEmitter';
 import { Logger } from './Logger';
 import ts = require("typescript");
@@ -17,11 +17,11 @@ export interface PerMethodEmitOptions extends MethodEmitOptionsBase, MethodEmitO
     name?: string;
 }
 export declare class MethodEmitter {
-    private stringEmitter;
+    private typeScriptEmitter;
     private logger;
     private optionsHelper;
     private typeEmitter;
-    constructor(stringEmitter: StringEmitter, logger: Logger);
+    constructor(typeScriptEmitter: TypeScriptEmitter, logger: Logger);
     emitMethods(methods: CSharpMethod[], options: MethodEmitOptions & PerMethodEmitOptions): void;
     emitMethod(method: CSharpMethod, options: MethodEmitOptions & PerMethodEmitOptions): void;
     createTypeScriptMethodNode(method: CSharpMethod, options: MethodEmitOptions & PerMethodEmitOptions): ts.MethodSignature;

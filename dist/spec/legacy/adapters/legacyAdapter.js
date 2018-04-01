@@ -83,10 +83,10 @@ function LegacyAdapter(contents, options) {
             parameters[_i - 1] = arguments[_i];
         }
         if (parameters.length > 0) {
-            console.log(emitter.stringEmitter.currentIndentation + message, parameters);
+            console.log(emitter.typeScriptEmitter.currentIndentation + message, parameters);
         }
         else {
-            console.log(emitter.stringEmitter.currentIndentation + message);
+            console.log(emitter.typeScriptEmitter.currentIndentation + message);
         }
     });
     if (options) {

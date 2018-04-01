@@ -361,10 +361,14 @@ declare type MyEnum =
   'SecondOption'
 ```
 
-## ASP .NET Core
+## ASP .NET Core + Angular
 
-### Generating AJAX clients for all controllers
+### Generating Angular HTTP clients for all controllers and their actions
+Requires `typescript` (by using `npm install typescript --save-dev`).
+
 ```typescript
+import typescript = require("typescript");
+
 var controllerClassFilter = (classObject: CSharpClass) => {
   //we are only interested in classes that are considered controllers as per: https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/actions#what-is-a-controller
 
@@ -380,22 +384,15 @@ var controllerClassFilter = (classObject: CSharpClass) => {
 var actionMethodFilter = (methodObject: CSharpMethod) => {
     //we are only interested in the methods considered actions as per: https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/actions#defining-actions
 
-    var hasNonActionAttribute = !!classObject.attributes.filter(a => a.name === "NonAction")[0];
+    var hasNonActionAttribute = !!methodObject.attributes.filter(a => a.name === "NonAction")[0];
     return methodObject.isPublic && !hasNonActionAttribute;
 }
 
 var typescriptCode = emitter.emitFile(<EmitOptions>{
   file: <FileEmitOptions>{
-    classEmitOptions: <ClassEmitOptions>{
-      filter: (classObject: CSharpClass) => false //we exclude all classes since we want to skip the normal typings generation since we emit something else in onAfterParsing
-    },
-    propertyEmitOptions: <PropertyEmitOptions>{
-      filter: (property: CSharpProperty) => false //we exclude all properties
-    },
-    fieldEmitOptions: <FieldEmitOptions>{
-      filter: (field: CSharpField) => false //we exclude all fields
-    },
-    onAfterPare: (file: CSharpFile, stringEmitter: StringEmitter) => {
+    onBeforeEmit: (file: CSharpFile, typescriptNodesToEmit: typescript.Node[]) => {
+      typescriptNodesToEmit.splice(); //we remove all typescript code we would have normally emitted and take control ourselves.
+
       var controllerClasses = file
         .getAllClassesRecursively()
         .filter(controllerClassFilter);

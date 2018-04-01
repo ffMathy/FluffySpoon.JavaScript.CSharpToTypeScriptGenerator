@@ -1,5 +1,5 @@
 import { CSharpInterface } from 'fluffy-spoon.javascript.csharp-parser';
-import { StringEmitter } from './StringEmitter';
+import { TypeScriptEmitter } from './TypeScriptEmitter';
 import { TypeEmitOptions } from './TypeEmitter';
 import { PropertyEmitOptions } from './PropertyEmitter';
 import { MethodEmitOptions } from './MethodEmitter';
@@ -22,13 +22,13 @@ export interface PerInterfaceEmitOptions extends InterfaceEmitOptionsBase, Inter
     name?: string;
 }
 export declare class InterfaceEmitter {
-    private stringEmitter;
+    private typeScriptEmitter;
     private logger;
     private optionsHelper;
     private propertyEmitter;
     private methodEmitter;
     private typeEmitter;
-    constructor(stringEmitter: StringEmitter, logger: Logger);
+    constructor(typeScriptEmitter: TypeScriptEmitter, logger: Logger);
     emitInterfaces(interfaces: CSharpInterface[], options: InterfaceEmitOptions): void;
     emitInterface(interfaceObject: CSharpInterface, options: InterfaceEmitOptions): void;
     createTypeScriptInterfaceNodes(interfaceObject: CSharpInterface, options: InterfaceEmitOptions & PerInterfaceEmitOptions): ts.Statement[];

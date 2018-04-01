@@ -4,10 +4,10 @@ var TypeEmitter_1 = require("./TypeEmitter");
 var ts = require("typescript");
 var OptionsHelper_1 = require("./OptionsHelper");
 var MethodEmitter = /** @class */ (function () {
-    function MethodEmitter(stringEmitter, logger) {
-        this.stringEmitter = stringEmitter;
+    function MethodEmitter(typeScriptEmitter, logger) {
+        this.typeScriptEmitter = typeScriptEmitter;
         this.logger = logger;
-        this.typeEmitter = new TypeEmitter_1.TypeEmitter(stringEmitter, logger);
+        this.typeEmitter = new TypeEmitter_1.TypeEmitter(typeScriptEmitter, logger);
         this.optionsHelper = new OptionsHelper_1.OptionsHelper();
     }
     MethodEmitter.prototype.emitMethods = function (methods, options) {
@@ -20,7 +20,7 @@ var MethodEmitter = /** @class */ (function () {
         var node = this.createTypeScriptMethodNode(method, options);
         if (!node)
             return;
-        this.stringEmitter.emitTypeScriptNode(node);
+        this.typeScriptEmitter.emitTypeScriptNode(node);
     };
     MethodEmitter.prototype.createTypeScriptMethodNode = function (method, options) {
         if (options.perMethodEmitOptions)

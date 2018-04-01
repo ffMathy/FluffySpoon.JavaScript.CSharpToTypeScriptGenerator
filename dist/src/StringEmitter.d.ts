@@ -1,6 +1,6 @@
 import { Logger } from './Logger';
 import ts = require("typescript");
-export declare class StringEmitter {
+export declare class TypeScriptEmitter {
     private logger;
     private _output;
     private indentationLevel;

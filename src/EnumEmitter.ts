@@ -1,6 +1,6 @@
 import { FileParser, CSharpEnum, CSharpEnumOption } from 'fluffy-spoon.javascript.csharp-parser';
 
-import { StringEmitter } from './StringEmitter';
+import { TypeScriptEmitter } from './TypeScriptEmitter';
 import { Logger } from './Logger';
 
 import ts = require("typescript");
@@ -16,7 +16,7 @@ export interface EnumEmitOptions extends EnumEmitOptionsBase {
 
 export class EnumEmitter {
 	constructor(
-		private stringEmitter: StringEmitter,
+		private typeScriptEmitter: TypeScriptEmitter,
 		private logger: Logger) {
 
 	}
@@ -36,7 +36,7 @@ export class EnumEmitter {
 		if (!node)
 			return;
 
-		this.stringEmitter.emitTypeScriptNode(node);
+		this.typeScriptEmitter.emitTypeScriptNode(node);
 	}
 
 	createTypeScriptEnumNode(enumObject: CSharpEnum, options: EnumEmitOptions) {

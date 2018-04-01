@@ -8,6 +8,9 @@ var TypeScriptEmitter = /** @class */ (function () {
         this.indentationLevel = 0;
         this.indentation = '    ';
     }
+    TypeScriptEmitter.prototype.clear = function () {
+        this._output = '';
+    };
     TypeScriptEmitter.prototype.writeLine = function (line) {
         if (line) {
             this.writeIndentation();

@@ -1,6 +1,6 @@
 import { FileParser, CSharpEnum, CSharpEnumOption, CSharpFile } from 'fluffy-spoon.javascript.csharp-parser';
 
-import { StringEmitter } from './StringEmitter';
+import { TypeScriptEmitter } from './TypeScriptEmitter';
 import { TypeEmitOptions, TypeEmitOptionsBase } from './TypeEmitter';
 import { StructEmitter, StructEmitOptions, StructEmitOptionsBase } from './StructEmitter';
 import { FileEmitter, FileEmitOptions } from './FileEmitter';
@@ -38,7 +38,7 @@ export interface EmitOptions {
 }
 
 export class Emitter {
-	public readonly stringEmitter: StringEmitter;
+	public readonly typeScriptEmitter: TypeScriptEmitter;
 	public readonly logger: Logger;
 
 	private fileEmitter: FileEmitter;
@@ -46,9 +46,9 @@ export class Emitter {
 
 	constructor(content: string) {
 		this.logger = new Logger();
-		this.stringEmitter = new StringEmitter(this.logger);
+		this.typeScriptEmitter = new TypeScriptEmitter(this.logger);
 
-		this.fileEmitter = new FileEmitter(this.logger, this.stringEmitter, content);
+		this.fileEmitter = new FileEmitter(this.logger, this.typeScriptEmitter, content);
 		this.optionsHelper = new OptionsHelper();
 	}
 
@@ -64,10 +64,7 @@ export class Emitter {
 
 		this.mergeFileEmitOptions(options.file, options.defaults);
 
-		var nodes = this.fileEmitter.emitFile(options.file);
-		this.stringEmitter.emitTypeScriptNodes(nodes);
-
-		return this.stringEmitter.output;
+		return this.fileEmitter.emitFile(options.file);
 	}
 
 	private mergeFileEmitOptions(

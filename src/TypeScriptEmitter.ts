@@ -2,7 +2,7 @@
 
 import ts = require("typescript");
 
-export class StringEmitter {
+export class TypeScriptEmitter {
 	private _output: string;
 	private indentationLevel: number;
 	private indentation: string;
@@ -11,6 +11,10 @@ export class StringEmitter {
 		this._output = '';
 		this.indentationLevel = 0;
 		this.indentation = '    ';
+	}
+
+	clear() {
+		this._output = '';
 	}
 
 	writeLine(line?: string) {

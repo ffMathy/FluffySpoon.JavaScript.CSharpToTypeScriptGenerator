@@ -1,7 +1,7 @@
 ﻿import { CSharpFile } from 'fluffy-spoon.javascript.csharp-parser';
 
 import { FileParser, CSharpNamespace } from 'fluffy-spoon.javascript.csharp-parser';
-import { StringEmitter } from './StringEmitter';
+import { TypeScriptEmitter } from './TypeScriptEmitter';
 import { EnumEmitter, EnumEmitOptions } from './EnumEmitter';
 import { ClassEmitter, ClassEmitOptions } from './ClassEmitter';
 import { InterfaceEmitter, InterfaceEmitOptions } from './InterfaceEmitter';
@@ -34,13 +34,13 @@ export class NamespaceEmitter {
 	private structEmitter: StructEmitter;
 
 	constructor(
-		private stringEmitter: StringEmitter,
+		private typeScriptEmitter: TypeScriptEmitter,
 		private logger: Logger
 	) {
-		this.enumEmitter = new EnumEmitter(stringEmitter, logger);
-		this.classEmitter = new ClassEmitter(stringEmitter, logger);
-		this.interfaceEmitter = new InterfaceEmitter(stringEmitter, logger);
-		this.structEmitter = new StructEmitter(stringEmitter, logger);
+		this.enumEmitter = new EnumEmitter(typeScriptEmitter, logger);
+		this.classEmitter = new ClassEmitter(typeScriptEmitter, logger);
+		this.interfaceEmitter = new InterfaceEmitter(typeScriptEmitter, logger);
+		this.structEmitter = new StructEmitter(typeScriptEmitter, logger);
 	}
 
 	emitNamespaces(namespaces: CSharpNamespace[], options: NamespaceEmitOptions & NestingLevelMixin) {
@@ -55,7 +55,7 @@ export class NamespaceEmitter {
 
 	emitNamespace(namespace: CSharpNamespace, options: NamespaceEmitOptions & NestingLevelMixin) {
 		var nodes = this.createTypeScriptNamespaceNodes(namespace, options);
-		this.stringEmitter.emitTypeScriptNodes(nodes);
+		this.typeScriptEmitter.emitTypeScriptNodes(nodes);
 	}
 
 	createTypeScriptNamespaceNodes(namespace: CSharpNamespace, options: NamespaceEmitOptions & NestingLevelMixin) {

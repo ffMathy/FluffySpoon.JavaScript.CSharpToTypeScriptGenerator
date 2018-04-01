@@ -1,4 +1,4 @@
-import { StringEmitter } from './StringEmitter';
+import { TypeScriptEmitter } from './TypeScriptEmitter';
 import { TypeEmitOptionsBase } from './TypeEmitter';
 import { StructEmitOptionsBase } from './StructEmitter';
 import { FileEmitOptions } from './FileEmitter';
@@ -29,7 +29,7 @@ export interface EmitOptions {
     file?: FileEmitOptions;
 }
 export declare class Emitter {
-    readonly stringEmitter: StringEmitter;
+    readonly typeScriptEmitter: TypeScriptEmitter;
     readonly logger: Logger;
     private fileEmitter;
     private optionsHelper;

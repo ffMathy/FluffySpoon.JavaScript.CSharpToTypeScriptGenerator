@@ -1,14 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var StringEmitter_1 = require("./StringEmitter");
+var TypeScriptEmitter_1 = require("./TypeScriptEmitter");
 var FileEmitter_1 = require("./FileEmitter");
 var Logger_1 = require("./Logger");
 var OptionsHelper_1 = require("./OptionsHelper");
 var Emitter = /** @class */ (function () {
     function Emitter(content) {
         this.logger = new Logger_1.Logger();
-        this.stringEmitter = new StringEmitter_1.StringEmitter(this.logger);
-        this.fileEmitter = new FileEmitter_1.FileEmitter(this.logger, this.stringEmitter, content);
+        this.typeScriptEmitter = new TypeScriptEmitter_1.TypeScriptEmitter(this.logger);
+        this.fileEmitter = new FileEmitter_1.FileEmitter(this.logger, this.typeScriptEmitter, content);
         this.optionsHelper = new OptionsHelper_1.OptionsHelper();
     }
     Emitter.prototype.emit = function (options) {
@@ -19,9 +19,7 @@ var Emitter = /** @class */ (function () {
         if (!options.file)
             options.file = {};
         this.mergeFileEmitOptions(options.file, options.defaults);
-        var nodes = this.fileEmitter.emitFile(options.file);
-        this.stringEmitter.emitTypeScriptNodes(nodes);
-        return this.stringEmitter.output;
+        return this.fileEmitter.emitFile(options.file);
     };
     Emitter.prototype.mergeFileEmitOptions = function (explicitSettings, defaultSettings) {
         if (!explicitSettings.classEmitOptions)

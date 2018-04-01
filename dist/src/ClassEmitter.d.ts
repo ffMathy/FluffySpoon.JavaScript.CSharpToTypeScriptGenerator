@@ -1,5 +1,5 @@
 import { CSharpClass } from 'fluffy-spoon.javascript.csharp-parser';
-import { StringEmitter } from './StringEmitter';
+import { TypeScriptEmitter } from './TypeScriptEmitter';
 import { EnumEmitOptions } from './EnumEmitter';
 import { TypeEmitOptions } from './TypeEmitter';
 import { PropertyEmitOptions } from './PropertyEmitter';
@@ -31,7 +31,7 @@ export interface PerClassEmitOptions extends ClassEmitOptionsBase, ClassEmitOpti
     name?: string;
 }
 export declare class ClassEmitter {
-    private stringEmitter;
+    private typeScriptEmitter;
     private logger;
     private enumEmitter;
     private propertyEmitter;
@@ -40,7 +40,7 @@ export declare class ClassEmitter {
     private interfaceEmitter;
     private typeEmitter;
     private optionsHelper;
-    constructor(stringEmitter: StringEmitter, logger: Logger);
+    constructor(typeScriptEmitter: TypeScriptEmitter, logger: Logger);
     emitClasses(classes: CSharpClass[], options: ClassEmitOptions & NestingLevelMixin): void;
     emitClass(classObject: CSharpClass, options: ClassEmitOptions & NestingLevelMixin): void;
     createTypeScriptClassNodes(classObject: CSharpClass, options: ClassEmitOptions & PerClassEmitOptions & NestingLevelMixin): ts.Statement[];

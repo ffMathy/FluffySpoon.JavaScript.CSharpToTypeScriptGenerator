@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var ts = require("typescript");
 var EnumEmitter = /** @class */ (function () {
-    function EnumEmitter(stringEmitter, logger) {
-        this.stringEmitter = stringEmitter;
+    function EnumEmitter(typeScriptEmitter, logger) {
+        this.typeScriptEmitter = typeScriptEmitter;
         this.logger = logger;
     }
     EnumEmitter.prototype.emitEnums = function (enums, options) {
@@ -18,7 +18,7 @@ var EnumEmitter = /** @class */ (function () {
         var node = this.createTypeScriptEnumNode(enumObject, options);
         if (!node)
             return;
-        this.stringEmitter.emitTypeScriptNode(node);
+        this.typeScriptEmitter.emitTypeScriptNode(node);
     };
     EnumEmitter.prototype.createTypeScriptEnumNode = function (enumObject, options) {
         if (!options.filter(enumObject))

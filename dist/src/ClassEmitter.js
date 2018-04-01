@@ -19,15 +19,15 @@ var NamespaceEmitter_1 = require("./NamespaceEmitter");
 var ts = require("typescript");
 var OptionsHelper_1 = require("./OptionsHelper");
 var ClassEmitter = /** @class */ (function () {
-    function ClassEmitter(stringEmitter, logger) {
-        this.stringEmitter = stringEmitter;
+    function ClassEmitter(typeScriptEmitter, logger) {
+        this.typeScriptEmitter = typeScriptEmitter;
         this.logger = logger;
-        this.enumEmitter = new EnumEmitter_1.EnumEmitter(stringEmitter, logger);
-        this.propertyEmitter = new PropertyEmitter_1.PropertyEmitter(stringEmitter, logger);
-        this.fieldEmitter = new FieldEmitter_1.FieldEmitter(stringEmitter, logger);
-        this.methodEmitter = new MethodEmitter_1.MethodEmitter(stringEmitter, logger);
-        this.typeEmitter = new TypeEmitter_1.TypeEmitter(stringEmitter, logger);
-        this.interfaceEmitter = new InterfaceEmitter_1.InterfaceEmitter(stringEmitter, logger);
+        this.enumEmitter = new EnumEmitter_1.EnumEmitter(typeScriptEmitter, logger);
+        this.propertyEmitter = new PropertyEmitter_1.PropertyEmitter(typeScriptEmitter, logger);
+        this.fieldEmitter = new FieldEmitter_1.FieldEmitter(typeScriptEmitter, logger);
+        this.methodEmitter = new MethodEmitter_1.MethodEmitter(typeScriptEmitter, logger);
+        this.typeEmitter = new TypeEmitter_1.TypeEmitter(typeScriptEmitter, logger);
+        this.interfaceEmitter = new InterfaceEmitter_1.InterfaceEmitter(typeScriptEmitter, logger);
         this.optionsHelper = new OptionsHelper_1.OptionsHelper();
     }
     ClassEmitter.prototype.emitClasses = function (classes, options) {
@@ -42,7 +42,7 @@ var ClassEmitter = /** @class */ (function () {
         var nodes = this.createTypeScriptClassNodes(classObject, options);
         for (var _i = 0, nodes_1 = nodes; _i < nodes_1.length; _i++) {
             var node = nodes_1[_i];
-            this.stringEmitter.emitTypeScriptNode(node);
+            this.typeScriptEmitter.emitTypeScriptNode(node);
         }
     };
     ClassEmitter.prototype.createTypeScriptClassNodes = function (classObject, options) {
@@ -111,7 +111,7 @@ var ClassEmitter = /** @class */ (function () {
             classObject.interfaces = [];
             classObject.structs = [];
             classObject.parent = wrappedNamespace;
-            var namespaceEmitter = new NamespaceEmitter_1.NamespaceEmitter(this.stringEmitter, this.logger);
+            var namespaceEmitter = new NamespaceEmitter_1.NamespaceEmitter(this.typeScriptEmitter, this.logger);
             var declareObject = {
                 declare: false
             };

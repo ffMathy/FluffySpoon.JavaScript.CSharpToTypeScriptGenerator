@@ -1,6 +1,6 @@
 ﻿import { FileParser, CSharpClass, CSharpStruct } from 'fluffy-spoon.javascript.csharp-parser';
 
-import { StringEmitter } from './StringEmitter';
+import { TypeScriptEmitter } from './TypeScriptEmitter';
 import { EnumEmitter, EnumEmitOptions } from './EnumEmitter';
 import { TypeEmitter, TypeEmitOptions } from './TypeEmitter';
 import { PropertyEmitter, PropertyEmitOptions } from './PropertyEmitter';
@@ -39,14 +39,14 @@ export class StructEmitter {
 	private optionsHelper: OptionsHelper;
 
 	constructor(
-		private stringEmitter: StringEmitter,
+		private typeScriptEmitter: TypeScriptEmitter,
 		private logger: Logger
 	) {
-		this.enumEmitter = new EnumEmitter(stringEmitter, logger);
-		this.propertyEmitter = new PropertyEmitter(stringEmitter, logger);
-		this.fieldEmitter = new FieldEmitter(stringEmitter, logger);
-		this.methodEmitter = new MethodEmitter(stringEmitter, logger);
-		this.typeEmitter = new TypeEmitter(stringEmitter, logger);
+		this.enumEmitter = new EnumEmitter(typeScriptEmitter, logger);
+		this.propertyEmitter = new PropertyEmitter(typeScriptEmitter, logger);
+		this.fieldEmitter = new FieldEmitter(typeScriptEmitter, logger);
+		this.methodEmitter = new MethodEmitter(typeScriptEmitter, logger);
+		this.typeEmitter = new TypeEmitter(typeScriptEmitter, logger);
 		this.optionsHelper = new OptionsHelper();
 	}
 
@@ -65,7 +65,7 @@ export class StructEmitter {
 
 		var node = this.createTypeScriptStructNode(struct, options);
 		if(node)
-			this.stringEmitter.emitTypeScriptNode(node);
+			this.typeScriptEmitter.emitTypeScriptNode(node);
 
 		this.logger.log("Done emitting struct", struct);
 	}

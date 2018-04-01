@@ -1,5 +1,5 @@
 import { CSharpProperty } from 'fluffy-spoon.javascript.csharp-parser';
-import { StringEmitter } from './StringEmitter';
+import { TypeScriptEmitter } from './TypeScriptEmitter';
 import { TypeEmitOptions } from './TypeEmitter';
 import { Logger } from './Logger';
 import ts = require("typescript");
@@ -17,11 +17,11 @@ export interface PerPropertyEmitOptions extends PropertyEmitOptionsBase, Propert
     name?: string;
 }
 export declare class PropertyEmitter {
-    private stringEmitter;
+    private typeScriptEmitter;
     private logger;
     private typeEmitter;
     private optionsHelper;
-    constructor(stringEmitter: StringEmitter, logger: Logger);
+    constructor(typeScriptEmitter: TypeScriptEmitter, logger: Logger);
     emitProperties(properties: CSharpProperty[], options: PropertyEmitOptions & PerPropertyEmitOptions): void;
     emitProperty(property: CSharpProperty, options: PropertyEmitOptions & PerPropertyEmitOptions): void;
     createTypeScriptPropertyNode(property: CSharpProperty, options: PropertyEmitOptions & PerPropertyEmitOptions): ts.PropertySignature;
