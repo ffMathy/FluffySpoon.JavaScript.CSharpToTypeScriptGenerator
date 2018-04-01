@@ -24,7 +24,8 @@ var options = <EmitOptions>{
 var typescriptCode = emitter.emitFile(options);
 ```
 
-**To see the definitions of each type such as `FileEmitOptions`, look here: https://github.com/ffMathy/FluffySpoon.JavaScript.CSharpParser/blob/master/src/Models.ts**
+- To see the definitions of each C# type such as `CSharpType`, look here: https://github.com/ffMathy/FluffySpoon.JavaScript.CSharpParser/blob/master/dist/src/Models.ts
+- To see the definitions of each option type such as `ClassEmitOptions`, look here: https://github.com/ffMathy/FluffySpoon.JavaScript.CSharpToTypeScriptGenerator/blob/master/dist/src/Index.d.ts
 
 ## Recipes
 To see pre-made examples designed for frameworks like Angular and ASP .NET Core (for instance for auto-generating HTTP clients for each controller action), go [see the recipes here](doc/RECIPES.md).
