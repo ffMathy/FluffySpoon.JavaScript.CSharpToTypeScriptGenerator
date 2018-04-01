@@ -4,6 +4,11 @@ Recipes are pre-made options that work with a framework of your choise.
 ## ASP .NET Core + Angular
 
 ### Generating Angular HTTP clients for all controllers and their actions
+- Runs through all classes in the C# file that look like controllers (https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/actions#what-is-a-controller).
+- For each controller, an Angular HTTP client is generated with a default constructor injecting Angular's `HttpClient` in.
+- Runs through all methods in each controller class that look like actions (https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/actions#defining-actions).
+- For each action, a proper GET/POST/PUT/PATCH method is made with a proper return type (a `Promise` variant of your controller action's original return type).
+
 ```typescript
 import typescript = require("typescript");
 
