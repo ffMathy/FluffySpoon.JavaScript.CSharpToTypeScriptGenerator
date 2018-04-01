@@ -72,7 +72,7 @@ describe("UseCases", function () {
 		  
 			return (inheritsFromController || hasControllerAttribute) && !hasNonControllerAttribute;
 		};
-		  
+		
 		var actionMethodFilter = (methodObject: CSharpMethod) => {
 			var hasNonActionAttribute = !!methodObject.attributes.filter(a => a.name === "NonAction")[0];
 			return methodObject.isPublic && !hasNonActionAttribute;
@@ -102,7 +102,7 @@ describe("UseCases", function () {
 						typescriptEmitter.increaseIndentation();
 
 						typescriptEmitter.writeLine("constructor(private http: HttpClient) { }");
-						typescriptEmitter.writeLine();
+						typescriptEmitter.ensureNewParagraph();
 
 						var actionMethods = controllerClass
 							.methods
@@ -135,8 +135,7 @@ describe("UseCases", function () {
 								}
 							});
 
-							typescriptEmitter.write(" {");
-							typescriptEmitter.writeLine();
+							typescriptEmitter.writeLine(" {");
 							typescriptEmitter.increaseIndentation();
 
 							var method = "get";

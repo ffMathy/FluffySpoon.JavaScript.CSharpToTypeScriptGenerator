@@ -49,7 +49,7 @@ var typescriptCode = emitter.emitFile(<EmitOptions>{
                 typescriptEmitter.increaseIndentation();
 
                 typescriptEmitter.writeLine("constructor(private http: HttpClient) { }");
-                typescriptEmitter.writeLine();
+                typescriptEmitter.ensureNewParagraph();
 
                 var actionMethods = controllerClass
                     .methods
@@ -82,8 +82,7 @@ var typescriptCode = emitter.emitFile(<EmitOptions>{
                         }
                     });
 
-                    typescriptEmitter.write(" {");
-                    typescriptEmitter.writeLine();
+                    typescriptEmitter.writeLine(" {");
                     typescriptEmitter.increaseIndentation();
 
                     var method = "get";

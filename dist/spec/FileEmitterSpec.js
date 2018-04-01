@@ -81,7 +81,7 @@ describe("UseCases", function () {
                         typescriptEmitter.writeLine("export class " + controllerNameWithoutSuffix + "Client {");
                         typescriptEmitter.increaseIndentation();
                         typescriptEmitter.writeLine("constructor(private http: HttpClient) { }");
-                        typescriptEmitter.writeLine();
+                        typescriptEmitter.ensureNewParagraph();
                         var actionMethods = controllerClass
                             .methods
                             .filter(actionMethodFilter);
@@ -107,8 +107,7 @@ describe("UseCases", function () {
                                     return suggested;
                                 }
                             });
-                            typescriptEmitter.write(" {");
-                            typescriptEmitter.writeLine();
+                            typescriptEmitter.writeLine(" {");
                             typescriptEmitter.increaseIndentation();
                             var method = "get";
                             for (var _d = 0, _e = actionMethod.attributes; _d < _e.length; _d++) {
