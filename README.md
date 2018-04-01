@@ -33,23 +33,23 @@ To see pre-made examples designed for frameworks like Angular and ASP .NET Core 
 ## How settings work
 The `EmitOptions` are the root options. These contain just two properties:
 - `defaults` **[DefaultEmitOptions]** makes it easy to treat specific C# constructs in a specific way per default if no other settings are explicitly specified (for instance, lower-casing all property names). This settings hieracy is flat.
-  `classEmitOptions` **[ClassEmitOptions]**
-  `namespaceEmitOptions` **[NamespaceEmitOptions]**
-  `enumEmitOptions` **[EnumEmitOptions]**
-  `structEmitOptions` **[StructEmitOptions]**
-  `interfaceEmitOptions` **[InterfaceEmitOptions]**
-  `typeEmitOptions` **[TypeEmitOptions]**
-  `propertyEmitOptions` **[PropertyEmitOptions]**
-  `fieldEmitOptions` **[FieldEmitOptions]**
-  `methodEmitOptions` **[MethodEmitOptions]**
+  - `classEmitOptions` **[ClassEmitOptions]**
+  - `namespaceEmitOptions` **[NamespaceEmitOptions]**
+  - `enumEmitOptions` **[EnumEmitOptions]**
+  - `structEmitOptions` **[StructEmitOptions]**
+  - `interfaceEmitOptions` **[InterfaceEmitOptions]**
+  - `typeEmitOptions` **[TypeEmitOptions]**
+  - `propertyEmitOptions` **[PropertyEmitOptions]**
+  - `fieldEmitOptions` **[FieldEmitOptions]**
+  - `methodEmitOptions` **[MethodEmitOptions]**
 - `file` **[FileEmitOptions]** configures file-level settings. This is a nested configuration hierachy. Every property defined here overrides the default one. This structure is recursive.
-  `classEmitOptions` **[ClassEmitOptions]**
-  `namespaceEmitOptions` **[NamespaceEmitOptions]**
-  `enumEmitOptions` **[EnumEmitOptions]**
-  `structEmitOptions` **[StructEmitOptions]**
-  `interfaceEmitOptions` **[InterfaceEmitOptions]**
-  `onAfterParse`
-  `onBeforeEmit`
+  - `classEmitOptions` **[ClassEmitOptions]**
+  - `namespaceEmitOptions` **[NamespaceEmitOptions]**
+  - `enumEmitOptions` **[EnumEmitOptions]**
+  - `structEmitOptions` **[StructEmitOptions]**
+  - `interfaceEmitOptions` **[InterfaceEmitOptions]**
+  - `onAfterParse`
+  - `onBeforeEmit`
 
 ## Default settings
 ```typescript
