@@ -3,7 +3,7 @@ A flexible CSharp to TypeScript generator that is `Gulp` and `Grunt` friendly, w
 
 Uses the following library for parsing C# code from TypeScript: https://github.com/ffMathy/FluffySpoon.JavaScript.CSharpParser
 
-## Wrappers
+## Wrappers for build runners
 - **Gulp:** https://github.com/ffMathy/FluffySpoon.JavaScript.CSharpToTypeScriptGenerator.Gulp
 - **Grunt:** https://github.com/ffMathy/FluffySpoon.JavaScript.CSharpToTypeScriptGenerator.Grunt
 
@@ -25,14 +25,33 @@ var typescriptCode = emitter.emitFile(options);
 ```
 
 - To see the definitions of each C# type such as `CSharpType`, look here: https://github.com/ffMathy/FluffySpoon.JavaScript.CSharpParser/blob/master/dist/src/Models.ts
-- To see the definitions of each option type such as `ClassEmitOptions`, look here: https://github.com/ffMathy/FluffySpoon.JavaScript.CSharpToTypeScriptGenerator/blob/master/dist/src/Index.d.ts
+- To see the definitions of each option type such as `FileEmitOptions`, look here: https://github.com/ffMathy/FluffySpoon.JavaScript.CSharpToTypeScriptGenerator/blob/master/dist/src/Index.d.ts
 
-## Recipes
+## Recipes for frameworks & libraries
 To see pre-made examples designed for frameworks like Angular and ASP .NET Core (for instance for auto-generating HTTP clients for each controller action), go [see the recipes here](doc/RECIPES.md).
 
-## Plain C#
+## How settings work
+The `EmitOptions` are the root options. These contain just two properties:
+- `defaults` **[DefaultEmitOptions]** makes it easy to treat specific C# constructs in a specific way per default if no other settings are explicitly specified (for instance, lower-casing all property names). This settings hieracy is flat.
+-- `classEmitOptions` **[ClassEmitOptions]**
+-- `namespaceEmitOptions` **[NamespaceEmitOptions]**
+-- `enumEmitOptions` **[EnumEmitOptions]**
+-- `structEmitOptions` **[StructEmitOptions]**
+-- `interfaceEmitOptions` **[InterfaceEmitOptions]**
+-- `typeEmitOptions` **[TypeEmitOptions]**
+-- `propertyEmitOptions` **[PropertyEmitOptions]**
+-- `fieldEmitOptions` **[FieldEmitOptions]**
+-- `methodEmitOptions` **[MethodEmitOptions]**
+- `file` **[FileEmitOptions]** configures file-level settings. This is a nested configuration hierachy. Every property defined here overrides the default one. This structure is recursive.
+-- `classEmitOptions` **[ClassEmitOptions]**
+-- `namespaceEmitOptions` **[NamespaceEmitOptions]**
+-- `enumEmitOptions` **[EnumEmitOptions]**
+-- `structEmitOptions` **[StructEmitOptions]**
+-- `interfaceEmitOptions` **[InterfaceEmitOptions]**
+-- `onAfterParse`
+-- `onBeforeEmit`
 
-### Default settings
+## Default settings
 ```typescript
 var typescriptCode = emitter.emitFile();
 ```
@@ -110,7 +129,7 @@ declare interface MyClass {
 }
 ```
 
-### Wrapping all emitted code in a namespace
+## Wrapping all emitted code in a namespace
 ```typescript
 var typescriptCode = emitter.emitFile(<EmitOptions>{
   file: <FileEmitOptions>{
@@ -159,7 +178,7 @@ declare namespace MyNamespace {
 }
 ```
 
-### Specify what TypeScript types specific CSharp types map to
+## Specify what TypeScript types specific CSharp types map to
 ```typescript
 var typescriptCode = emitter.emitFile(<EmitOptions>{
   defaults: <DefaultEmitOptions>{
@@ -188,7 +207,7 @@ declare interface MyClass {
 }
 ```
 
-### Including private properties
+## Including private properties
 ```typescript
 var typescriptCode = emitter.emitFile(<EmitOptions>{
   defaults: <DefaultEmitOptions>{
@@ -219,7 +238,7 @@ declare interface MyClass {
 
 **Note:** This can also be done for classes, methods and fields by using the `ClassEmitOptions`, `MethodEmitOptions`, and `FieldEmitOptions` respectively.
 
-### Pascal-casing property names
+## Pascal-casing property names
 ```typescript
 var typescriptCode = emitter.emitFile(<EmitOptions>{
   defaults: <DefaultEmitOptions>{
@@ -252,7 +271,7 @@ declare interface MyClass {
 
 **Note:** This can also be done for classes, types, methods and fields by using the `ClassEmitOptions`, `TypeEmitOptions`, `MethodEmitOptions` and `FieldEmitOptions` respectively.
 
-### Prefixing all class names with "I"
+## Prefixing all class names with "I"
 ```typescript
 var typescriptCode = emitter.emitFile(<EmitOptions>{
   defaults: <DefaultEmitOptions>{
@@ -295,7 +314,7 @@ declare interface ISomeInheritedClass {
 
 **Note:** This can also be done for interfaces by using the `InterfaceEmitOptions` instead.
 
-### Removing inheritance
+## Removing inheritance
 ```typescript
 var typescriptCode = emitter.emitFile(<EmitOptions>{
   defaults: <FileEmitOptions>{
@@ -337,7 +356,7 @@ declare interface SomeInheritedClass {
 
 **Note:** This can also be done for interfaces by using the `InterfaceEmitOptions` instead.
 
-### Convert enums to string union types
+## Convert enums to string union types
 ```typescript
 var typescriptCode = emitter.emitFile(<EmitOptions>{
   defaults: <DefaultEmitOptions>{
