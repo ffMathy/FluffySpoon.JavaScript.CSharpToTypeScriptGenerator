@@ -1,4 +1,4 @@
-/// <reference path="../typings/tsd.d.ts" />
+
 // Disable multiline warning, we're fine with ES5
 // jshint -W043
 
@@ -18,12 +18,12 @@ namespace MyNamespace.Domain\n\
 
 var expectedOutput = "declare enum MyEnum {\n\
     Unknown = -1,\n\
-    Green = 0,\n\
+    Green,\n\
     Red = 1,\n\
     Blue = 2\n\
 }";
 
-var LegacyAdapter = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('../../dist/spec/legacy/adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function() {
 	it('should transform an enum with negative indexes correctly', function() {

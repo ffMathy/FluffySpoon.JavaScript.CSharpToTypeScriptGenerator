@@ -8,14 +8,23 @@ import { InterfaceEmitter, InterfaceEmitOptions } from './InterfaceEmitter';
 import { StructEmitter, StructEmitOptions } from './StructEmitter';
 import { Logger } from './Logger';
 
-export interface NamespaceEmitOptions {
+import ts = require("typescript");
+import { NestingLevelMixin } from './Emitter';
+
+export interface NamespaceEmitOptionsBase {
 	declare?: boolean;
 	skip?: boolean;
+	filter?: (namespace: CSharpNamespace) => boolean;
+}
 
+export interface NamespaceEmitOptionsLinks {
 	classEmitOptions?: ClassEmitOptions;
 	interfaceEmitOptions?: InterfaceEmitOptions;
 	structEmitOptions?: StructEmitOptions;
 	enumEmitOptions?: EnumEmitOptions;
+}
+
+export interface NamespaceEmitOptions extends NamespaceEmitOptionsBase, NamespaceEmitOptionsLinks {
 }
 
 export class NamespaceEmitter {
@@ -26,7 +35,7 @@ export class NamespaceEmitter {
 
 	constructor(
 		private stringEmitter: StringEmitter,
-        private logger: Logger
+		private logger: Logger
 	) {
 		this.enumEmitter = new EnumEmitter(stringEmitter, logger);
 		this.classEmitter = new ClassEmitter(stringEmitter, logger);
@@ -34,118 +43,105 @@ export class NamespaceEmitter {
 		this.structEmitter = new StructEmitter(stringEmitter, logger);
 	}
 
-	emitNamespaces(namespaces: CSharpNamespace[], options?: NamespaceEmitOptions) {
+	emitNamespaces(namespaces: CSharpNamespace[], options: NamespaceEmitOptions & NestingLevelMixin) {
 		this.logger.log("Emitting namespaces", namespaces);
 
 		for (var namespace of namespaces) {
 			this.emitNamespace(namespace, options);
 		}
 
-		this.stringEmitter.removeLastNewLines();
-
 		this.logger.log("Done emitting namespaces", namespaces);
 	}
 
-	emitNamespace(namespace: CSharpNamespace, options?: NamespaceEmitOptions) {
-		if (!options) {
-			options = {};
-		}
+	emitNamespace(namespace: CSharpNamespace, options: NamespaceEmitOptions & NestingLevelMixin) {
+		var nodes = this.createTypeScriptNamespaceNodes(namespace, options);
+		this.stringEmitter.emitTypeScriptNodes(nodes);
+	}
 
-		if (namespace.enums.length === 0 && namespace.namespaces.length === 0 && namespace.classes.length === 0 && namespace.interfaces.length === 0) {
-			this.logger.log("Skipping namespace " + namespace.name + " because it contains no enums, classes, interfaces or namespaces");
-			return;
-		}
+	createTypeScriptNamespaceNodes(namespace: CSharpNamespace, options: NamespaceEmitOptions & NestingLevelMixin) {
+		if (!options.filter(namespace))
+			return [];
 
 		this.logger.log("Emitting namespace", namespace);
 
+		var modifiers = new Array<ts.Modifier>();
+		if (options.declare)
+			modifiers.push(ts.createToken(ts.SyntaxKind.DeclareKeyword));
+
+		var content = new Array<ts.Statement>();
+
+		for (let enumObject of namespace.enums) {
+			content.push(
+				this.enumEmitter.createTypeScriptEnumNode(
+				  	enumObject,
+				  	<EnumEmitOptions>{ 
+					 	declare: options.skip, 
+					  	...options.enumEmitOptions
+					}));
+		}
+
+		for (let classObject of namespace.classes) {
+			let classNodes = this.classEmitter.createTypeScriptClassNodes(
+				classObject,
+				<ClassEmitOptions & NestingLevelMixin>{ 
+					declare: options.skip, 
+					...options.classEmitOptions,
+					nestingLevel: options.nestingLevel + 1
+				});
+			for (let classNode of classNodes) {
+				content.push(classNode);
+			}
+		}
+
+		for (let interfaceObject of namespace.interfaces) {
+			let interfaceNodes = this.interfaceEmitter.createTypeScriptInterfaceNodes(
+				interfaceObject,
+				<InterfaceEmitOptions>{ 
+					declare: options.skip, 
+					...options.interfaceEmitOptions
+				});
+			for (let interfaceNode of interfaceNodes) {
+				content.push(interfaceNode);
+			}
+		}
+
+		for (let namespaceObject of namespace.namespaces) {
+			let namespaceNodes = this.createTypeScriptNamespaceNodes(
+				namespaceObject, 
+				<NamespaceEmitOptions & NestingLevelMixin>{
+					...options, 
+					declare: false,
+					nestingLevel: options.nestingLevel + 1
+				});
+			for (let namespaceNode of namespaceNodes) {
+				content.push(namespaceNode);
+			}
+		}
+
+		for (let structObject of namespace.structs) {
+			content.push(
+				this.structEmitter.createTypeScriptStructNode(
+				  structObject,
+				  <StructEmitOptions>{ 
+					  declare: options.skip,
+					  ...options.structEmitOptions
+				  }));
+		}
+
+		var nodes = new Array<ts.Statement>();
 		if (!options.skip) {
-			this.stringEmitter.writeIndentation();
-			if (options.declare)
-				this.stringEmitter.write("declare ");
-
-			this.stringEmitter.write("namespace " + namespace.name + " {");
-			this.stringEmitter.writeLine();
-
-			this.stringEmitter.increaseIndentation();
+			nodes.push(ts.createModuleDeclaration(
+				[],
+				modifiers,
+				ts.createIdentifier(namespace.name),
+				ts.createModuleBlock(content),
+				ts.NodeFlags.Namespace | ts.NodeFlags.NestedNamespace));
+		} else {
+			nodes = content;
 		}
-
-		if (namespace.enums.length > 0) {
-			var declare = typeof options.enumEmitOptions.declare !== "undefined" 
-				? options.enumEmitOptions.declare 
-				: options.skip;
-
-			var namespaceEnumOptions = Object.assign(options.enumEmitOptions, <EnumEmitOptions>{
-				declare
-			});
-			this.enumEmitter.emitEnums(
-				namespace.enums,
-				namespaceEnumOptions);
-			this.stringEmitter.ensureNewParagraph();
-		}
-
-		if (namespace.interfaces.length > 0) {
-			var declare = typeof options.interfaceEmitOptions.declare !== "undefined" ? 
-				options.interfaceEmitOptions.declare : 
-				(options.skip || !options.declare);
-			var interfaceOptions = Object.assign(options.interfaceEmitOptions, <InterfaceEmitOptions>{
-				declare
-			});
-			this.interfaceEmitter.emitInterfaces(
-				namespace.interfaces,
-				interfaceOptions);
-			this.stringEmitter.ensureNewParagraph();
-		}
-
-		if (namespace.classes.length > 0) {
-			var declare = typeof options.classEmitOptions.declare !== "undefined" ? 
-				options.classEmitOptions.declare : 
-				(options.skip || !options.declare);
-			var classOptions = Object.assign(options.classEmitOptions, <ClassEmitOptions>{
-				declare
-			});
-			this.classEmitter.emitClasses(
-				namespace.classes,
-				classOptions);
-			this.stringEmitter.ensureNewParagraph();
-		}
-
-		if (namespace.structs.length > 0) {
-			var declare = typeof options.structEmitOptions.declare !== "undefined" ? 
-				options.structEmitOptions.declare : 
-				(options.skip || !options.declare);
-			var structEmitOptions = Object.assign(options.structEmitOptions, <StructEmitOptions>{
-				declare
-			});
-			this.structEmitter.emitStructs(
-				namespace.structs,
-				structEmitOptions);
-			this.stringEmitter.ensureNewParagraph();
-		}
-
-		if (namespace.namespaces.length > 0) {
-			var declare = typeof options.declare !== "undefined" ? 
-				options.skip : 
-				(options.skip || !options.declare);
-			var subNamespaceOptions = Object.assign(options, <NamespaceEmitOptions>{
-				declare
-			});
-			this.emitNamespaces(
-				namespace.namespaces,
-				subNamespaceOptions);
-			this.stringEmitter.ensureNewParagraph();
-		}
-
-		if (!options.skip) {
-			this.stringEmitter.removeLastNewLines();
-
-			this.stringEmitter.decreaseIndentation();
-
-			this.stringEmitter.writeLine();
-			this.stringEmitter.writeLine("}");
-		}
-
-		this.stringEmitter.ensureNewParagraph();
 
 		this.logger.log("Done emitting namespace", namespace);
+
+		return nodes;
 	}
 }

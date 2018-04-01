@@ -13,7 +13,7 @@ var expectedOutput = "declare interface MyPoco {\n\
     Name: string;\n\
 }";
 
-var LegacyAdapter = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('../../dist/spec/legacy/adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function() {
 	it('should transform an abstract class correctly', function() {

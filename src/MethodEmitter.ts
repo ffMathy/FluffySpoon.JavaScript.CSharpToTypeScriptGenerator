@@ -1,28 +1,31 @@
-﻿import { CSharpMethod, CSharpMethodParameter } from 'fluffy-spoon.javascript.csharp-parser';
+﻿import { CSharpMethod, CSharpMethodParameter, CSharpNamedToken } from 'fluffy-spoon.javascript.csharp-parser';
 
 import { StringEmitter } from './StringEmitter';
 import { TypeEmitter, TypeEmitOptions } from './TypeEmitter';
 import { Logger } from './Logger';
 
+import ts = require("typescript");
+import { OptionsHelper } from './OptionsHelper';
+
 export interface MethodEmitOptionsBase {
 	filter?: (method: CSharpMethod) => boolean;
+	perMethodEmitOptions?: (method: CSharpMethod) => PerMethodEmitOptions;
+}
 
+export interface MethodEmitOptionsLinks {
 	returnTypeEmitOptions?: TypeEmitOptions;
 	argumentTypeEmitOptions?: TypeEmitOptions;
 }
 
-export interface MethodEmitOptions extends MethodEmitOptionsBase {
-	perMethodEmitOptions?: (method: CSharpMethod) => PerMethodEmitOptions;
+export interface MethodEmitOptions extends MethodEmitOptionsBase, MethodEmitOptionsLinks {
 }
 
-export interface PerMethodEmitOptions extends MethodEmitOptionsBase {
+export interface PerMethodEmitOptions extends MethodEmitOptionsBase, MethodEmitOptionsLinks {
 	name?: string;
 }
 
-export interface MethodEmitOptions {
-}
-
 export class MethodEmitter {
+	private optionsHelper: OptionsHelper;
 	private typeEmitter: TypeEmitter;
 
 	constructor(
@@ -30,64 +33,72 @@ export class MethodEmitter {
 		private logger: Logger
 	) {
 		this.typeEmitter = new TypeEmitter(stringEmitter, logger);
+		this.optionsHelper = new OptionsHelper();
 	}
 
-	emitMethods(methods: CSharpMethod[], options?: MethodEmitOptions & PerMethodEmitOptions) {
-		options = this.prepareOptions(options);
-
+	emitMethods(methods: CSharpMethod[], options: MethodEmitOptions & PerMethodEmitOptions) {
 		for (var method of methods) {
 			this.emitMethod(method, options);
 		}
 	}
 
-	emitMethod(method: CSharpMethod, options?: MethodEmitOptions & PerMethodEmitOptions) {
-		options = this.prepareOptions(options);
-		options = Object.assign(
-			options,
-			options.perMethodEmitOptions(method));
+	emitMethod(method: CSharpMethod, options: MethodEmitOptions & PerMethodEmitOptions) {
+		var node = this.createTypeScriptMethodNode(method, options);
+		if(!node)
+			return;
+
+		this.stringEmitter.emitTypeScriptNode(node);
+	}
+
+	createTypeScriptMethodNode(method: CSharpMethod, options: MethodEmitOptions & PerMethodEmitOptions) {
+		if(options.perMethodEmitOptions)
+			options = this.optionsHelper.mergeOptionsRecursively<any>(
+				options.perMethodEmitOptions(method), 
+				options);
 
 		if (!options.filter(method))
-			return;
+			return null;
 
 		if (method.isConstructor)
-			return;
+			return null;
 
-		this.stringEmitter.writeIndentation();
-		this.stringEmitter.write((options.name || method.name) + "(");
-		this.emitMethodParameters(method.parameters, options);
-		this.stringEmitter.write("): ");
-		this.typeEmitter.emitType(method.returnType, options.returnTypeEmitOptions);
-		this.stringEmitter.write(";");
-		this.stringEmitter.writeLine();
+		var modifiers = new Array<ts.Modifier>();
+
+		var node = ts.createMethodSignature(
+			[],
+			this.createTypeScriptMethodParameterNodes(method.parameters, options),
+			this.typeEmitter.createTypeScriptTypeReferenceNode(method.returnType, options.returnTypeEmitOptions),
+			options.name || method.name,
+			null);
+
+		return node;
 	}
 
-	private prepareOptions(options?: MethodEmitOptions) {
-		if (!options) {
-			options = {}
-		}
-
-		if (!options.filter) {
-			options.filter = (method) => method.isPublic;
-		}
-
-		if (!options.perMethodEmitOptions) {
-			options.perMethodEmitOptions = () => options;
-		}
-
-		return options;
-	}
-
-	private emitMethodParameters(parameters: CSharpMethodParameter[], options: MethodEmitOptions) {
+	private createTypeScriptMethodParameterNodes(parameters: CSharpMethodParameter[], options: MethodEmitOptions) {
+		var nodes = new Array<ts.ParameterDeclaration>();
 		for (var parameter of parameters) {
-			this.emitMethodParameter(parameter, options);
+			nodes.push(
+				this.createTypeScriptMethodParameterNode(parameter, options));
 		}
-		this.stringEmitter.removeLastCharacters(", ");
+		return nodes;
 	}
 
-	private emitMethodParameter(parameter: CSharpMethodParameter, options: MethodEmitOptions) {
-		this.stringEmitter.write(parameter.name + ": ");
-		this.typeEmitter.emitType(parameter.type, options.argumentTypeEmitOptions);
-		this.stringEmitter.write(", ");
+	private createTypeScriptMethodParameterNode(parameter: CSharpMethodParameter, options: MethodEmitOptions & PerMethodEmitOptions) {
+		var initializer: ts.Expression = null;
+		if(parameter.defaultValue) 
+			initializer = ts.createLiteral(parameter.defaultValue as any);
+
+		var node = ts.createParameter(
+			[],
+			[],
+			null,
+			options.name || parameter.name,
+			null,
+			this.typeEmitter.createTypeScriptTypeReferenceNode(
+				parameter.type,
+				options.argumentTypeEmitOptions),
+			initializer);
+		return node;
 	}
 
 }

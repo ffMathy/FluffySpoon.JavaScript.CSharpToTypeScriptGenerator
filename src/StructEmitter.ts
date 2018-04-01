@@ -8,20 +8,25 @@ import { FieldEmitter, FieldEmitOptions } from './FieldEmitter';
 import { MethodEmitter, MethodEmitOptions } from './MethodEmitter';
 import { Logger } from './Logger';
 
+import ts = require("typescript");
+import { OptionsHelper } from './OptionsHelper';
+
 export interface StructEmitOptionsBase {
 	declare?: boolean;
 	filter?: (struct: CSharpStruct) => boolean;
-    
+	perStructEmitOptions?: (struct: CSharpStruct) => PerStructEmitOptions;
+}
+
+export interface StructEmitOptionsLinks {
 	propertyEmitOptions?: PropertyEmitOptions;
 	methodEmitOptions?: MethodEmitOptions;
 	fieldEmitOptions?: FieldEmitOptions;
 }
 
-export interface StructEmitOptions extends StructEmitOptionsBase {
-	perStructEmitOptions?: (struct: CSharpStruct) => PerStructEmitOptions;
+export interface StructEmitOptions extends StructEmitOptionsBase, StructEmitOptionsLinks {
 }
 
-export interface PerStructEmitOptions extends StructEmitOptionsBase {
+export interface PerStructEmitOptions extends StructEmitOptionsBase, StructEmitOptionsLinks {
 	name?: string;
 }
 
@@ -31,6 +36,7 @@ export class StructEmitter {
 	private fieldEmitter: FieldEmitter;
 	private methodEmitter: MethodEmitter;
 	private typeEmitter: TypeEmitter;
+	private optionsHelper: OptionsHelper;
 
 	constructor(
 		private stringEmitter: StringEmitter,
@@ -41,93 +47,70 @@ export class StructEmitter {
 		this.fieldEmitter = new FieldEmitter(stringEmitter, logger);
 		this.methodEmitter = new MethodEmitter(stringEmitter, logger);
 		this.typeEmitter = new TypeEmitter(stringEmitter, logger);
+		this.optionsHelper = new OptionsHelper();
 	}
 
-	emitStructs(structs: CSharpStruct[], options?: StructEmitOptions) {
+	emitStructs(structs: CSharpStruct[], options: StructEmitOptions) {
 		this.logger.log("Emitting structs", structs);
 
 		for (var struct of structs) {
 			this.emitStruct(struct, options);
 		}
 
-		this.stringEmitter.removeLastNewLines();
-
 		this.logger.log("Done emitting structs", structs);
 	}
 
-	emitStruct(struct: CSharpStruct, options?: StructEmitOptions) {
+	emitStruct(struct: CSharpStruct, options: StructEmitOptions) {
 		this.logger.log("Emitting struct", struct);
 
-		options = this.prepareOptions(options);
-		options = Object.assign(
-			options,
-			options.perStructEmitOptions(struct));
-
-		this.emitStructInterface(struct, options);
-		this.stringEmitter.ensureNewParagraph();
+		var node = this.createTypeScriptStructNode(struct, options);
+		if(node)
+			this.stringEmitter.emitTypeScriptNode(node);
 
 		this.logger.log("Done emitting struct", struct);
 	}
 
-	private prepareOptions(options?: StructEmitOptions) {
-		if (!options) {
-			options = {};
-		}
+	createTypeScriptStructNode(struct: CSharpStruct, options: StructEmitOptions & PerStructEmitOptions) {
+		if(options.perStructEmitOptions)
+			options = this.optionsHelper.mergeOptionsRecursively<any>(
+				options.perStructEmitOptions(struct), 
+				options);
 
-		if (!options.filter) {
-			options.filter = (struct) => struct.isPublic;
-		}
-
-		if (!options.perStructEmitOptions) {
-			options.perStructEmitOptions = () => options;
-		}
-
-		return options;
-	}
-
-	private emitStructInterface(struct: CSharpStruct, options?: StructEmitOptions & PerStructEmitOptions) {
 		if (struct.properties.length === 0 && struct.methods.length === 0 && struct.fields.length === 0) {
 			this.logger.log("Skipping interface " + struct.name + " because it contains no properties, fields or methods");
-			return;
+			return null;
 		}
 
-		this.stringEmitter.writeIndentation();
+		if(!options.filter(struct))
+			return null;
 
+		var structName = options.name || struct.name;
+		this.logger.log("Emitting interface " + structName);
+		
+		var modifiers = new Array<ts.Modifier>();
 		if (options.declare)
-			this.stringEmitter.write("declare ");
+			modifiers.push(ts.createToken(ts.SyntaxKind.DeclareKeyword));
 
-		var className = options.name || struct.name;
-		this.logger.log("Emitting interface " + className);
+		var fields = struct
+			.fields
+			.map(p => this
+				.fieldEmitter
+				.createTypeScriptFieldNode(p, options.fieldEmitOptions));
 
-		this.stringEmitter.write("interface " + className);
+		var properties = struct
+			.properties
+			.map(p => this
+				.propertyEmitter
+				.createTypeScriptPropertyNode(p, options.propertyEmitOptions));
 
-		this.stringEmitter.write(" {");
-		this.stringEmitter.writeLine();
+		var node = ts.createInterfaceDeclaration(
+			[], 
+			modifiers, 
+			structName,
+			[],
+			[],
+			[...properties, ...fields]);
 
-		this.stringEmitter.increaseIndentation();
-
-		if (struct.fields.length > 0) {
-			this.fieldEmitter.emitFields(struct.fields, options.fieldEmitOptions);
-			this.stringEmitter.ensureNewParagraph();
-		}
-
-		if (struct.properties.length > 0) {
-			this.propertyEmitter.emitProperties(struct.properties, options.propertyEmitOptions);
-			this.stringEmitter.ensureNewParagraph();
-		}
-
-		if (struct.methods.length > 0) {
-			this.methodEmitter.emitMethods(struct.methods, options.methodEmitOptions);
-			this.stringEmitter.ensureNewParagraph();
-		}
-
-		this.stringEmitter.removeLastNewLines();
-
-		this.stringEmitter.decreaseIndentation();
-
-		this.stringEmitter.writeLine();
-		this.stringEmitter.writeLine("}");
-
-		this.stringEmitter.ensureNewParagraph();
+		return node;
 	}
 }

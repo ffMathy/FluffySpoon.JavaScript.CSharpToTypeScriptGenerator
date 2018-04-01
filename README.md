@@ -33,8 +33,7 @@ Given the following CSharp model code:
 ```csharp
 namespace MyNamespace {
   public class MyClass {
-    public int myField;
-    private int myPrivateField;
+    public bool myField;
   
     public int MyProperty { get; set; }
     public string MyOtherProperty { get; set; }
@@ -56,16 +55,16 @@ The following TypeScript code would be generated:
 ```typescript
 declare namespace MyNamespace {
   interface MyClass {
-    myField: number;
-    MyProperty: number;
-    MyOtherProperty: string;
-    MyNullableProperty?: number;
+    myField: boolean;
+    myProperty: number;
+    myOtherProperty: string;
+    myNullableProperty?: number;
   }
   
   namespace MyClass {
     interface MySubclass {
-      MyListProperty: string[];
-      MyGenericProperty: MyGenericType<SomeType, SomeOtherType>;
+      myListProperty: string[];
+      myGenericProperty: MyGenericType<SomeType, SomeOtherType>;
       MyFunction(input1: string, input2: number): Promise;
     }
   }
@@ -96,14 +95,14 @@ The following TypeScript code would be generated:
 
 ```typescript
 declare interface MyClass {
-  MyProperty: number;
+  myProperty: number;
 }
 ```
 
 ### Wrapping all emitted code in a namespace
 ```typescript
 var typescriptCode = emitter.emitFile(<FileEmitOptions>{
-  afterParsing: (file: CSharpFile, fileEmitter: StringEmitter) => {
+  onAfterParsing: (file: CSharpFile) => {
     //we create a namespace, move all items of the file into that namespace, and remove the same items from the file. 
     //we then add the newly created namespace to the file.
 
@@ -142,7 +141,7 @@ The following TypeScript code would be generated:
 ```typescript
 declare namespace MyNamespace {
   interface MyClass {
-    MyProperty: number;
+    myProperty: number;
   }
 }
 ```
@@ -169,8 +168,8 @@ The following TypeScript code would be generated:
 
 ```typescript
 declare interface MyClass {
-  MyProperty: Date;
-  MyOtherProperty: string;
+  myProperty: Date;
+  myOtherProperty: string;
 }
 ```
 
@@ -196,19 +195,19 @@ The following TypeScript code would be generated:
 
 ```typescript
 declare interface MyClass {
-  MyProperty: number;
-  MyOtherProperty: string;
+  myProperty: number;
+  myOtherProperty: string;
 }
 ```
 
 **Note:** This can also be done for classes, methods and fields by using the `ClassEmitOptions`, `MethodEmitOptions`, and `FieldEmitOptions` respectively.
 
-### Camel-casing property names
+### Pascal-casing property names
 ```typescript
 var typescriptCode = emitter.emitFile(<FileEmitOptions>{
   propertyEmitOptions: <PropertyEmitOptions>{
     perPropertyEmitOptions: (property: CSharpProperty) => <PerPropertyEmitOptions>{
-      name: property.name[0].toLowerCase() + property.name.substring(1)
+      name: property.name //the default is camel casing
     }
   }
 });
@@ -227,8 +226,8 @@ The following TypeScript code would be generated:
 
 ```typescript
 declare interface MyClass {
-  myProperty: number;
-  myOtherProperty: string;
+  MyProperty: number;
+  MyOtherProperty: string;
 }
 ```
 
@@ -265,11 +264,11 @@ The following TypeScript code would be generated:
 
 ```typescript
 declare interface IMyClass extends ISomeInheritedClass {
-  MyProperty: number;
+  myProperty: number;
 }
 
 declare interface ISomeInheritedClass {
-  MyBaseProperty: number;
+  myBaseProperty: number;
 }
 ```
 
@@ -305,11 +304,11 @@ The following TypeScript code would be generated:
 
 ```typescript
 declare interface MyClass {
-  MyProperty: number;
+  myProperty: number;
 }
 
 declare interface SomeInheritedClass {
-  MyBaseProperty: number;
+  myBaseProperty: number;
 }
 ```
 

@@ -1,4 +1,4 @@
-﻿/// <reference path="../typings/tsd.d.ts" />
+﻿
 // Disable multiline warning, we're fine with ES5
 // jshint -W043
 
@@ -16,13 +16,13 @@ namespace MyNamespace.Domain\n\
     }\n\
 }\n";
 
-var expectedOutput = "declare type MyEnum =\n\
-    'Unknown' |\n\
-    'Green' |\n\
-    'Red' |\n\
-    'Blue'";
+var expectedOutput = "declare type MyEnum = \
+'Unknown' | \
+'Green' | \
+'Red' | \
+'Blue';";
 
-var LegacyAdapter = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('../../dist/spec/legacy/adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function() {
 	it('should transform an enum to a string union type correctly', function() {

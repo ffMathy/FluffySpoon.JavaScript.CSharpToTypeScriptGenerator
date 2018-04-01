@@ -1,4 +1,4 @@
-/// <reference path="../typings/tsd.d.ts" />
+
 // Disabled multiline warning, we're fine with ES5
 // jshint -W043
 
@@ -16,11 +16,11 @@ namespace MyNamespace.Domain\n\
 }\n";
 
 var expectedOutput = "declare interface MyInterface {\n\
-    Name: string;\n\n\
+    Name: string;\n\
     Foo(bar: string): string;\n\
 }";
 
-var LegacyAdapter = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('../../dist/spec/legacy/adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function() {
 	it('should transform an interface correctly', function() {

@@ -1,4 +1,4 @@
-/// <reference path="../typings/tsd.d.ts" />
+
 
 /* jshint -W043 */
 
@@ -50,22 +50,22 @@ namespace MyNamespace.Domain\n\
 }\n";
 
 var expectedOutput = "declare enum MyEnum {\n\
-    Green = 0,\n\
+    Green,\n\
     Blue = 1\n\
 }\n\n\
 declare interface MyPoco {\n\
     Id: number;\n\
     Name: string;\n\
     Title: string;\n\
-    ListFields: string[];\n\
-    IEnumerableFields: string[];\n\
-    ArrayFields: string[];\n\
+    ListFields: Array<string>;\n\
+    IEnumerableFields: Array<string>;\n\
+    ArrayFields: Array<string>;\n\
     OptionalBool?: boolean;\n\
     SomeDate: string;\n\
     SomeDecimal: number;\n\
     SomeGuid: string;\n\
 }";
-var LegacyAdapter = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('../../dist/spec/legacy/adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function() {
 	it('should handle enums and classes in the same file', function() {

@@ -1,0 +1,35 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "stopOnEntry": false,
+            "sourceMaps": true,
+            "name": "Run tests",
+            "program": "${workspaceFolder}\\node_modules\\jasmine\\bin\\jasmine.js",
+            "env": {
+                "NODE_PATH": ".",
+                "NODE_ENV": "development"
+            }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "stopOnEntry": false,
+            "sourceMaps": true,
+            "name": "Run specific test",
+            "program": "${workspaceFolder}\\node_modules\\jasmine\\bin\\jasmine.js",
+            "args": [
+                "spec\\legacy\\dictionaries.js"
+            ],
+            "env": {
+                "NODE_PATH": ".",
+                "NODE_ENV": "development"
+            }
+        }
+    ]
+}
