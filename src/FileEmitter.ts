@@ -24,7 +24,7 @@ export interface FileEmitOptions {
 	fieldEmitOptions?: FieldEmitOptions,
 	methodEmitOptions?: MethodEmitOptions,
 
-	afterParsing?: (file: CSharpFile, fileEmitter: StringEmitter) => void
+	onAfterParsing?: (file: CSharpFile, fileEmitter: StringEmitter) => void
 }
 
 export class FileEmitter {
@@ -234,8 +234,8 @@ export class FileEmitter {
 		this.logger.log("Using options", options);
 
 		var file = this.fileParser.parseFile();
-		if(options.afterParsing)
-			options.afterParsing(file, this.stringEmitter);
+		if(options.onAfterParsing)
+			options.onAfterParsing(file, this.stringEmitter);
 
 		if (file.enums.length > 0) {
 			this.enumEmitter.emitEnums(file.enums, Object.assign({ declare: true }, options.enumEmitOptions));

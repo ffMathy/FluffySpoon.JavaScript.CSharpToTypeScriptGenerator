@@ -137,7 +137,7 @@ function LegacyAdapter(contents: any, options: any) {
 		if (options.baseNamespace) {
 			emitOptions.namespaceEmitOptions.skip = false;
 
-			emitOptions.afterParsing = (file) => {
+			emitOptions.onAfterParsing = (file) => {
 				if (file.namespaces.filter(n => n.name === options.baseNamespace)[0])
 					return;
 

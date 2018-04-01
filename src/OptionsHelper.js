@@ -1,5 +1,6 @@
 "use strict";
-var OptionsHelper = (function () {
+Object.defineProperty(exports, "__esModule", { value: true });
+var OptionsHelper = /** @class */ (function () {
     function OptionsHelper() {
     }
     OptionsHelper.prototype.mergeOptions = function (originalParent, originalChild) {

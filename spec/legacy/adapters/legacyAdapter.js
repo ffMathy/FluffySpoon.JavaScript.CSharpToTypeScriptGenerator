@@ -113,7 +113,7 @@ function LegacyAdapter(contents, options) {
         }
         if (options.baseNamespace) {
             emitOptions.namespaceEmitOptions.skip = false;
-            emitOptions.afterParsing = function (file) {
+            emitOptions.onAfterParsing = function (file) {
                 if (file.namespaces.filter(function (n) { return n.name === options.baseNamespace; })[0])
                     return;
                 var namespace = new fluffy_spoon_javascript_csharp_parser_1.CSharpNamespace(options.baseNamespace);

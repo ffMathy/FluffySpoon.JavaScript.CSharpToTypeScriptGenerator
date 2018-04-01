@@ -10,12 +10,17 @@ Uses the following library for parsing C# code from TypeScript: https://github.c
 # Examples
 These recipes help you quickly get started with common scenarios you may need. Feel free to contribute with your own!
 
+The following code shows general usage. The examples below only differ in the `EmitOptions` provided.
+
 ```typescript
 import { FileEmitter } from 'fluffy-spoon.javascript.csharp-to-typescript-generator';
 
 var csharpCode = "insert the CSharp model code here - you could also read it from a file.";
 var emitter = new FileEmitter(csharpCode);
-var options = <FileEmitOptions>{ };
+var options = <EmitOptions>{ 
+  defaults: <DefaultEmitOptions>{ },
+  file: <FileEmitOptions>{ }
+};
 var typescriptCode = emitter.emitFile(options);
 ```
 
@@ -74,9 +79,11 @@ declare namespace MyNamespace {
 
 ### Ignoring methods
 ```typescript
-var typescriptCode = emitter.emitFile(<FileEmitOptions>{
-  methodEmitOptions: <MethodEmitOptions>{
-    filter: (method: CSharpMethod) => false //returning false filters away all methods
+var typescriptCode = emitter.emitFile(<EmitOptions>{
+  defaults: <DefaultEmitOptions>{
+    methodEmitOptions: <MethodEmitOptions>{
+      filter: (method: CSharpMethod) => false //returning false filters away all methods
+    }
   }
 });
 ```
@@ -102,29 +109,31 @@ declare interface MyClass {
 
 ### Wrapping all emitted code in a namespace
 ```typescript
-var typescriptCode = emitter.emitFile(<FileEmitOptions>{
-  afterParsing: (file: CSharpFile, fileEmitter: StringEmitter) => {
-    //we create a namespace, move all items of the file into that namespace, and remove the same items from the file. 
-    //we then add the newly created namespace to the file.
+var typescriptCode = emitter.emitFile(<EmitOptions>{
+  file: <FileEmitOptions>{
+    onAfterParsing: (file: CSharpFile) => {
+      //we create a namespace, move all items of the file into that namespace, and remove the same items from the file. 
+      //we then add the newly created namespace to the file.
 
-    var namespace = new CSharpNamespace("MyNamespace");
-    namespace.classes = file.classes;
-    namespace.enums = file.enums;
-    namespace.innerScopeText = file.innerScopeText;
-    namespace.interfaces = file.interfaces;
-    namespace.namespaces = file.namespaces;
-    namespace.parent = file;
-    namespace.structs = file.structs;
-    namespace.usings = file.usings;
+      var namespace = new CSharpNamespace("MyNamespace");
+      namespace.classes = file.classes;
+      namespace.enums = file.enums;
+      namespace.innerScopeText = file.innerScopeText;
+      namespace.interfaces = file.interfaces;
+      namespace.namespaces = file.namespaces;
+      namespace.parent = file;
+      namespace.structs = file.structs;
+      namespace.usings = file.usings;
 
-    file.classes = [];
-    file.enums = [];
-    file.interfaces = [];
-    file.namespaces = [];
-    file.structs = [];
-    file.usings = [];
+      file.classes = [];
+      file.enums = [];
+      file.interfaces = [];
+      file.namespaces = [];
+      file.structs = [];
+      file.usings = [];
 
-    file.namespaces.push(namespace);
+      file.namespaces.push(namespace);
+    }
   }
 });
 ```
@@ -149,9 +158,11 @@ declare namespace MyNamespace {
 
 ### Specify what TypeScript types specific CSharp types map to
 ```typescript
-var typescriptCode = emitter.emitFile(<FileEmitOptions>{
-  typeEmitOptions: <TypeEmitOptions>{
-    mapper: (type: CSharpType, suggested: string) => type.name === "DateTime" ? "Date" : suggested
+var typescriptCode = emitter.emitFile(<EmitOptions>{
+  defaults: <DefaultEmitOptions>{
+    typeEmitOptions: <TypeEmitOptions>{
+      mapper: (type: CSharpType, suggested: string) => type.name === "DateTime" ? "Date" : suggested
+    }
   }
 });
 ```
@@ -176,9 +187,11 @@ declare interface MyClass {
 
 ### Including private properties
 ```typescript
-var typescriptCode = emitter.emitFile(<FileEmitOptions>{
-  propertyEmitOptions: <PropertyEmitOptions>{
-    filter: (property: CSharpProperty) => true //the default filter is "property.isPublic === true"
+var typescriptCode = emitter.emitFile(<EmitOptions>{
+  defaults: <DefaultEmitOptions>{
+    propertyEmitOptions: <PropertyEmitOptions>{
+      filter: (property: CSharpProperty) => true //the default filter is "property.isPublic === true"
+    }
   }
 });
 ```
@@ -205,10 +218,12 @@ declare interface MyClass {
 
 ### Camel-casing property names
 ```typescript
-var typescriptCode = emitter.emitFile(<FileEmitOptions>{
-  propertyEmitOptions: <PropertyEmitOptions>{
-    perPropertyEmitOptions: (property: CSharpProperty) => <PerPropertyEmitOptions>{
-      name: property.name[0].toLowerCase() + property.name.substring(1)
+var typescriptCode = emitter.emitFile(<EmitOptions>{
+  defaults: <DefaultEmitOptions>{
+    propertyEmitOptions: <PropertyEmitOptions>{
+      perPropertyEmitOptions: (property: CSharpProperty) => <PerPropertyEmitOptions>{
+        name: property.name //the default is camel casing
+      }
     }
   }
 });
@@ -236,13 +251,15 @@ declare interface MyClass {
 
 ### Prefixing all class names with "I"
 ```typescript
-var typescriptCode = emitter.emitFile(<FileEmitOptions>{
-  classEmitOptions: <ClassEmitOptions>{
-    perClassEmitOptions: (classObjcect: CSharpClass) => <PerClassEmitOptions>{
-      name: "I" + classObject.name,
-      inheritedTypeEmitOptions: { 
-        //this is needed to also change the name of the inherited class, if any
-        mapper: (type, suggested) => "I" + suggested
+var typescriptCode = emitter.emitFile(<EmitOptions>{
+  defaults: <DefaultEmitOptions>{
+    classEmitOptions: <ClassEmitOptions>{
+      perClassEmitOptions: (classObjcect: CSharpClass) => <PerClassEmitOptions>{
+        name: "I" + classObject.name,
+        inheritedTypeEmitOptions: { 
+          //this is needed to also change the name of the inherited class, if any
+          mapper: (type, suggested) => "I" + suggested
+        }
       }
     }
   }
@@ -277,12 +294,14 @@ declare interface ISomeInheritedClass {
 
 ### Removing inheritance
 ```typescript
-var typescriptCode = emitter.emitFile(<FileEmitOptions>{
-  classEmitOptions: <ClassEmitOptions>{
-    perClassEmitOptions: (classObjcect: CSharpClass) => <PerClassEmitOptions>{
-      inheritedTypeEmitOptions: { 
-        //by mapping the inherited type to "null", it is not emitted
-        mapper: (type, suggested) => null
+var typescriptCode = emitter.emitFile(<EmitOptions>{
+  defaults: <FileEmitOptions>{
+    classEmitOptions: <ClassEmitOptions>{
+      perClassEmitOptions: (classObjcect: CSharpClass) => <PerClassEmitOptions>{
+        inheritedTypeEmitOptions: { 
+          //by mapping the inherited type to "null", it is not emitted
+          mapper: (type, suggested) => null
+        }
       }
     }
   }
@@ -317,9 +336,11 @@ declare interface SomeInheritedClass {
 
 ### Convert enums to string union types
 ```typescript
-var typescriptCode = emitter.emitFile(<FileEmitOptions>{
-  enumEmitOptions: <EnumEmitOptions>{
-    strategy: "string-union"
+var typescriptCode = emitter.emitFile(<EmitOptions>{
+  defaults: <DefaultEmitOptions>{
+    enumEmitOptions: <EnumEmitOptions>{
+      strategy: "string-union"
+    }
   }
 });
 ```
@@ -345,28 +366,51 @@ declare type MyEnum =
 
 ### Generating AJAX clients for all controllers
 ```typescript
-var classFilter = (classObject: CSharpClass) => {
-  //we only want to process classes that inherit from Controller.
+var controllerClassFilter = (classObject: CSharpClass) => {
+  //we are only interested in classes that are considered controllers as per: https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/actions#what-is-a-controller
+
   if(!classObject.inheritsFrom) return false;
-  return classObject.inheritsFrom.name === "Controller";
+  
+  var inheritsFromController = classObject.inheritsFrom.name.endsWith("Controller");
+  var hasControllerAttribute = !!classObject.attributes.filter(a => a.name === "Controller")[0];
+  var hasNonControllerAttribute = !!classObject.attributes.filter(a => a.name === "NonController")[0];
+
+  return (inheritsFromController || hasControllerAttribute) && !hasNonControllerAttribute;
 };
 
-var typescriptCode = emitter.emitFile(<FileEmitOptions>{
-  classEmitOptions: <ClassEmitOptions>{
-    filter: classFilter
-  },
-  propertyEmitOptions: <PropertyEmitOptions>{
-    filter: (property: CSharpProperty) => false //we exclude all properties
-  },
-  fieldEmitOptions: <FieldEmitOptions>{
-    filter: (field: CSharpField) => false //we exclude all fields
-  },
-  afterParsing: (file: CSharpFile, fileEmitter: StringEmitter) => {
-    var allControllerClasses = file
-      .getAllClassesRecursively()
-      .filter(classFilter);
+var actionMethodFilter = (methodObject: CSharpMethod) => {
+    //we are only interested in the methods considered actions as per: https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/actions#defining-actions
+
+    var hasNonActionAttribute = !!classObject.attributes.filter(a => a.name === "NonAction")[0];
+    return methodObject.isPublic && !hasNonActionAttribute;
+}
+
+var typescriptCode = emitter.emitFile(<EmitOptions>{
+  file: <FileEmitOptions>{
+    classEmitOptions: <ClassEmitOptions>{
+      filter: (classObject: CSharpClass) => false //we exclude all classes since we want to skip the normal typings generation since we emit something else in onAfterParsing
+    },
+    propertyEmitOptions: <PropertyEmitOptions>{
+      filter: (property: CSharpProperty) => false //we exclude all properties
+    },
+    fieldEmitOptions: <FieldEmitOptions>{
+      filter: (field: CSharpField) => false //we exclude all fields
+    },
+    onAfterParsing: (file: CSharpFile, stringEmitter: StringEmitter) => {
+      var controllerClasses = file
+        .getAllClassesRecursively()
+        .filter(controllerClassFilter);
       
-    //TODO: not done yet.
+      for(var controllerClass of controllerClasses) {
+        var actionMethods = controllerClass
+          .methods
+          .filter(actionMethodFilter);
+
+        for(var actionMethod of actionMethods) {
+          stringEmitter.
+        }
+      }
+    }
   }
 });
 ```

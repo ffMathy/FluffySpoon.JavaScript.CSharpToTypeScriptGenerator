@@ -1,5 +1,6 @@
 "use strict";
-var StringEmitter = (function () {
+Object.defineProperty(exports, "__esModule", { value: true });
+var StringEmitter = /** @class */ (function () {
     function StringEmitter(logger) {
         this.logger = logger;
         this._output = '';

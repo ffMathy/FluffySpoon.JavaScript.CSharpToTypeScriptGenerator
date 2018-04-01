@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var fluffy_spoon_javascript_csharp_parser_1 = require("fluffy-spoon.javascript.csharp-parser");
 var StringEmitter_1 = require("./StringEmitter");
 var OptionsHelper_1 = require("./OptionsHelper");
@@ -8,7 +9,7 @@ var ClassEmitter_1 = require("./ClassEmitter");
 var InterfaceEmitter_1 = require("./InterfaceEmitter");
 var NamespaceEmitter_1 = require("./NamespaceEmitter");
 var Logger_1 = require("./Logger");
-var FileEmitter = (function () {
+var FileEmitter = /** @class */ (function () {
     function FileEmitter(content) {
         this.fileParser = new fluffy_spoon_javascript_csharp_parser_1.FileParser(content);
         this.logger = new Logger_1.Logger();
@@ -139,8 +140,8 @@ var FileEmitter = (function () {
         }
         this.logger.log("Using options", options);
         var file = this.fileParser.parseFile();
-        if (options.afterParsing)
-            options.afterParsing(file, this.stringEmitter);
+        if (options.onAfterParsing)
+            options.onAfterParsing(file, this.stringEmitter);
         if (file.enums.length > 0) {
             this.enumEmitter.emitEnums(file.enums, Object.assign({ declare: true }, options.enumEmitOptions));
             this.stringEmitter.ensureNewParagraph();

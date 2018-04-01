@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var fluffy_spoon_javascript_csharp_parser_1 = require("fluffy-spoon.javascript.csharp-parser");
 exports.CSharpType = fluffy_spoon_javascript_csharp_parser_1.CSharpType;
 exports.CSharpNamespace = fluffy_spoon_javascript_csharp_parser_1.CSharpNamespace;
