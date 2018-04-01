@@ -1,23 +1,31 @@
-﻿import { CSharpField, FieldParser } from 'fluffy-spoon.javascript.csharp-parser';
+import { CSharpField, FieldParser } from 'fluffy-spoon.javascript.csharp-parser';
+
 import { StringEmitter } from './StringEmitter';
 import { TypeEmitter, TypeEmitOptions } from './TypeEmitter';
 import { Logger } from './Logger';
 
+import ts = require("typescript");
+import { OptionsHelper } from './OptionsHelper';
+
 export interface FieldEmitOptionsBase {
 	readOnly?: boolean;
-	typeEmitOptions?: TypeEmitOptions;
 	filter?: (field: CSharpField) => boolean;
-}
-
-export interface FieldEmitOptions extends FieldEmitOptionsBase {
 	perFieldEmitOptions?: (field: CSharpField) => PerFieldEmitOptions;
 }
 
-export interface PerFieldEmitOptions extends FieldEmitOptionsBase {
+export interface FieldEmitOptionsLinks {
+	typeEmitOptions?: TypeEmitOptions;
+}
+
+export interface FieldEmitOptions extends FieldEmitOptionsBase, FieldEmitOptionsLinks {
+}
+
+export interface PerFieldEmitOptions extends FieldEmitOptionsBase, FieldEmitOptionsLinks {
 	name?: string;
 }
 
 export class FieldEmitter {
+	private optionsHelper: OptionsHelper;
 	private typeEmitter: TypeEmitter;
 
 	constructor(
@@ -25,11 +33,10 @@ export class FieldEmitter {
 		private logger: Logger
 	) {
 		this.typeEmitter = new TypeEmitter(stringEmitter, logger);
+		this.optionsHelper = new OptionsHelper();
 	}
 
-	emitFields(fields: CSharpField[], options?: FieldEmitOptions & PerFieldEmitOptions) {
-		options = this.prepareOptions(options);
-
+	emitFields(fields: CSharpField[], options: FieldEmitOptions) {
 		for (var property of fields) {
 			this.emitField(property, options);
 		}
@@ -37,42 +44,39 @@ export class FieldEmitter {
 		this.stringEmitter.removeLastNewLines();
 	}
 
-	emitField(field: CSharpField, options?: FieldEmitOptions & PerFieldEmitOptions) {
-		options = Object.assign(
-			this.prepareOptions(options),
-			options.perFieldEmitOptions(field));
-
-		if (!options.filter(field))
+	emitField(field: CSharpField, options: FieldEmitOptions & PerFieldEmitOptions) {
+		var node = this.createTypeScriptFieldNode(field, options);
+		if(!node) 
 			return;
 
-		this.logger.log("Emitting field " + field.name);
-
-		this.stringEmitter.writeIndentation();
-
-		if (options.readOnly)
-			this.stringEmitter.write("readonly ");
-
-		this.stringEmitter.write((options.name || field.name) + ": ");
-		this.typeEmitter.emitType(field.type, options.typeEmitOptions);
-		this.stringEmitter.write(";");
-
-		this.stringEmitter.ensureNewLine();
+		this.stringEmitter.emitTypeScriptNode(node);
 	}
 
-	private prepareOptions(options?: FieldEmitOptions) {
-		if (!options) {
-			options = {};
-		}
+	createTypeScriptFieldNode(field: CSharpField, options: FieldEmitOptions & PerFieldEmitOptions) {
+		if(options.perFieldEmitOptions)
+			options = this.optionsHelper.mergeOptionsRecursively<any>(
+				options.perFieldEmitOptions(field), 
+				options);
 
-		if (!options.filter) {
-			options.filter = (field) => field.isPublic;
-		}
+		if (!options.filter(field))
+			return null;
 
-		if (!options.perFieldEmitOptions) {
-			options.perFieldEmitOptions = () => options;
-		}
+		this.logger.log("Emitting field", field);
 
-		return options;
+		var modifiers = new Array<ts.Modifier>();
+		if ((typeof options.readOnly !== "boolean" || options.readOnly) && field.isReadOnly)
+			modifiers.push(ts.createToken(ts.SyntaxKind.ReadonlyKeyword));
+
+		var node = ts.createPropertySignature(
+			modifiers,
+			options.name || field.name,
+			field.type.isNullable ? ts.createToken(ts.SyntaxKind.QuestionToken) : null,
+			this.typeEmitter.createTypeScriptTypeReferenceNode(field.type, options.typeEmitOptions),
+			null);
+
+		this.logger.log("Done emitting field", field);
+
+		return node;
 	}
 
 }

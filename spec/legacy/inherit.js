@@ -1,4 +1,4 @@
-/// <reference path="../typings/tsd.d.ts" />
+
 // Disables multiline warning, we're fine with ES5
 // jshint -W043
 
@@ -47,17 +47,17 @@ var expectedOutput = "declare interface MyPoco extends BasePoco {\n\
     Id: number;\n\
     Name: string;\n\
     Title: string;\n\
-    ListFields: string[];\n\
-    IEnumerableFields: string[];\n\
-    ICollectionFields: string[];\n\
-    ArrayFields: string[];\n\
+    ListFields: Array<string>;\n\
+    IEnumerableFields: Array<string>;\n\
+    ICollectionFields: Array<string>;\n\
+    ArrayFields: Array<string>;\n\
     OptionalBool?: boolean;\n\
     SomeDate: string;\n\
     SomeDecimal: number;\n\
     SomeGuid: string;\n\
 }";
 
-var LegacyAdapter = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('../../dist/spec/legacy/adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function() {
 	it('should turn inheritence into extends', function() {

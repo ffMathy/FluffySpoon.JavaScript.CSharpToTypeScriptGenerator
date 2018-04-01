@@ -1,11 +1,17 @@
-﻿import { FileParser, CSharpEnum, CSharpEnumOption } from 'fluffy-spoon.javascript.csharp-parser';
+import { FileParser, CSharpEnum, CSharpEnumOption } from 'fluffy-spoon.javascript.csharp-parser';
+
 import { StringEmitter } from './StringEmitter';
 import { Logger } from './Logger';
 
-export interface EnumEmitOptions {
+import ts = require("typescript");
+
+export interface EnumEmitOptionsBase {
 	declare?: boolean;
 	strategy?: "default" | "string-union";
 	filter?: (enumObject: CSharpEnum) => boolean;
+}
+
+export interface EnumEmitOptions extends EnumEmitOptionsBase {
 }
 
 export class EnumEmitter {
@@ -15,98 +21,61 @@ export class EnumEmitter {
 
 	}
 
-	private prepareOptions(options?: EnumEmitOptions) {
-		if (!options) {
-			options = {}
-		}
-
-		if (!options.filter) {
-			options.filter = (field) => field.isPublic;
-		}
-
-		if (!options.strategy) {
-			options.strategy = "default";
-		}
-
-		return options;
-	}
-
-	emitEnums(enums: CSharpEnum[], options?: EnumEmitOptions) {
+	emitEnums(enums: CSharpEnum[], options: EnumEmitOptions) {
 		this.logger.log("Emitting enums", enums);
-
-		options = this.prepareOptions(options);
 
 		for (var enumObject of enums) {
 			this.emitEnum(enumObject, options);
 		}
 
-		this.stringEmitter.removeLastNewLines();
-
 		this.logger.log("Done emitting enums", enums);
 	}
 
-	emitEnum(enumObject: CSharpEnum, options?: EnumEmitOptions) {
-		this.logger.log("Emitting enum", enumObject);
+	emitEnum(enumObject: CSharpEnum, options: EnumEmitOptions) {
+		var node = this.createTypeScriptEnumNode(enumObject, options);
+		if (!node)
+			return;
 
-		options = this.prepareOptions(options);
-
-		this.stringEmitter.writeIndentation();
-		if (options.declare)
-			this.stringEmitter.write("declare ");
-
-		if (options.strategy === "default") {
-			this.stringEmitter.write("enum");
-		} else if (options.strategy === "string-union") {
-			this.stringEmitter.write("type");
-		}
-
-		this.stringEmitter.write(" " + enumObject.name + " ");
-
-		if (options.strategy === "default") {
-			this.stringEmitter.write("{");
-		} else if (options.strategy === "string-union") {
-			this.stringEmitter.write("=");
-		}
-
-		this.stringEmitter.writeLine();
-		this.stringEmitter.increaseIndentation();
-
-		for (var option of enumObject.options) {
-			var isLastOption = option === enumObject.options[enumObject.options.length-1];
-			this.emitEnumOption(option, isLastOption, options);
-		}
-
-		if (options.strategy === "default") {
-			this.stringEmitter.removeLastCharacters(',');
-		} else if (options.strategy === "string-union") {
-			this.stringEmitter.removeLastCharacters(' |\n');
-		}
-
-		this.stringEmitter.decreaseIndentation();
-
-		if (options.strategy === "default") {
-			this.stringEmitter.writeLine("}");
-		}
-
-		this.stringEmitter.ensureNewParagraph();
-
-		this.logger.log("Done emitting enum", enumObject);
+		this.stringEmitter.emitTypeScriptNode(node);
 	}
 
-	private emitEnumOption(
-		option: CSharpEnumOption,
-		isLast: boolean,
-		options: EnumEmitOptions)
-	{
-		this.logger.log("Emitting enum option", option);
-		if (options.strategy === "default") {
-			this.stringEmitter.write(this.stringEmitter.currentIndentation + option.name + " = " + option.value);
-			if(!isLast) 
-				this.stringEmitter.write(",");
+	createTypeScriptEnumNode(enumObject: CSharpEnum, options: EnumEmitOptions) {
+		if (!options.filter(enumObject))
+			return null;
 
-			this.stringEmitter.writeLine();
-		} else if (options.strategy === "string-union") {
-			this.stringEmitter.writeLine("'" + option.name + "' |");
+		this.logger.log("Emitting enum", enumObject);
+
+		var modifiers = new Array<ts.Modifier>();
+		if (options.declare)
+			modifiers.push(ts.createToken(ts.SyntaxKind.DeclareKeyword));
+
+		var node: ts.Statement;
+
+		if (options.strategy === "string-union") {
+			node = ts.createTypeAliasDeclaration(
+				[],
+				modifiers,
+				enumObject.name,
+				[],
+				ts.createUnionOrIntersectionTypeNode(
+					ts.SyntaxKind.UnionType,
+					enumObject
+						.options
+						.map(v => ts.createTypeReferenceNode(ts.createIdentifier("'" + v.name + "'"), []))));
+		} else {
+			node = ts.createEnumDeclaration(
+				[],
+				modifiers,
+				enumObject.name,
+				enumObject
+					.options
+					.map(v => ts.createEnumMember(
+						v.name,
+						v.value ? ts.createNumericLiteral(v.value.toString()) : null)));
 		}
+
+		this.logger.log("Done emitting enum", enumObject);
+
+		return node;
 	}
 }

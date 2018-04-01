@@ -1,8 +1,8 @@
-﻿/// <reference path="../typings/tsd.d.ts" />
+﻿
 // Disabled multiline warning, we're fine with ES5
 // jshint -W043
 
-var LegacyAdapter = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('../../dist/spec/legacy/adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function () {
     it('should use the typeResolver option correctly for properties', function () {
@@ -24,7 +24,6 @@ namespace MyNamespace.Domain\n\
         var expectedOutput = "declare interface MyPoco {\n\
     Id: Observable<number>;\n\
     NameOfStuff: Observable<string>;\n\
-\n\
     Foo(): string;\n\
     Foo(foo: string, bar: number): string;\n\
 }";
@@ -58,7 +57,6 @@ namespace MyNamespace.Domain\n\
         var expectedOutput = "declare interface MyPoco {\n\
     Id: number;\n\
     NameOfStuff: string;\n\
-\n\
     Foo(): Observable<string>;\n\
     Foo(foo: string, bar: number): Observable<string>;\n\
 }";
@@ -92,7 +90,6 @@ namespace MyNamespace.Domain\n\
         var expectedOutput = "declare interface MyPoco {\n\
     Id: number;\n\
     NameOfStuff: string;\n\
-\n\
     Foo(): string;\n\
     Foo(foo: Observable<string>, bar: Observable<number>): string;\n\
 }";
@@ -102,6 +99,7 @@ namespace MyNamespace.Domain\n\
         expect(result).toEqual(expectedOutput);
 
         function observablePropertyResolver(typeName, scope) {
+            console.log("called mapper", scope, typeName);
             if(scope !== 'method-argument-type') return typeName;
             return "Observable<" + typeName + ">";
         }

@@ -1,9 +1,16 @@
-﻿{
+{
   "compileOnSave": true,
-  "exclude": [ "./spec/cases/", "./node_modules" ],
+  "exclude": [
+	"./spec/**/*.d.ts"
+  ],
+  "include": [
+	"./src/**/*.ts",
+	"./spec/**/*.ts"
+  ],
   "compilerOptions": {
     "target": "es5",
     "lib": [ "es2015", "es2017", "dom" ],
+    "outDir": "./dist",
     "sourceMap": true,
     "allowJs": false,
     "declaration": true,

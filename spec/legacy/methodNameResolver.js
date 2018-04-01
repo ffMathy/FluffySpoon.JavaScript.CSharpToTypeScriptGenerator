@@ -1,4 +1,4 @@
-/// <reference path="../typings/tsd.d.ts" />
+
 // Disabled multiline warning, we're fine with ES5
 // jshint -W043
 
@@ -17,11 +17,11 @@ namespace MyNamespace.Domain\n\
 
 var expectedOutput = "declare interface MyPoco {\n\
     Id: number;\n\
-    NameOfStuff: string;\n\n\
+    NameOfStuff: string;\n\
     foo(): string;\n\
 }";
 
-var LegacyAdapter = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('../../dist/spec/legacy/adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function () {
     it('should use the methodNameResolver option correctly', function () {

@@ -1,4 +1,4 @@
-﻿/// <reference path="../typings/tsd.d.ts" />
+﻿
 // Disabled multiline warning, we're fine with ES5
 // jshint -W043
 
@@ -20,8 +20,8 @@ namespace MyNamespace.Domain\n\
 }\n";
 
 var expectedOutput = "declare interface MyPoco {\n\
-    OtherPocos: MyOtherPoco[];\n\
-    NonVirtualPocos: MyOtherPoco[];\n\
+    OtherPocos: Array<MyOtherPoco>;\n\
+    NonVirtualPocos: Array<MyOtherPoco>;\n\
 }\n\
 \n\
 declare interface MyOtherPoco {\n\
@@ -29,20 +29,20 @@ declare interface MyOtherPoco {\n\
 }";
 
 var expectedWithoutVirtuals = "declare interface MyPoco {\n\
-    NonVirtualPocos: MyOtherPoco[];\n\
+    NonVirtualPocos: Array<MyOtherPoco>;\n\
 }\n\
 \n\
 declare interface MyOtherPoco {\n\
     id: number;\n\
 }";
-var LegacyAdapter = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('../../dist/spec/legacy/adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function() {
 	it('should include properties marked as virtual', function() {
         var result = LegacyAdapter(sampleFile);
             
         expect(result).toEqual(expectedOutput);
-	});
+	});                                                                                                                                                                              
 
 	it('should not include properties marked as virtual if option is set', function() {
         var r = LegacyAdapter(sampleFile, { ignoreVirtual: true, debug: true });

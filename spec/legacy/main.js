@@ -1,4 +1,4 @@
-/// <reference path="../typings/tsd.d.ts" />
+
 // Disabled multiline warning, we're fine with ES5
 // jshint -W043
 
@@ -52,11 +52,11 @@ var expectedOutput = "declare interface MyPoco {\n\
     Id: number;\n\
     Name: string;\n\
     Title: string;\n\
-    ListFields: string[];\n\
-    IEnumerableFields: string[];\n\
-    ArrayFields: string[];\n\
-    NumberArray: number[];\n\
-    NumberList: number[];\n\
+    ListFields: Array<string>;\n\
+    IEnumerableFields: Array<string>;\n\
+    ArrayFields: Array<string>;\n\
+    NumberArray: Array<number>;\n\
+    NumberList: Array<number>;\n\
     OptionalBool?: boolean;\n\
     SomeDate: string;\n\
     SomeDecimal: number;\n\
@@ -65,7 +65,7 @@ var expectedOutput = "declare interface MyPoco {\n\
     ObjectToAny: any;\n\
 }";
 
-var LegacyAdapter = require('./adapters/legacyAdapter.js');
+var LegacyAdapter = require('../../dist/spec/legacy/adapters/legacyAdapter.js');
 
 describe('typescript-cs-poco', function() {
 	it('should transform a POCO correctly', function() {

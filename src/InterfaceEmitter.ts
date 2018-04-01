@@ -1,4 +1,5 @@
 ﻿import { FileParser, CSharpClass, CSharpInterface } from 'fluffy-spoon.javascript.csharp-parser';
+
 import { StringEmitter } from './StringEmitter';
 import { EnumEmitter, EnumEmitOptions } from './EnumEmitter';
 import { TypeEmitter, TypeEmitOptions } from './TypeEmitter';
@@ -7,25 +8,31 @@ import { FieldEmitter, FieldEmitOptions } from './FieldEmitter';
 import { MethodEmitter, MethodEmitOptions } from './MethodEmitter';
 import { Logger } from './Logger';
 
+import ts = require("typescript");
+import { OptionsHelper } from './OptionsHelper';
+
 export interface InterfaceEmitOptionsBase {
 	declare?: boolean;
 	filter?: (method: CSharpInterface) => boolean;
+	perInterfaceEmitOptions?: (interfaceObject: CSharpInterface) => PerInterfaceEmitOptions;
+}
 
+export interface InterfaceEmitOptionsLinks {
 	propertyEmitOptions?: PropertyEmitOptions;
 	methodEmitOptions?: MethodEmitOptions;
 	genericParameterTypeEmitOptions?: TypeEmitOptions;
 	inheritedTypeEmitOptions?: TypeEmitOptions;
 }
 
-export interface InterfaceEmitOptions extends InterfaceEmitOptionsBase {
-	perInterfaceEmitOptions?: (interfaceObject: CSharpInterface) => PerInterfaceEmitOptions;
+export interface InterfaceEmitOptions extends InterfaceEmitOptionsBase, InterfaceEmitOptionsLinks {
 }
 
-export interface PerInterfaceEmitOptions extends InterfaceEmitOptionsBase {
+export interface PerInterfaceEmitOptions extends InterfaceEmitOptionsBase, InterfaceEmitOptionsLinks {
 	name?: string;
 }
 
 export class InterfaceEmitter {
+	private optionsHelper: OptionsHelper;
 	private propertyEmitter: PropertyEmitter;
 	private methodEmitter: MethodEmitter;
 	private typeEmitter: TypeEmitter;
@@ -37,9 +44,10 @@ export class InterfaceEmitter {
 		this.propertyEmitter = new PropertyEmitter(stringEmitter, logger);
 		this.methodEmitter = new MethodEmitter(stringEmitter, logger);
 		this.typeEmitter = new TypeEmitter(stringEmitter, logger);
+		this.optionsHelper = new OptionsHelper();
 	}
 
-	emitInterfaces(interfaces: CSharpInterface[], options?: InterfaceEmitOptions) {
+	emitInterfaces(interfaces: CSharpInterface[], options: InterfaceEmitOptions) {
 		this.logger.log("Emitting interfaces", interfaces);
 
 		for (var interfaceObject of interfaces) {
@@ -51,89 +59,74 @@ export class InterfaceEmitter {
 		this.logger.log("Done emitting interfaces", interfaces);
 	}
 
-	emitInterface(interfaceObject: CSharpInterface, options?: InterfaceEmitOptions) {
-		options = this.prepareOptions(options);
-		options = Object.assign(
-			options,
-			options.perInterfaceEmitOptions(interfaceObject));
-			
+	emitInterface(interfaceObject: CSharpInterface, options: InterfaceEmitOptions) {
+		var nodes = this.createTypeScriptInterfaceNodes(interfaceObject, options);
+		for (var node of nodes)
+			this.stringEmitter.emitTypeScriptNode(node);
+	}
+
+	createTypeScriptInterfaceNodes(interfaceObject: CSharpInterface, options: InterfaceEmitOptions & PerInterfaceEmitOptions) {
+		if(options.perInterfaceEmitOptions)
+			options = this.optionsHelper.mergeOptionsRecursively<any>(
+				options.perInterfaceEmitOptions(interfaceObject), 
+				options);
+
 		if (!options.filter(interfaceObject))
-			return;
-			
+			return [];
+
+		if (interfaceObject.properties.length === 0 && interfaceObject.methods.length === 0) {
+			this.logger.log("Skipping emitting body of interface " + interfaceObject.name + " because it contains no properties or methods");
+			return [];
+		}
+
 		this.logger.log("Emitting interface", interfaceObject);
 
-		this.emitClassInterface(interfaceObject, options);
-
-		this.stringEmitter.ensureNewParagraph();
-
-		this.logger.log("Done emitting interface", interfaceObject);
-	}
-
-	private prepareOptions(options?: InterfaceEmitOptions) {
-		if (!options) {
-			options = {};
-		}
-
-		if (!options.filter) {
-			options.filter = (interfaceObject) => interfaceObject.isPublic;
-		}
-
-		if (!options.perInterfaceEmitOptions) {
-			options.perInterfaceEmitOptions = () => options;
-		}
-
-		return options;
-	}
-
-	private emitClassInterface(interfaceObject: CSharpInterface, options?: InterfaceEmitOptions & PerInterfaceEmitOptions) {
-		if (interfaceObject.properties.length === 0 && interfaceObject.methods.length === 0) {
-			this.logger.log("Skipping interface " + interfaceObject.name + " because it contains no properties or methods");
-			return;
-		}
-
-		this.stringEmitter.writeIndentation();
+		var nodes = new Array<ts.Statement>();
+		var modifiers = new Array<ts.Modifier>();
 
 		if (options.declare)
-			this.stringEmitter.write("declare ");
+			modifiers.push(ts.createToken(ts.SyntaxKind.DeclareKeyword));
 
-		var className = options.name || interfaceObject.name;
-		this.logger.log("Emitting interface " + className);
+		var heritageClauses = new Array<ts.HeritageClause>();
+		if (interfaceObject.inheritsFrom && this.typeEmitter.canEmitType(interfaceObject.inheritsFrom, options.inheritedTypeEmitOptions))
+			heritageClauses.push(ts.createHeritageClause(
+				ts.SyntaxKind.ExtendsKeyword,
+				[this.typeEmitter.createTypeScriptExpressionWithTypeArguments(
+					interfaceObject.inheritsFrom,
+					options.inheritedTypeEmitOptions)]));
 
-		this.stringEmitter.write("interface " + className);
-		if(interfaceObject.genericParameters)
-			this.typeEmitter.emitGenericParameters(
-				interfaceObject.genericParameters,
-				options.genericParameterTypeEmitOptions);
+		var properties = interfaceObject
+			.properties
+			.map(x => this
+				.propertyEmitter
+				.createTypeScriptPropertyNode(x, options.propertyEmitOptions));
 
-		if (interfaceObject.inheritsFrom && this.typeEmitter.canEmitType(interfaceObject.inheritsFrom, options.inheritedTypeEmitOptions)) {
-			this.stringEmitter.write(" extends ");
-			this.typeEmitter.emitType(
-				interfaceObject.inheritsFrom,
-				options.inheritedTypeEmitOptions);
-		}
+		var methods = interfaceObject
+			.methods
+			.map(x => this
+				.methodEmitter
+				.createTypeScriptMethodNode(x, options.methodEmitOptions));
 
-		this.stringEmitter.write(" {");
-		this.stringEmitter.writeLine();
+		var genericParameters = new Array<ts.TypeParameterDeclaration>();
+		if (interfaceObject.genericParameters)
+			genericParameters = genericParameters.concat(interfaceObject
+				.genericParameters
+				.map(x => this
+					.typeEmitter
+					.createTypeScriptTypeParameterDeclaration(x, options.genericParameterTypeEmitOptions)));
 
-		this.stringEmitter.increaseIndentation();
+		var members = [...properties, ...methods];
+		var node = ts.createInterfaceDeclaration(
+			[],
+			modifiers,
+			options.name || interfaceObject.name,
+			genericParameters,
+			heritageClauses,
+			members);
+		nodes.push(node);
 
-		if (interfaceObject.properties.length > 0) {
-			this.propertyEmitter.emitProperties(interfaceObject.properties, options.propertyEmitOptions);
-			this.stringEmitter.ensureNewParagraph();
-		}
+		this.logger.log("Done emitting interface", interfaceObject);
 
-		if (interfaceObject.methods.length > 0) {
-			this.methodEmitter.emitMethods(interfaceObject.methods, options.methodEmitOptions);
-			this.stringEmitter.ensureNewParagraph();
-		}
-
-		this.stringEmitter.removeLastNewLines();
-
-		this.stringEmitter.decreaseIndentation();
-
-		this.stringEmitter.writeLine();
-		this.stringEmitter.writeLine("}");
-
-		this.stringEmitter.ensureNewParagraph();
+		return nodes;
 	}
 }

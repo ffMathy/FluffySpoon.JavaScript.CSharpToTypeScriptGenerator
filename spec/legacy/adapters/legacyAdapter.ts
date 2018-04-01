@@ -1,49 +1,97 @@
-﻿import { FileEmitter, FileEmitOptions } from '../../../src/FileEmitter';
+﻿import { Emitter, EmitOptions } from '../../../src/Emitter';
 import { PerFieldEmitOptions } from '../../../src/FieldEmitter';
 import { PerPropertyEmitOptions } from '../../../src/PropertyEmitter';
-import { PerClassEmitOptions } from '../../../src/ClassEmitter';
+import { PerClassEmitOptions, ClassEmitOptions } from '../../../src/ClassEmitter';
 import { PerInterfaceEmitOptions } from '../../../src/InterfaceEmitter';
 import { PerMethodEmitOptions } from '../../../src/MethodEmitter';
+import { PerStructEmitOptions, StructEmitOptions } from '../../../src/StructEmitter';
 import { TypeEmitOptions } from '../../../src/TypeEmitter';
 
 import {
 	CSharpClass,
 	CSharpInterface,
-	CSharpNamespace
+	CSharpNamespace,
+	CSharpField,
+	CSharpProperty,
+	CSharpStruct
 } from 'fluffy-spoon.javascript.csharp-parser';
 
+Error.stackTraceLimit = 100;
+
 function LegacyAdapter(contents: any, options: any) {
-	var emitter = new FileEmitter(contents);
-	var emitOptions = <FileEmitOptions>{
-		namespaceEmitOptions: {
-			skip: true
-		},
-		classEmitOptions: {
-			propertyEmitOptions: {
-				typeEmitOptions: {}
-			},
-			methodEmitOptions: {
-				argumentTypeEmitOptions: {},
-				returnTypeEmitOptions: {}
+	var emitter = new Emitter(contents);
+
+	var emitOptions = <EmitOptions>{
+		defaults: {
+			namespaceEmitOptions: {
+				skip: true
 			},
 			fieldEmitOptions: {
-				perFieldEmitOptions: (field) => <PerFieldEmitOptions>{
-					readOnly: field.isReadOnly
+				perFieldEmitOptions: (field: CSharpField) => <PerFieldEmitOptions>{
+					readOnly: field.isReadOnly,
+					name: field.name
+				}
+			},
+			propertyEmitOptions: {
+				perPropertyEmitOptions: (property: CSharpProperty) => <PerPropertyEmitOptions>{
+					name: property.name
+				}
+			},
+			structEmitOptions: {
+				perStructEmitOptions: (struct: CSharpStruct) => <PerStructEmitOptions>{
+					name: struct.name
+				}
+			},
+			methodEmitOptions: {},
+			enumEmitOptions: {},
+			interfaceEmitOptions: {
+				filter: (interfaceObject) => false
+			},
+			classEmitOptions: <ClassEmitOptions>{
+				inheritedTypeEmitOptions: {
+					mapper: () => null
 				}
 			}
 		},
-		enumEmitOptions: {
-		},
-		interfaceEmitOptions: {
-			methodEmitOptions: {
-				argumentTypeEmitOptions: {},
-				returnTypeEmitOptions: {}
+		file: {
+			namespaceEmitOptions: {
+				classEmitOptions: {
+					propertyEmitOptions: {
+						typeEmitOptions: {}
+					},
+					methodEmitOptions: {
+						returnTypeEmitOptions: {},
+						argumentTypeEmitOptions: {}
+					},
+					structEmitOptions: {
+						fieldEmitOptions: {},
+						methodEmitOptions: {},
+						propertyEmitOptions: {}
+					}
+				}
 			},
-			propertyEmitOptions: {
-				typeEmitOptions: {}
+			classEmitOptions: {
+				propertyEmitOptions: {
+					typeEmitOptions: {}
+				},
+				methodEmitOptions: {
+					returnTypeEmitOptions: {},
+					argumentTypeEmitOptions: {}
+				},
+				structEmitOptions: {
+					fieldEmitOptions: {},
+					methodEmitOptions: {},
+					propertyEmitOptions: {}
+				}
+			},
+			interfaceEmitOptions: {
+				propertyEmitOptions: {}
+			},
+			structEmitOptions: {
+				propertyEmitOptions: {},
+				methodEmitOptions: {},
+				fieldEmitOptions: {}
 			}
-		},
-		structEmitOptions: {
 		}
 	};
 
@@ -59,20 +107,24 @@ function LegacyAdapter(contents: any, options: any) {
 	});
 
 	if (options) {
+		if(options.includeInterfaces) {
+			emitOptions.defaults.interfaceEmitOptions.filter = () => true;
+		}
+
 		if (options.useStringUnionTypes) {
-			emitOptions.enumEmitOptions.strategy = "string-union";
+			emitOptions.defaults.enumEmitOptions.strategy = "string-union";
 		}
 
 		if (options.propertyNameResolver) {
-			emitOptions.classEmitOptions.propertyEmitOptions.perPropertyEmitOptions =
-				emitOptions.interfaceEmitOptions.propertyEmitOptions.perPropertyEmitOptions = (property) => <PerPropertyEmitOptions>{
+			emitOptions.defaults.propertyEmitOptions.perPropertyEmitOptions =
+				emitOptions.defaults.propertyEmitOptions.perPropertyEmitOptions = (property) => <PerPropertyEmitOptions>{
 					name: options.propertyNameResolver(property.name)
 				};
 		}
 
 		if (options.methodNameResolver) {
-			emitOptions.interfaceEmitOptions.methodEmitOptions.perMethodEmitOptions =
-				emitOptions.classEmitOptions.methodEmitOptions.perMethodEmitOptions = (method) => <PerMethodEmitOptions>{
+			emitOptions.defaults.methodEmitOptions.perMethodEmitOptions =
+				emitOptions.defaults.methodEmitOptions.perMethodEmitOptions = (method) => <PerMethodEmitOptions>{
 					name: options.methodNameResolver(method.name)
 				};
 		}
@@ -91,8 +143,8 @@ function LegacyAdapter(contents: any, options: any) {
 				}
 			};
 
-			emitOptions.interfaceEmitOptions.perInterfaceEmitOptions =
-				emitOptions.classEmitOptions.perClassEmitOptions = <any>perInterfaceOrClassOptions;
+			emitOptions.defaults.interfaceEmitOptions.perInterfaceEmitOptions =
+				emitOptions.defaults.classEmitOptions.perClassEmitOptions = <any>perInterfaceOrClassOptions;
 		}
 
 		if (options.prefixWithI) {
@@ -105,39 +157,51 @@ function LegacyAdapter(contents: any, options: any) {
 				}
 			};
 
-			emitOptions.classEmitOptions.perClassEmitOptions =
-				emitOptions.interfaceEmitOptions.perInterfaceEmitOptions = <any>perInterfaceOrClassOptions;
+			emitOptions.defaults.classEmitOptions.perClassEmitOptions =
+				emitOptions.defaults.interfaceEmitOptions.perInterfaceEmitOptions = <any>perInterfaceOrClassOptions;
 		}
 
 		if (options.ignoreVirtual) {
-			emitOptions.classEmitOptions.methodEmitOptions.filter = (method) => !method.isVirtual;
-			emitOptions.classEmitOptions.propertyEmitOptions.filter = (property) => !property.isVirtual;
+			emitOptions.defaults.methodEmitOptions.filter = (method) => !method.isVirtual;
+			emitOptions.defaults.propertyEmitOptions.filter = (property) => !property.isVirtual;
 		}
 
 		if (options.ignoreMethods) {
-			emitOptions.classEmitOptions.methodEmitOptions.filter = (method) => false;
+			emitOptions.defaults.methodEmitOptions.filter = (method) => false;
 		}
 
 		if (options.stripReadOnly) {
-			emitOptions.classEmitOptions.fieldEmitOptions.perFieldEmitOptions = () => <PerFieldEmitOptions>{
+			emitOptions.defaults.fieldEmitOptions.perFieldEmitOptions = () => <PerFieldEmitOptions>{
 				readOnly: false
 			};
 		}
 
 		if (options.ignoreInheritance) {
-			emitOptions.interfaceEmitOptions.filter = (classObject) => options.ignoreInheritance.indexOf(classObject.name) === -1;
-			emitOptions.classEmitOptions.filter = (classObject) => options.ignoreInheritance.indexOf(classObject.name) === -1;
-			emitOptions.classEmitOptions.perClassEmitOptions = (classObject) => <PerClassEmitOptions>{
+			emitOptions.defaults.interfaceEmitOptions.filter = (classObject) =>
+				options.ignoreInheritance === true || 
+				options.ignoreInheritance.indexOf(classObject.name) === -1;
+			emitOptions.defaults.interfaceEmitOptions.perInterfaceEmitOptions = (interfaceObject) => <PerInterfaceEmitOptions>{
 				inheritedTypeEmitOptions: {
-					filter: (type) => options.ignoreInheritance.indexOf(type.name) === -1
+					filter: (type) => 
+						options.ignoreInheritance === true ||
+						options.ignoreInheritance.indexOf(type.name) === -1
+				}
+			};
+			emitOptions.defaults.classEmitOptions.filter = (classObject) => options.ignoreInheritance.indexOf(classObject.name) === -1;
+			emitOptions.defaults.classEmitOptions.perClassEmitOptions = (classObject) => <PerClassEmitOptions>{
+				inheritedTypeEmitOptions: {
+					filter: (type) => 
+						options.ignoreInheritance === true ||
+						options.ignoreInheritance.indexOf(type.name) === -1
 				}
 			};
 		}
 
 		if (options.baseNamespace) {
-			emitOptions.namespaceEmitOptions.skip = false;
+			emitOptions.file.namespaceEmitOptions.skip = false;
+			emitOptions.file.namespaceEmitOptions.declare = true;
 
-			emitOptions.onAfterParsing = (file) => {
+			emitOptions.file.onAfterParse = (file) => {
 				if (file.namespaces.filter(n => n.name === options.baseNamespace)[0])
 					return;
 
@@ -163,33 +227,54 @@ function LegacyAdapter(contents: any, options: any) {
 		}
 
 		if (options.dateTimeToDate) {
-			emitOptions.typeEmitOptions = <TypeEmitOptions>{
+			emitOptions.defaults.typeEmitOptions = <TypeEmitOptions>{
 				mapper: (type, suggested) => type.name === "DateTime" ? "Date" : suggested
 			};
 		}
 
 		if (options.customTypeTranslations) {
-			emitOptions.typeEmitOptions = <TypeEmitOptions>{
+			emitOptions.defaults.typeEmitOptions = <TypeEmitOptions>{
 				mapper: (type, suggested) => options.customTypeTranslations[type.name] || suggested
 			};
 		}
 
 		if (options.typeResolver) {
-			emitOptions.classEmitOptions
+			emitOptions.file.classEmitOptions
+				.propertyEmitOptions
+				.typeEmitOptions
+				.mapper = (type, suggested) => options.typeResolver(
+					suggested,
+					"property-type");
+			emitOptions.file.namespaceEmitOptions
+				.classEmitOptions
 				.propertyEmitOptions
 				.typeEmitOptions
 				.mapper = (type, suggested) => options.typeResolver(
 					suggested,
 					"property-type");
 
-			emitOptions.classEmitOptions
+			emitOptions.file.classEmitOptions
+				.methodEmitOptions
+				.returnTypeEmitOptions
+				.mapper = (type, suggested) => options.typeResolver(
+					suggested,
+					"method-return-type");
+			emitOptions.file.namespaceEmitOptions
+				.classEmitOptions
 				.methodEmitOptions
 				.returnTypeEmitOptions
 				.mapper = (type, suggested) => options.typeResolver(
 					suggested,
 					"method-return-type");
 
-			emitOptions.classEmitOptions
+			emitOptions.file.classEmitOptions
+				.methodEmitOptions
+				.argumentTypeEmitOptions
+				.mapper = (type, suggested) => options.typeResolver(
+					suggested,
+					"method-argument-type");
+			emitOptions.file.namespaceEmitOptions
+				.classEmitOptions
 				.methodEmitOptions
 				.argumentTypeEmitOptions
 				.mapper = (type, suggested) => options.typeResolver(
@@ -198,7 +283,7 @@ function LegacyAdapter(contents: any, options: any) {
 		}
 	}
 
-	return emitter.emitFile(emitOptions);
+	return emitter.emit(emitOptions);
 }
 
 export = LegacyAdapter;
