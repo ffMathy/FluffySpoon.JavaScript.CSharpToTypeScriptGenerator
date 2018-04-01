@@ -4,6 +4,7 @@ var ts = require("typescript");
 var TypeScriptEmitter = /** @class */ (function () {
     function TypeScriptEmitter(logger) {
         this.logger = logger;
+        this.NEWLINE_CHARACTER = "\n";
         this._output = '';
         this.indentationLevel = 0;
         this.indentation = '    ';
@@ -13,23 +14,29 @@ var TypeScriptEmitter = /** @class */ (function () {
     };
     TypeScriptEmitter.prototype.writeLine = function (line) {
         if (line) {
-            this.writeIndentation();
-            this.write(line);
+            if (this._output.endsWith(this.NEWLINE_CHARACTER))
+                this.writeIndentation();
+            this._write(line);
         }
-        this.write("\n");
+        this._write(this.NEWLINE_CHARACTER);
     };
     TypeScriptEmitter.prototype.getLogText = function (text) {
         var logText = text
-            .replace("\n", "\\n")
+            .replace(this.NEWLINE_CHARACTER, "\\n")
             .replace("\t", "\\t")
             .replace("\r", "\\r")
             .trim();
         return logText;
     };
-    TypeScriptEmitter.prototype.write = function (text) {
+    TypeScriptEmitter.prototype._write = function (text) {
         this._output += text;
         var logged = this.getLogText(text);
         this.logger.log("Emitted: " + logged);
+    };
+    TypeScriptEmitter.prototype.write = function (text) {
+        if (this._output.endsWith(this.NEWLINE_CHARACTER))
+            this._write(this.currentIndentation);
+        this._write(text);
     };
     TypeScriptEmitter.prototype.increaseIndentation = function () {
         this.logger.log("Increasing indentation to " + (this.indentationLevel + 1));
@@ -55,7 +62,7 @@ var TypeScriptEmitter = /** @class */ (function () {
         for (var _i = 0, nodes_1 = nodes; _i < nodes_1.length; _i++) {
             var node = nodes_1[_i];
             var result = printer.printNode(ts.EmitHint.Unspecified, node, resultFile);
-            this.write(result);
+            this._write(result);
             this.ensureNewParagraph();
         }
         this.removeLastNewLines();

@@ -53,14 +53,12 @@ describe("UseCases", function () {
     runCase("Class");
     runCase("AspNetCoreControllerToAngularClient", function () {
         var controllerClassFilter = function (classObject) {
-            //we are only interested in classes that are considered controllers as per: https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/actions#what-is-a-controller
             var inheritsFromController = classObject.name.endsWith("Controller") || (classObject.inheritsFrom && classObject.inheritsFrom.name.endsWith("Controller"));
             var hasControllerAttribute = !!classObject.attributes.filter(function (a) { return a.name === "Controller"; })[0];
             var hasNonControllerAttribute = !!classObject.attributes.filter(function (a) { return a.name === "NonController"; })[0];
             return (inheritsFromController || hasControllerAttribute) && !hasNonControllerAttribute;
         };
         var actionMethodFilter = function (methodObject) {
-            //we are only interested in the methods considered actions as per: https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/actions#defining-actions
             var hasNonActionAttribute = !!methodObject.attributes.filter(function (a) { return a.name === "NonAction"; })[0];
             return methodObject.isPublic && !hasNonActionAttribute;
         };
@@ -70,7 +68,7 @@ describe("UseCases", function () {
                     typescriptEmitter.clear(); //we clear all code the emitter would have normally written and take control ourselves
                     typescriptEmitter.writeLine("import { Injectable } from '@angular/core';");
                     typescriptEmitter.writeLine("import { HttpClient, HttpParams } from '@angular/common/http';");
-                    typescriptEmitter.writeLine();
+                    typescriptEmitter.ensureNewParagraph();
                     var controllerClasses = file
                         .getAllClassesRecursively()
                         .filter(controllerClassFilter);
@@ -89,7 +87,6 @@ describe("UseCases", function () {
                             .filter(actionMethodFilter);
                         for (var _a = 0, actionMethods_1 = actionMethods; _a < actionMethods_1.length; _a++) {
                             var actionMethod = actionMethods_1[_a];
-                            typescriptEmitter.write(typescriptEmitter.currentIndentation);
                             var actionNameCamelCase = actionMethod.name.substr(0, 1).toLowerCase() + actionMethod.name.substr(1);
                             typescriptEmitter.write("async " + actionNameCamelCase + "(");
                             var typeEmitter = new Index_1.TypeEmitter(typescriptEmitter, new Logger_1.Logger());
@@ -113,7 +110,6 @@ describe("UseCases", function () {
                             typescriptEmitter.write(" {");
                             typescriptEmitter.writeLine();
                             typescriptEmitter.increaseIndentation();
-                            typescriptEmitter.write(typescriptEmitter.currentIndentation);
                             var method = "get";
                             for (var _d = 0, _e = actionMethod.attributes; _d < _e.length; _d++) {
                                 var actionAttribute = _e[_d];
@@ -134,16 +130,15 @@ describe("UseCases", function () {
                                 var parameter = _g[_f];
                                 typescriptEmitter.write(".append('" + parameter.name + "', " + parameter.name + ")");
                             }
-                            typescriptEmitter.write(").toPromise();");
-                            typescriptEmitter.writeLine();
+                            typescriptEmitter.writeLine(").toPromise();");
                             typescriptEmitter.decreaseIndentation();
-                            typescriptEmitter.writeLine("}");
-                            typescriptEmitter.writeLine();
+                            typescriptEmitter.write("}");
+                            typescriptEmitter.ensureNewParagraph();
                         }
-                        typescriptEmitter.removeLastNewLines();
-                        typescriptEmitter.writeLine();
+                        typescriptEmitter.ensureNewLine();
                         typescriptEmitter.decreaseIndentation();
-                        typescriptEmitter.writeLine("}");
+                        typescriptEmitter.write("}");
+                        typescriptEmitter.ensureNewParagraph();
                     }
                 }
             }

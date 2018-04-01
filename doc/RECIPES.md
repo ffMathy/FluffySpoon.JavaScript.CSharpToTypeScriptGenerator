@@ -13,8 +13,6 @@ Recipes are pre-made options that work with a framework of your choise.
 import typescript = require("typescript");
 
 var controllerClassFilter = (classObject: CSharpClass) => {
-  //we are only interested in classes that are considered controllers as per: https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/actions#what-is-a-controller
-  
   var inheritsFromController = classObject.name.endsWith("Controller") || (classObject.inheritsFrom && classObject.inheritsFrom.name.endsWith("Controller"));
   var hasControllerAttribute = !!classObject.attributes.filter(a => a.name === "Controller")[0];
   var hasNonControllerAttribute = !!classObject.attributes.filter(a => a.name === "NonController")[0];
@@ -23,108 +21,102 @@ var controllerClassFilter = (classObject: CSharpClass) => {
 };
   
 var actionMethodFilter = (methodObject: CSharpMethod) => {
-  //we are only interested in the methods considered actions as per: https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/actions#defining-actions
-
   var hasNonActionAttribute = !!methodObject.attributes.filter(a => a.name === "NonAction")[0];
   return methodObject.isPublic && !hasNonActionAttribute;
 };
 
 var typescriptCode = emitter.emitFile(<EmitOptions>{
-  file: <FileEmitOptions>{
-    onBeforeEmit: (file: CSharpFile, typescriptEmitter: TypeScriptEmitter) => {
-      typescriptEmitter.clear(); //we clear all code the emitter would have normally written and take control ourselves
+    file: <FileEmitOptions>{
+        onBeforeEmit: (file: CSharpFile, typescriptEmitter: TypeScriptEmitter) => {
+            typescriptEmitter.clear(); //we clear all code the emitter would have normally written and take control ourselves
 
-      typescriptEmitter.writeLine("import { Injectable } from '@angular/core';");
-      typescriptEmitter.writeLine("import { HttpClient, HttpParams } from '@angular/common/http';");
+            typescriptEmitter.writeLine("import { Injectable } from '@angular/core';");
+            typescriptEmitter.writeLine("import { HttpClient, HttpParams } from '@angular/common/http';");
 
-      typescriptEmitter.writeLine();
-  
-      var controllerClasses = file
-        .getAllClassesRecursively()
-        .filter(controllerClassFilter);
-      
-      for(var controllerClass of controllerClasses) {
-        var controllerNameWithoutSuffix = controllerClass.name;
-        if(controllerNameWithoutSuffix.endsWith("Controller"))
-          controllerNameWithoutSuffix = controllerNameWithoutSuffix.substr(0, controllerNameWithoutSuffix.lastIndexOf("Controller"));
+            typescriptEmitter.ensureNewParagraph();
 
-        typescriptEmitter.writeLine("@Injectable()");
-        typescriptEmitter.writeLine(`export class ${controllerNameWithoutSuffix}Client {`);
-        typescriptEmitter.increaseIndentation();
-
-        typescriptEmitter.writeLine("constructor(private http: HttpClient) { }");
-        typescriptEmitter.writeLine();
-
-        var actionMethods = controllerClass
-          .methods
-          .filter(actionMethodFilter);
-    
-        for(var actionMethod of actionMethods) {
-          typescriptEmitter.write(typescriptEmitter.currentIndentation);
+            var controllerClasses = file
+                .getAllClassesRecursively()
+                .filter(controllerClassFilter);
             
-          var actionNameCamelCase = actionMethod.name.substr(0, 1).toLowerCase() + actionMethod.name.substr(1);
-          typescriptEmitter.write(`async ${actionNameCamelCase}(`);
+            for(var controllerClass of controllerClasses) {
+                var controllerNameWithoutSuffix = controllerClass.name;
+                if(controllerNameWithoutSuffix.endsWith("Controller"))
+                    controllerNameWithoutSuffix = controllerNameWithoutSuffix.substr(0, controllerNameWithoutSuffix.lastIndexOf("Controller"));
 
-          const typeEmitter = new TypeEmitter(typescriptEmitter, new Logger());
+                typescriptEmitter.writeLine("@Injectable()");
+                typescriptEmitter.writeLine(`export class ${controllerNameWithoutSuffix}Client {`);
+                typescriptEmitter.increaseIndentation();
 
-          var parameterOffset = 0;
-          for(var parameter of actionMethod.parameters) {
-            if(parameterOffset > 0)
-              typescriptEmitter.write(", ");
+                typescriptEmitter.writeLine("constructor(private http: HttpClient) { }");
+                typescriptEmitter.writeLine();
 
-            typescriptEmitter.write(`${parameter.name}: `);
+                var actionMethods = controllerClass
+                    .methods
+                    .filter(actionMethodFilter);
+        
+                for(var actionMethod of actionMethods) {								
+                    var actionNameCamelCase = actionMethod.name.substr(0, 1).toLowerCase() + actionMethod.name.substr(1);
+                    typescriptEmitter.write(`async ${actionNameCamelCase}(`);
 
-            typeEmitter.emitType(parameter.type);
+                    const typeEmitter = new TypeEmitter(typescriptEmitter, new Logger());
 
-            parameterOffset++;
-          }
+                    var parameterOffset = 0;
+                    for(var parameter of actionMethod.parameters) {
+                        if(parameterOffset > 0)
+                            typescriptEmitter.write(", ");
 
-          typescriptEmitter.write("): ");
+                        typescriptEmitter.write(`${parameter.name}: `);
 
-          typeEmitter.emitType(actionMethod.returnType, { 
-            mapper: (type, suggested) => {
-              if(type.name !== "Task<>") return `Promise<${suggested}>`;
-              return suggested;
+                        typeEmitter.emitType(parameter.type);
+
+                        parameterOffset++;
+                    }
+
+                    typescriptEmitter.write("): ");
+
+                    typeEmitter.emitType(actionMethod.returnType, { 
+                        mapper: (type, suggested) => {
+                            if(type.name !== "Task<>") return `Promise<${suggested}>`;
+                            return suggested;
+                        }
+                    });
+
+                    typescriptEmitter.write(" {");
+                    typescriptEmitter.writeLine();
+                    typescriptEmitter.increaseIndentation();
+
+                    var method = "get";
+                    for(var actionAttribute of actionMethod.attributes) {
+                        switch(actionAttribute.name) {
+                            case "HttpPost": method = "post"; break;
+                            case "HttpPut": method = "put"; break;
+                            case "HttpPatch": method = "patch"; break;
+                        }
+                    }
+
+                    typescriptEmitter.write(`return this.http.${method}('/api/${controllerNameWithoutSuffix.toLowerCase()}/${actionMethod.name.toLowerCase()}', new HttpParams()`);
+
+                    for(var parameter of actionMethod.parameters) {
+                        typescriptEmitter.write(`.append('${parameter.name}', ${parameter.name})`);
+                    }
+
+                    typescriptEmitter.writeLine(").toPromise();");
+
+                    typescriptEmitter.decreaseIndentation();
+                    typescriptEmitter.write("}");
+                    typescriptEmitter.ensureNewParagraph();
+                }
+                
+                typescriptEmitter.ensureNewLine();
+
+                typescriptEmitter.decreaseIndentation();
+                typescriptEmitter.write("}");
+                typescriptEmitter.ensureNewParagraph();
             }
-          });
-
-          typescriptEmitter.write(" {");
-          typescriptEmitter.writeLine();
-          typescriptEmitter.increaseIndentation();
-          typescriptEmitter.write(typescriptEmitter.currentIndentation);
-
-          var method = "get";
-          for(var actionAttribute of actionMethod.attributes) {
-            switch(actionAttribute.name) {
-              case "HttpPost": method = "post"; break;
-              case "HttpPut": method = "put"; break;
-              case "HttpPatch": method = "patch"; break;
-            }
-          }
-
-          typescriptEmitter.write(`return this.http.${method}('/api/${controllerNameWithoutSuffix.toLowerCase()}/${actionMethod.name.toLowerCase()}', new HttpParams()`);
-
-          for(var parameter of actionMethod.parameters) {
-            typescriptEmitter.write(`.append('${parameter.name}', ${parameter.name})`);
-          }
-
-          typescriptEmitter.write(").toPromise();");
-
-          typescriptEmitter.writeLine();
-          typescriptEmitter.decreaseIndentation();
-          typescriptEmitter.writeLine("}");
-          typescriptEmitter.writeLine();
         }
-
-        typescriptEmitter.removeLastNewLines();
-        typescriptEmitter.writeLine();
-
-        typescriptEmitter.decreaseIndentation();
-        typescriptEmitter.writeLine("}");
-      }
     }
-  }
-});
+    });
 ```
 
 Given the following CSharp model code:

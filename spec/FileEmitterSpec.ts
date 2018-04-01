@@ -66,8 +66,6 @@ describe("UseCases", function () {
 	
 	runCase("AspNetCoreControllerToAngularClient", () => {
 		var controllerClassFilter = (classObject: CSharpClass) => {
-			//we are only interested in classes that are considered controllers as per: https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/actions#what-is-a-controller
-		  
 			var inheritsFromController = classObject.name.endsWith("Controller") || (classObject.inheritsFrom && classObject.inheritsFrom.name.endsWith("Controller"));
 			var hasControllerAttribute = !!classObject.attributes.filter(a => a.name === "Controller")[0];
 			var hasNonControllerAttribute = !!classObject.attributes.filter(a => a.name === "NonController")[0];
@@ -76,8 +74,6 @@ describe("UseCases", function () {
 		};
 		  
 		var actionMethodFilter = (methodObject: CSharpMethod) => {
-			//we are only interested in the methods considered actions as per: https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/actions#defining-actions
-		
 			var hasNonActionAttribute = !!methodObject.attributes.filter(a => a.name === "NonAction")[0];
 			return methodObject.isPublic && !hasNonActionAttribute;
 		};
@@ -90,7 +86,7 @@ describe("UseCases", function () {
 					typescriptEmitter.writeLine("import { Injectable } from '@angular/core';");
 					typescriptEmitter.writeLine("import { HttpClient, HttpParams } from '@angular/common/http';");
 
-					typescriptEmitter.writeLine();
+					typescriptEmitter.ensureNewParagraph();
 			
 					var controllerClasses = file
 						.getAllClassesRecursively()
@@ -112,9 +108,7 @@ describe("UseCases", function () {
 							.methods
 							.filter(actionMethodFilter);
 				
-						for(var actionMethod of actionMethods) {
-							typescriptEmitter.write(typescriptEmitter.currentIndentation);
-								
+						for(var actionMethod of actionMethods) {								
 							var actionNameCamelCase = actionMethod.name.substr(0, 1).toLowerCase() + actionMethod.name.substr(1);
 							typescriptEmitter.write(`async ${actionNameCamelCase}(`);
 
@@ -144,7 +138,6 @@ describe("UseCases", function () {
 							typescriptEmitter.write(" {");
 							typescriptEmitter.writeLine();
 							typescriptEmitter.increaseIndentation();
-							typescriptEmitter.write(typescriptEmitter.currentIndentation);
 
 							var method = "get";
 							for(var actionAttribute of actionMethod.attributes) {
@@ -161,19 +154,18 @@ describe("UseCases", function () {
 								typescriptEmitter.write(`.append('${parameter.name}', ${parameter.name})`);
 							}
 
-							typescriptEmitter.write(").toPromise();");
+							typescriptEmitter.writeLine(").toPromise();");
 
-							typescriptEmitter.writeLine();
 							typescriptEmitter.decreaseIndentation();
-							typescriptEmitter.writeLine("}");
-							typescriptEmitter.writeLine();
+							typescriptEmitter.write("}");
+							typescriptEmitter.ensureNewParagraph();
 						}
-
-						typescriptEmitter.removeLastNewLines();
-						typescriptEmitter.writeLine();
+						
+						typescriptEmitter.ensureNewLine();
 
 						typescriptEmitter.decreaseIndentation();
-						typescriptEmitter.writeLine("}");
+						typescriptEmitter.write("}");
+						typescriptEmitter.ensureNewParagraph();
 					}
 				}
 			}

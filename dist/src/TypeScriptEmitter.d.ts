@@ -5,10 +5,12 @@ export declare class TypeScriptEmitter {
     private _output;
     private indentationLevel;
     private indentation;
+    private readonly NEWLINE_CHARACTER;
     constructor(logger: Logger);
     clear(): void;
     writeLine(line?: string): void;
     private getLogText(text);
+    private _write(text);
     write(text: string): void;
     increaseIndentation(): void;
     decreaseIndentation(): void;

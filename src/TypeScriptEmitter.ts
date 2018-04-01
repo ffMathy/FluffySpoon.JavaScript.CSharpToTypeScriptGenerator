@@ -4,8 +4,11 @@ import ts = require("typescript");
 
 export class TypeScriptEmitter {
 	private _output: string;
+
 	private indentationLevel: number;
 	private indentation: string;
+
+	private readonly NEWLINE_CHARACTER = "\n";
 
 	constructor(private logger: Logger) {
 		this._output = '';
@@ -19,27 +22,36 @@ export class TypeScriptEmitter {
 
 	writeLine(line?: string) {
 		if (line) {
-			this.writeIndentation();
-			this.write(line);
+			if(this._output.endsWith(this.NEWLINE_CHARACTER))
+				this.writeIndentation();
+
+			this._write(line);
 		}
 
-		this.write("\n");
+		this._write(this.NEWLINE_CHARACTER);
 	}
 
 	private getLogText(text: string) {
 		var logText = text
-			.replace("\n", "\\n")
+			.replace(this.NEWLINE_CHARACTER, "\\n")
 			.replace("\t", "\\t")
 			.replace("\r", "\\r")
 			.trim();
 		return logText;
 	}
 
-	write(text: string) {
+	private _write(text: string) {
 		this._output += text;
 
 		var logged = this.getLogText(text);
 		this.logger.log("Emitted: " + logged);
+	}
+
+	public write(text: string) {
+		if(this._output.endsWith(this.NEWLINE_CHARACTER))
+			this._write(this.currentIndentation);
+
+		this._write(text);
 	}
 
 	increaseIndentation() {
@@ -75,7 +87,7 @@ export class TypeScriptEmitter {
 				node, 
 				resultFile);
 				
-			this.write(result);
+			this._write(result);
 			this.ensureNewParagraph();
 		}
 
