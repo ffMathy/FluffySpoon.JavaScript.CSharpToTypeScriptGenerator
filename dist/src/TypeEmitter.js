@@ -57,16 +57,10 @@ var TypeEmitter = /** @class */ (function () {
         var node;
         var typeMappingAsType = this.getMatchingTypeMappingAsType(type, options);
         if (!typeMappingAsType) {
-            var typeFile = ts.createSourceFile("", this.getMatchingTypeMappingAsString(type, options), ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
-            var syntaxList = typeFile.getChildAt(0);
-            ts.createTypeLiteralNode([ts.createIndexSignature([], [], [])]);
-            var block = syntaxList.getChildAt(0);
-            var statement1 = block.getChildAt(0); //openBraceToken
-            var statement2 = block.getChildAt(1);
-            var statement2Expression1 = statement2.getChildAt(0);
-            var statement2Colon = statement2.getChildAt(1);
-            var statement2Expression2 = statement2.getChildAt(2);
-            debugger;
+            var typeString = this.getMatchingTypeMappingAsString(type, options);
+            var typeFile = ts.createSourceFile("", "let tmp: " + typeString, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+            var literalNode = typeFile.statements[0].declarationList.declarations[0].type;
+            node = literalNode;
         }
         else {
             node = this.createTypeScriptTypeReferenceNodes([typeMappingAsType], options)[0];

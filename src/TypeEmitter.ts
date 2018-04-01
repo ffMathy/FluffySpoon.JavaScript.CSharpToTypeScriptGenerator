@@ -82,24 +82,17 @@ export class TypeEmitter {
 
 		this.logger.log("Emitting type", type);
 
-		var node: ts.Node;
+		var node: ts.TypeReferenceNode | ts.TypeLiteralNode;
 
 		var typeMappingAsType = this.getMatchingTypeMappingAsType(type, options);
 		if(!typeMappingAsType) {
+			const typeString = this.getMatchingTypeMappingAsString(type, options);
 			const typeFile = ts.createSourceFile(
-				"", this.getMatchingTypeMappingAsString(type, options), 
+				"", `let tmp: ${typeString}`, 
 				ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
-			var syntaxList = typeFile.getChildAt(0) as ts.SyntaxList;
-			ts.createTypeLiteralNode([ts.createIndexSignature(
-				[], [], [],
-			)]);
-			var block = syntaxList.getChildAt(0) as ts.Block;
-			var statement1 = block.getChildAt(0); //openBraceToken
-			var statement2 = block.getChildAt(1) as ts.SyntaxList;
-			var statement2Expression1 = statement2.getChildAt(0) as ts.Expression;
-			var statement2Colon = statement2.getChildAt(1) as ts.ColonToken;
-			var statement2Expression2 = statement2.getChildAt(2) as ts.Expression;
-			debugger;
+
+			var literalNode = (typeFile.statements[0] as ts.VariableStatement).declarationList.declarations[0].type as ts.TypeLiteralNode;
+			node = literalNode;
 		} else {
 			node = this.createTypeScriptTypeReferenceNodes(
 				[typeMappingAsType], 

@@ -19,7 +19,7 @@ export declare class TypeEmitter {
     emitType(type: CSharpType, options: TypeEmitOptions): void;
     emitGenericParameters(genericParameters: CSharpType[], options: TypeEmitOptions): void;
     createTypeScriptExpressionWithTypeArguments(type: CSharpType, options: TypeEmitOptions): ts.ExpressionWithTypeArguments;
-    createTypeScriptTypeReferenceNode(type: CSharpType, options: TypeEmitOptions): ts.Node;
+    createTypeScriptTypeReferenceNode(type: CSharpType, options: TypeEmitOptions): ts.TypeReferenceNode | ts.TypeLiteralNode;
     createTypeScriptTypeParameterDeclaration(type: CSharpType, options: TypeEmitOptions): ts.TypeParameterDeclaration;
     createTypeScriptTypeReferenceNodes(types: CSharpType[], options: TypeEmitOptions): ts.TypeReferenceNode[];
     private getNonGenericTypeName(type);

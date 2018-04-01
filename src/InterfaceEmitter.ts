@@ -95,7 +95,6 @@ export class InterfaceEmitter {
 					interfaceObject.inheritsFrom,
 					options.inheritedTypeEmitOptions)]));
 
-		debugger;
 		var properties = interfaceObject
 			.properties
 			.map(x => this

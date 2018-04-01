@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "fluffy-spoon.javascript.csharp-parser": "https://github.com/ffMathy/FluffySpoon.JavaScript.CSharpParser.git",
-    "typescript": "latest"
+    "npm": "^5.8.0",
+    "typescript": "^2.8.1"
   }
 }
