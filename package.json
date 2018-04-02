@@ -23,7 +23,7 @@
     "jasmine": "^2.6.0"
   },
   "dependencies": {
-    "fluffy-spoon.javascript.csharp-parser": "https://github.com/ffMathy/FluffySpoon.JavaScript.CSharpParser.git",
+    "fluffy-spoon.javascript.csharp-parser": "git+https://github.com/ffMathy/FluffySpoon.JavaScript.CSharpParser.git",
     "npm": "^5.8.0",
     "typescript": "^2.8.1"
   }

@@ -88,11 +88,13 @@ export class InterfaceEmitter {
 			modifiers.push(ts.createToken(ts.SyntaxKind.DeclareKeyword));
 
 		var heritageClauses = new Array<ts.HeritageClause>();
-		if (interfaceObject.inheritsFrom && this.typeEmitter.canEmitType(interfaceObject.inheritsFrom, options.inheritedTypeEmitOptions))
+		var implementationsToEmit = (interfaceObject.implements || [])
+			.filter(x => this.typeEmitter.canEmitType(x, options.inheritedTypeEmitOptions))
+		for(var implement of implementationsToEmit)
 			heritageClauses.push(ts.createHeritageClause(
 				ts.SyntaxKind.ExtendsKeyword,
 				[this.typeEmitter.createTypeScriptExpressionWithTypeArguments(
-					interfaceObject.inheritsFrom,
+					implement,
 					options.inheritedTypeEmitOptions)]));
 
 		var properties = interfaceObject

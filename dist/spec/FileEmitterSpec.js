@@ -53,7 +53,8 @@ describe("UseCases", function () {
     runCase("Class");
     runCase("AspNetCoreControllerToAngularClient", function () {
         var controllerClassFilter = function (classObject) {
-            var inheritsFromController = classObject.name.endsWith("Controller") || (classObject.inheritsFrom && classObject.inheritsFrom.name.endsWith("Controller"));
+            var isTypeController = function (type) { return type.name.endsWith("Controller"); };
+            var inheritsFromController = isTypeController(classObject) || !!classObject.inheritsFrom.filter(isTypeController)[0];
             var hasControllerAttribute = !!classObject.attributes.filter(function (a) { return a.name === "Controller"; })[0];
             var hasNonControllerAttribute = !!classObject.attributes.filter(function (a) { return a.name === "NonController"; })[0];
             return (inheritsFromController || hasControllerAttribute) && !hasNonControllerAttribute;
@@ -102,6 +103,7 @@ describe("UseCases", function () {
                             typescriptEmitter.write("): ");
                             typeEmitter.emitType(actionMethod.returnType, {
                                 mapper: function (type, suggested) {
+                                    debugger;
                                     if (type.name !== "Task<>")
                                         return "Promise<" + suggested + ">";
                                     return suggested;

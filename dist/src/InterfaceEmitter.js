@@ -46,8 +46,12 @@ var InterfaceEmitter = /** @class */ (function () {
         if (options.declare)
             modifiers.push(ts.createToken(ts.SyntaxKind.DeclareKeyword));
         var heritageClauses = new Array();
-        if (interfaceObject.inheritsFrom && this.typeEmitter.canEmitType(interfaceObject.inheritsFrom, options.inheritedTypeEmitOptions))
-            heritageClauses.push(ts.createHeritageClause(ts.SyntaxKind.ExtendsKeyword, [this.typeEmitter.createTypeScriptExpressionWithTypeArguments(interfaceObject.inheritsFrom, options.inheritedTypeEmitOptions)]));
+        var implementationsToEmit = (interfaceObject.implements || [])
+            .filter(function (x) { return _this.typeEmitter.canEmitType(x, options.inheritedTypeEmitOptions); });
+        for (var _i = 0, implementationsToEmit_1 = implementationsToEmit; _i < implementationsToEmit_1.length; _i++) {
+            var implement = implementationsToEmit_1[_i];
+            heritageClauses.push(ts.createHeritageClause(ts.SyntaxKind.ExtendsKeyword, [this.typeEmitter.createTypeScriptExpressionWithTypeArguments(implement, options.inheritedTypeEmitOptions)]));
+        }
         var properties = interfaceObject
             .properties
             .map(function (x) { return _this

@@ -70,8 +70,12 @@ var ClassEmitter = /** @class */ (function () {
             if (options.declare)
                 modifiers.push(ts.createToken(ts.SyntaxKind.DeclareKeyword));
             var heritageClauses = new Array();
-            if (classObject.inheritsFrom && this.typeEmitter.canEmitType(classObject.inheritsFrom, options.inheritedTypeEmitOptions))
-                heritageClauses.push(ts.createHeritageClause(ts.SyntaxKind.ExtendsKeyword, [this.typeEmitter.createTypeScriptExpressionWithTypeArguments(classObject.inheritsFrom, options.inheritedTypeEmitOptions)]));
+            var inheritancesToEmit = (classObject.inheritsFrom || [])
+                .filter(function (x) { return _this.typeEmitter.canEmitType(x, options.inheritedTypeEmitOptions); });
+            for (var _i = 0, inheritancesToEmit_1 = inheritancesToEmit; _i < inheritancesToEmit_1.length; _i++) {
+                var inheritsFrom = inheritancesToEmit_1[_i];
+                heritageClauses.push(ts.createHeritageClause(ts.SyntaxKind.ExtendsKeyword, [this.typeEmitter.createTypeScriptExpressionWithTypeArguments(inheritsFrom, options.inheritedTypeEmitOptions)]));
+            }
             var properties = classObject
                 .properties
                 .map(function (x) { return _this
@@ -126,8 +130,8 @@ var ClassEmitter = /** @class */ (function () {
                 nestingLevel: options.nestingLevel,
             };
             var namespaceNodes = namespaceEmitter.createTypeScriptNamespaceNodes(wrappedNamespace, namespaceOptions);
-            for (var _i = 0, namespaceNodes_1 = namespaceNodes; _i < namespaceNodes_1.length; _i++) {
-                var namespaceNode = namespaceNodes_1[_i];
+            for (var _a = 0, namespaceNodes_1 = namespaceNodes; _a < namespaceNodes_1.length; _a++) {
+                var namespaceNode = namespaceNodes_1[_a];
                 nodes.push(namespaceNode);
             }
         }
