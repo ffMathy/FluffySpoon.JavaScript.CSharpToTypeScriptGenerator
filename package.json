@@ -1,5 +1,5 @@
 {
-  "name": "fluffy-spoon.javascript.csharp-to-typescript-generator",
+  "name": "@fluffy-spoon/javascript.csharp-to-typescript-generator",
   "version": "1.0.0",
   "description": "Parses C# code as well as possible into JavaScript objects.",
   "main": "./dist/Index.js",
