@@ -197,6 +197,11 @@ var Emitter = /** @class */ (function () {
         if (!options.filter) {
             options.filter = function (method) { return !!method.isPublic; };
         }
+        if (!options.perMethodEmitOptions) {
+            options.perMethodEmitOptions = function (method) { return ({
+                name: method.name.charAt(0).toLowerCase() + method.name.substring(1)
+            }); };
+        }
         options.argumentTypeEmitOptions = this.prepareTypeEmitOptionDefaults(options.argumentTypeEmitOptions);
         options.returnTypeEmitOptions = this.prepareTypeEmitOptionDefaults(options.returnTypeEmitOptions);
         return options;

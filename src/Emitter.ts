@@ -8,7 +8,7 @@ import { EnumEmitter, EnumEmitOptions, EnumEmitOptionsBase } from './EnumEmitter
 import { ClassEmitter, ClassEmitOptions, ClassEmitOptionsBase } from './ClassEmitter';
 import { InterfaceEmitter, InterfaceEmitOptions, InterfaceEmitOptionsBase } from './InterfaceEmitter';
 import { NamespaceEmitter, NamespaceEmitOptions, NamespaceEmitOptionsBase } from './NamespaceEmitter';
-import { MethodEmitOptions, MethodEmitOptionsBase } from './MethodEmitter';
+import { MethodEmitOptions, MethodEmitOptionsBase, PerMethodEmitOptions } from './MethodEmitter';
 import { PropertyEmitOptions, PerPropertyEmitOptions, PropertyEmitOptionsBase } from './PropertyEmitter';
 import { FieldEmitOptions, FieldEmitOptionsBase } from './FieldEmitter';
 import { Logger } from './Logger';
@@ -282,6 +282,12 @@ export class Emitter {
 
 		if (!options.filter) {
 			options.filter = (method) => !!method.isPublic;
+		}
+
+		if (!options.perMethodEmitOptions) {
+			options.perMethodEmitOptions = (method) => <PerMethodEmitOptions>{
+				name: method.name.charAt(0).toLowerCase() + method.name.substring(1)
+			};
 		}
 
 		options.argumentTypeEmitOptions = this.prepareTypeEmitOptionDefaults(options.argumentTypeEmitOptions);

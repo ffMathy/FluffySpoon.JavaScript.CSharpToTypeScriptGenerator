@@ -45,7 +45,7 @@ var MethodEmitter = /** @class */ (function () {
         var initializer = null;
         if (parameter.defaultValue)
             initializer = ts.createLiteral(parameter.defaultValue);
-        var node = ts.createParameter([], [], null, options.name || parameter.name, null, this.typeEmitter.createTypeScriptTypeReferenceNode(parameter.type, options.argumentTypeEmitOptions), initializer);
+        var node = ts.createParameter([], [], parameter.isVariadicContainer ? ts.createToken(ts.SyntaxKind.DotDotDotToken) : null, parameter.name, null, this.typeEmitter.createTypeScriptTypeReferenceNode(parameter.type, options.argumentTypeEmitOptions), initializer);
         return node;
     };
     return MethodEmitter;

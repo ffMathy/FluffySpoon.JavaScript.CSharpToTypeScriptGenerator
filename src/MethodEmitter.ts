@@ -91,8 +91,8 @@ export class MethodEmitter {
 		var node = ts.createParameter(
 			[],
 			[],
-			null,
-			options.name || parameter.name,
+			parameter.isVariadicContainer ? ts.createToken(ts.SyntaxKind.DotDotDotToken) : null,
+			parameter.name,
 			null,
 			this.typeEmitter.createTypeScriptTypeReferenceNode(
 				parameter.type,

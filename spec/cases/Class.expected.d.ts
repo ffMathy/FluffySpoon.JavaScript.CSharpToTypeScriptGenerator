@@ -1,6 +1,7 @@
 ﻿declare interface BeforeClass {
 	foo: string;
 	myProperty: string;
+	myMethod(foo: string, ...bar: Array<string>): void;
 }
 
 declare interface MainClass<Foo> {

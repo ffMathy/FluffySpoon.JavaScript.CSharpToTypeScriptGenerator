@@ -2,6 +2,10 @@
 {
 	public string MyProperty { get; set; }
 
+	public void MyMethod(string foo, params string[] bar) {
+		
+	}
+
 	public string foo;
 }
 

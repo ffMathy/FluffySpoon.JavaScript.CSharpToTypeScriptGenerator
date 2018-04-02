@@ -13,7 +13,8 @@ import {
 	CSharpNamespace,
 	CSharpField,
 	CSharpProperty,
-	CSharpStruct
+	CSharpStruct,
+	CSharpMethod
 } from 'fluffy-spoon.javascript.csharp-parser';
 
 Error.stackTraceLimit = 100;
@@ -42,7 +43,11 @@ function LegacyAdapter(contents: any, options: any) {
 					name: struct.name
 				}
 			},
-			methodEmitOptions: {},
+			methodEmitOptions: {
+				perMethodEmitOptions: (method: CSharpMethod) => <PerMethodEmitOptions>{
+					name: method.name
+				}
+			},
 			enumEmitOptions: {},
 			interfaceEmitOptions: {
 				filter: (interfaceObject) => false

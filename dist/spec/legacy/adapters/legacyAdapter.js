@@ -25,7 +25,11 @@ function LegacyAdapter(contents, options) {
                     name: struct.name
                 }); }
             },
-            methodEmitOptions: {},
+            methodEmitOptions: {
+                perMethodEmitOptions: function (method) { return ({
+                    name: method.name
+                }); }
+            },
             enumEmitOptions: {},
             interfaceEmitOptions: {
                 filter: function (interfaceObject) { return false; }
