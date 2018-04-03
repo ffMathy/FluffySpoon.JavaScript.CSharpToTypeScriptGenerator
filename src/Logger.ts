@@ -24,7 +24,7 @@ export class Logger {
 			return;
 
 		if (!this.logMethod)
-			this.setLogMethod(console.log);
+			this.setLogMethod(() => {});
 
 		if (parameters && parameters.length > 0) {
 			this.logMethod(message, parameters);
