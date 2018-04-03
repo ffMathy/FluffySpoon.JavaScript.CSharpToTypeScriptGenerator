@@ -132,7 +132,6 @@ describe("UseCases", function () {
 
 							typeEmitter.emitType(actionMethod.returnType, { 
 								mapper: (type, suggested) => {
-									debugger;
 									if(type.name !== "Task<>") return `Promise<${suggested}>`;
 									return suggested;
 								}

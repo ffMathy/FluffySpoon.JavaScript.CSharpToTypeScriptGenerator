@@ -84,20 +84,16 @@ export class MethodEmitter {
 	}
 
 	private createTypeScriptMethodParameterNode(parameter: CSharpMethodParameter, options: MethodEmitOptions & PerMethodEmitOptions) {
-		var initializer: ts.Expression = null;
-		if(parameter.defaultValue) 
-			initializer = ts.createLiteral(parameter.defaultValue as any);
-
 		var node = ts.createParameter(
 			[],
 			[],
 			parameter.isVariadicContainer ? ts.createToken(ts.SyntaxKind.DotDotDotToken) : null,
 			parameter.name,
-			null,
+			parameter.defaultValue ? ts.createToken(ts.SyntaxKind.QuestionToken) : null,
 			this.typeEmitter.createTypeScriptTypeReferenceNode(
 				parameter.type,
 				options.argumentTypeEmitOptions),
-			initializer);
+			null);
 		return node;
 	}
 

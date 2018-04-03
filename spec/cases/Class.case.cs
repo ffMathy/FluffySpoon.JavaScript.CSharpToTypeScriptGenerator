@@ -2,9 +2,9 @@
 {
 	public string MyProperty { get; set; }
 
-	public void MyMethod(string foo, params string[] bar) {
-		
-	}
+	public void MyMethod(string foo, params string[] bar) { }
+
+	public void MyNullParameterMethod(string foo = null) { }
 
 	public string foo;
 }
