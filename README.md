@@ -31,7 +31,7 @@ To see pre-made examples designed for frameworks like Angular and ASP .NET Core 
 
 ## Default settings
 ```typescript
-var typescriptCode = emitter.emitFile();
+var typescriptCode = emitter.emit();
 ```
 
 Given the following CSharp model code:
@@ -79,7 +79,7 @@ declare namespace MyNamespace {
 
 ### Ignoring methods
 ```typescript
-var typescriptCode = emitter.emitFile(<EmitOptions>{
+var typescriptCode = emitter.emit(<EmitOptions>{
   defaults: <DefaultEmitOptions>{
     methodEmitOptions: <MethodEmitOptions>{
       filter: (method: CSharpMethod) => false //returning false filters away all methods
@@ -109,7 +109,7 @@ declare interface MyClass {
 
 ## Wrapping all emitted code in a namespace
 ```typescript
-var typescriptCode = emitter.emitFile(<EmitOptions>{
+var typescriptCode = emitter.emit(<EmitOptions>{
   file: <FileEmitOptions>{
     onAfterParse: (file: CSharpFile) => {
       //we create a namespace, move all items of the file into that namespace, and remove the same items from the file. 
@@ -158,7 +158,7 @@ declare namespace MyNamespace {
 
 ## Specify what TypeScript types specific CSharp types map to
 ```typescript
-var typescriptCode = emitter.emitFile(<EmitOptions>{
+var typescriptCode = emitter.emit(<EmitOptions>{
   defaults: <DefaultEmitOptions>{
     typeEmitOptions: <TypeEmitOptions>{
       mapper: (type: CSharpType, suggested: string) => type.name === "DateTime" ? "Date" : suggested
@@ -187,7 +187,7 @@ declare interface MyClass {
 
 ## Including private properties
 ```typescript
-var typescriptCode = emitter.emitFile(<EmitOptions>{
+var typescriptCode = emitter.emit(<EmitOptions>{
   defaults: <DefaultEmitOptions>{
     propertyEmitOptions: <PropertyEmitOptions>{
       filter: (property: CSharpProperty) => true //the default filter is "property.isPublic === true"
@@ -218,7 +218,7 @@ declare interface MyClass {
 
 ## Pascal-casing property names
 ```typescript
-var typescriptCode = emitter.emitFile(<EmitOptions>{
+var typescriptCode = emitter.emit(<EmitOptions>{
   defaults: <DefaultEmitOptions>{
     propertyEmitOptions: <PropertyEmitOptions>{
       perPropertyEmitOptions: (property: CSharpProperty) => <PerPropertyEmitOptions>{
@@ -251,7 +251,7 @@ declare interface MyClass {
 
 ## Prefixing all class names with "I"
 ```typescript
-var typescriptCode = emitter.emitFile(<EmitOptions>{
+var typescriptCode = emitter.emit(<EmitOptions>{
   defaults: <DefaultEmitOptions>{
     classEmitOptions: <ClassEmitOptions>{
       perClassEmitOptions: (classObjcect: CSharpClass) => <PerClassEmitOptions>{
@@ -294,7 +294,7 @@ declare interface ISomeInheritedClass {
 
 ## Removing inheritance
 ```typescript
-var typescriptCode = emitter.emitFile(<EmitOptions>{
+var typescriptCode = emitter.emit(<EmitOptions>{
   defaults: <FileEmitOptions>{
     classEmitOptions: <ClassEmitOptions>{
       perClassEmitOptions: (classObjcect: CSharpClass) => <PerClassEmitOptions>{
@@ -336,7 +336,7 @@ declare interface SomeInheritedClass {
 
 ## Convert enums to string union types
 ```typescript
-var typescriptCode = emitter.emitFile(<EmitOptions>{
+var typescriptCode = emitter.emit(<EmitOptions>{
   defaults: <DefaultEmitOptions>{
     enumEmitOptions: <EnumEmitOptions>{
       strategy: "string-union"
