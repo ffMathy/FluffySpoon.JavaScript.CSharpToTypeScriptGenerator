@@ -23,7 +23,7 @@
     "jasmine": "^2.6.0"
   },
   "dependencies": {
-    "@fluffy-spoon/javascript.csharp-parser": "1.0.95",
+    "@fluffy-spoon/javascript.csharp-parser": "1.0.102",
     "npm": "^5.8.0",
     "typescript": "^2.8.1"
   }
