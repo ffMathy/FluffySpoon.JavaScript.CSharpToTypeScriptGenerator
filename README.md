@@ -13,7 +13,7 @@ These recipes help you quickly get started with common scenarios you may need. F
 The following code shows general usage. The examples below only differ in the `EmitOptions` provided.
 
 ```typescript
-import { FileEmitter } from 'fluffy-spoon.javascript.csharp-to-typescript-generator';
+import { FileEmitter } from '@fluffy-spoon/javascript.csharp-to-typescript-generator';
 
 var csharpCode = "insert the CSharp model code here - you could also read it from a file.";
 var emitter = new FileEmitter(csharpCode);
