@@ -1,4 +1,4 @@
-import { FileParser, CSharpEnum, CSharpEnumOption, CSharpFile } from 'fluffy-spoon.javascript.csharp-parser';
+import { FileParser, CSharpEnum, CSharpEnumOption, CSharpFile } from '@fluffy-spoon/javascript.csharp-parser';
 
 import { TypeScriptEmitter } from './TypeScriptEmitter';
 import { TypeEmitOptions } from './TypeEmitter';
