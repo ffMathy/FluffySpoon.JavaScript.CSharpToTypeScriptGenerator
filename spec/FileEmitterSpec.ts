@@ -6,7 +6,7 @@ import { FileEmitOptions } from '../src/FileEmitter';
 import { TypeScriptEmitter } from '../src/TypeScriptEmitter';
 import { TypeEmitter, TypeEmitOptions } from '../src/Index';
 
-import { CSharpFile, CSharpClass, CSharpMethod } from 'fluffy-spoon.javascript.csharp-parser';
+import { CSharpFile, CSharpClass, CSharpMethod } from '@fluffy-spoon/javascript.csharp-parser';
 
 import typescript = require("typescript");
 
