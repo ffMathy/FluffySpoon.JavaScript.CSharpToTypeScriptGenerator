@@ -16,7 +16,6 @@ export class Logger {
 
 	setLogMethod(method: LogMethod) {
 		this.logMethod = method;
-        console.log("Log method set.");
 	}
 
 	log(message: any, ...parameters: any[]) {
