@@ -19,7 +19,7 @@ export {
     CSharpPropertyComponent, 
     CSharpField, 
     CSharpStruct 
-} from 'fluffy-spoon.javascript.csharp-parser';
+} from '@fluffy-spoon/javascript.csharp-parser';
 
 export { ClassEmitter, ClassEmitOptions, PerClassEmitOptions, ClassEmitOptionsBase } from './ClassEmitter';
 export { EnumEmitter, EnumEmitOptions } from './EnumEmitter';
