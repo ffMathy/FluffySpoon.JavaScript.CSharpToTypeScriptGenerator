@@ -1,4 +1,4 @@
-﻿import { CSharpProperty } from 'fluffy-spoon.javascript.csharp-parser';
+﻿import { CSharpProperty } from '@fluffy-spoon/javascript.csharp-parser';
 import { TypeScriptEmitter } from './TypeScriptEmitter';
 import { TypeEmitter, TypeEmitOptions } from './TypeEmitter';
 import { Logger } from './Logger';
