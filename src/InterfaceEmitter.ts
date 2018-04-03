@@ -101,13 +101,15 @@ export class InterfaceEmitter {
 			.properties
 			.map(x => this
 				.propertyEmitter
-				.createTypeScriptPropertyNode(x, options.propertyEmitOptions));
+				.createTypeScriptPropertyNode(x, options.propertyEmitOptions))
+			.filter(x => !!x);
 
 		var methods = interfaceObject
 			.methods
 			.map(x => this
 				.methodEmitter
-				.createTypeScriptMethodNode(x, options.methodEmitOptions));
+				.createTypeScriptMethodNode(x, options.methodEmitOptions))
+			.filter(x => !!x);
 
 		var genericParameters = new Array<ts.TypeParameterDeclaration>();
 		if (interfaceObject.genericParameters)

@@ -56,7 +56,7 @@ export class PropertyEmitter {
 				options);
 
 		if (!options.filter(property))
-			return;
+			return null;
 
 		var modifiers = new Array<ts.Modifier>();
 		if ((typeof options.readOnly !== "boolean" || options.readOnly) && property.isReadOnly)

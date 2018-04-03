@@ -127,13 +127,15 @@ export class ClassEmitter {
 				.properties
 				.map(x => this
 					.propertyEmitter
-					.createTypeScriptPropertyNode(x, options.propertyEmitOptions));
+					.createTypeScriptPropertyNode(x, options.propertyEmitOptions))
+				.filter(x => !!x);
 					
 			var methods = classObject
 				.methods
 				.map(x => this
 					.methodEmitter
-					.createTypeScriptMethodNode(x, options.methodEmitOptions));
+					.createTypeScriptMethodNode(x, options.methodEmitOptions))
+				.filter(x => !!x);
 
 			var genericParameters = new Array<ts.TypeParameterDeclaration>();
 			if (classObject.genericParameters)
@@ -147,7 +149,8 @@ export class ClassEmitter {
 				.fields
 				.map(x => this
 					.fieldEmitter
-					.createTypeScriptFieldNode(x, options.fieldEmitOptions));
+					.createTypeScriptFieldNode(x, options.fieldEmitOptions))
+				.filter(x => !!x);
 
 			var classMembers = [...fields, ...properties, ...methods];
 			var node = ts.createInterfaceDeclaration(
