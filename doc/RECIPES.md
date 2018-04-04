@@ -113,7 +113,7 @@ var typescriptCode = emitter.emitFile(<EmitOptions>{
             }
         }
     }
-    });
+});
 ```
 
 Given the following CSharp model code:
