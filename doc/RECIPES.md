@@ -43,8 +43,7 @@ var typescriptCode = emitter.emitFile(<EmitOptions>{
                     controllerNameWithoutSuffix = controllerNameWithoutSuffix.substr(0, controllerNameWithoutSuffix.lastIndexOf("Controller"));
 
                 typescriptEmitter.writeLine("@Injectable()");
-                typescriptEmitter.writeLine(`export class ${controllerNameWithoutSuffix}Client {`);
-                typescriptEmitter.increaseIndentation();
+                typescriptEmitter.enterScope(`export class ${controllerNameWithoutSuffix}Client {`);
 
                 typescriptEmitter.writeLine("constructor(private http: HttpClient) { }");
                 typescriptEmitter.ensureNewParagraph();
@@ -80,8 +79,7 @@ var typescriptCode = emitter.emitFile(<EmitOptions>{
                         }
                     });
 
-                    typescriptEmitter.writeLine(" {");
-                    typescriptEmitter.increaseIndentation();
+                    typescriptEmitter.enterScope(" {");
 
                     var method = "get";
                     for(var actionAttribute of actionMethod.attributes) {
@@ -100,15 +98,13 @@ var typescriptCode = emitter.emitFile(<EmitOptions>{
 
                     typescriptEmitter.writeLine(").toPromise();");
 
-                    typescriptEmitter.decreaseIndentation();
-                    typescriptEmitter.write("}");
+                    typescriptEmitter.leaveScope();
                     typescriptEmitter.ensureNewParagraph();
                 }
                 
                 typescriptEmitter.ensureNewLine();
 
-                typescriptEmitter.decreaseIndentation();
-                typescriptEmitter.write("}");
+                typescriptEmitter.leaveScope();
                 typescriptEmitter.ensureNewParagraph();
             }
         }
