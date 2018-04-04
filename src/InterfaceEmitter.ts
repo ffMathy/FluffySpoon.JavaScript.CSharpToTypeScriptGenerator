@@ -39,8 +39,11 @@ export class InterfaceEmitter {
 
 	constructor(
 		private typeScriptEmitter: TypeScriptEmitter,
-		private logger: Logger
+		private logger?: Logger
 	) {
+		if(!this.logger) 
+			this.logger = new Logger();
+		
 		this.propertyEmitter = new PropertyEmitter(typeScriptEmitter, logger);
 		this.methodEmitter = new MethodEmitter(typeScriptEmitter, logger);
 		this.typeEmitter = new TypeEmitter(typeScriptEmitter, logger);

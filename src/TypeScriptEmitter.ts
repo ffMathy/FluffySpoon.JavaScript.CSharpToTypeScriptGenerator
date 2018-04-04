@@ -10,7 +10,10 @@ export class TypeScriptEmitter {
 
 	private readonly NEWLINE_CHARACTER = "\n";
 
-	constructor(private logger: Logger) {
+	constructor(private logger?: Logger) {
+		if(!this.logger) 
+			this.logger = new Logger();
+		
 		this._output = '';
 		this.indentationLevel = 0;
 		this.indentation = '    ';

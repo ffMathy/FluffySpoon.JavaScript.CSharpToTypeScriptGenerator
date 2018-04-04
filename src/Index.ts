@@ -21,6 +21,8 @@ export {
     CSharpStruct 
 } from '@fluffy-spoon/javascript.csharp-parser';
 
+export { Logger } from './Logger';
+
 export { ClassEmitter, ClassEmitOptions, PerClassEmitOptions, ClassEmitOptionsBase } from './ClassEmitter';
 export { EnumEmitter, EnumEmitOptions } from './EnumEmitter';
 export { Emitter, EmitOptions } from './Emitter';

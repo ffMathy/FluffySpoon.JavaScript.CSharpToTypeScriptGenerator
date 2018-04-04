@@ -30,8 +30,11 @@ export class MethodEmitter {
 
 	constructor(
 		private typeScriptEmitter: TypeScriptEmitter,
-		private logger: Logger
+		private logger?: Logger
 	) {
+		if(!this.logger) 
+			this.logger = new Logger();
+		
 		this.typeEmitter = new TypeEmitter(typeScriptEmitter, logger);
 		this.optionsHelper = new OptionsHelper();
 	}

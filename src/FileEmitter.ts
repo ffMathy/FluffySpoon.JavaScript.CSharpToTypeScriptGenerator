@@ -35,10 +35,13 @@ export class FileEmitter {
 	private structEmitter: StructEmitter;
 
 	constructor(
-		private logger: Logger,
+		content: string,
 		private typeScriptEmitter: TypeScriptEmitter,
-		content: string) 
+		private logger?: Logger) 
 	{
+		if(!this.logger) 
+			this.logger = new Logger();
+		
 		this.fileParser = new FileParser(content);
 
 		this.enumEmitter = new EnumEmitter(this.typeScriptEmitter, this.logger);

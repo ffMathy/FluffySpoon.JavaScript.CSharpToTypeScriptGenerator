@@ -48,7 +48,7 @@ export class Emitter {
 		this.logger = new Logger();
 		this.typeScriptEmitter = new TypeScriptEmitter(this.logger);
 
-		this.fileEmitter = new FileEmitter(this.logger, this.typeScriptEmitter, content);
+		this.fileEmitter = new FileEmitter(content, this.typeScriptEmitter, this.logger);
 		this.optionsHelper = new OptionsHelper();
 	}
 

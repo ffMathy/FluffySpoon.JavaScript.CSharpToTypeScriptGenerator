@@ -17,8 +17,10 @@ export interface EnumEmitOptions extends EnumEmitOptionsBase {
 export class EnumEmitter {
 	constructor(
 		private typeScriptEmitter: TypeScriptEmitter,
-		private logger: Logger) {
-
+		private logger?: Logger) 
+	{
+		if(!this.logger) 
+			this.logger = new Logger();
 	}
 
 	emitEnums(enums: CSharpEnum[], options: EnumEmitOptions) {

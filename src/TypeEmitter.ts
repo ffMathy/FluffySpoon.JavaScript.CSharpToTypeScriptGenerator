@@ -20,8 +20,11 @@ export class TypeEmitter {
 
 	constructor(
 		private typeScriptEmitter: TypeScriptEmitter,
-        private logger: Logger
+        private logger?: Logger
 	) {
+		if(!this.logger) 
+			this.logger = new Logger();
+		
 		this.typeParser = new TypeParser();
 		this.regexHelper = new RegExHelper();
 

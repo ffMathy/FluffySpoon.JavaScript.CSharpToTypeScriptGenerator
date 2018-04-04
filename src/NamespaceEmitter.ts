@@ -33,8 +33,11 @@ export class NamespaceEmitter {
 
 	constructor(
 		private typeScriptEmitter: TypeScriptEmitter,
-		private logger: Logger
+		private logger?: Logger
 	) {
+		if(!this.logger) 
+			this.logger = new Logger();
+		
 		this.enumEmitter = new EnumEmitter(typeScriptEmitter, logger);
 		this.classEmitter = new ClassEmitter(typeScriptEmitter, logger);
 		this.interfaceEmitter = new InterfaceEmitter(typeScriptEmitter, logger);

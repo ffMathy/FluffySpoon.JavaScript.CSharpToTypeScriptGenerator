@@ -50,8 +50,11 @@ export class ClassEmitter {
 
 	constructor(
 		private typeScriptEmitter: TypeScriptEmitter,
-		private logger: Logger
+		private logger?: Logger
 	) {
+		if(!this.logger) 
+			this.logger = new Logger();
+
 		this.enumEmitter = new EnumEmitter(typeScriptEmitter, logger);
 		this.propertyEmitter = new PropertyEmitter(typeScriptEmitter, logger);
 		this.fieldEmitter = new FieldEmitter(typeScriptEmitter, logger);
