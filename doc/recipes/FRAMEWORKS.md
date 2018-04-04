@@ -1,5 +1,5 @@
-# Recipes
-Recipes are pre-made options that work with a framework of your choise.
+# Framework recipes
+These recipes are pre-made options that work with a framework of your choise.
 
 ## ASP .NET Core + Angular
 
@@ -56,7 +56,7 @@ var typescriptCode = emitter.emitFile(<EmitOptions>{
                     var actionNameCamelCase = actionMethod.name.substr(0, 1).toLowerCase() + actionMethod.name.substr(1);
                     typescriptEmitter.write(`async ${actionNameCamelCase}(`);
 
-                    const typeEmitter = new TypeEmitter(typescriptEmitter, new Logger());
+                    const typeEmitter = new TypeEmitter(typescriptEmitter);
 
                     var parameterOffset = 0;
                     for(var parameter of actionMethod.parameters) {
