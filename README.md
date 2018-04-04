@@ -10,6 +10,12 @@ Uses the following library for parsing C# code from TypeScript: https://github.c
 # Configuration
 To see all available settings, [look at the configuration options here](doc/CONFIGURATION.md).
 
+## Recipes for frameworks & libraries
+To see pre-made examples designed for frameworks like Angular and ASP .NET Core (for instance for auto-generating HTTP clients for each controller action), go [see the framework recipes here](doc/recipes/FRAMEWORKS.md).
+
+## Other recipes
+To see all other examples for common use cases, go [see the other recipes here](doc/recipes/OTHER.md).
+
 # Usage examples
 These recipes help you quickly get started with common scenarios you may need. Feel free to contribute with your own!
 
@@ -29,12 +35,6 @@ var typescriptCode = emitter.emitFile(options);
 
 - To see the definitions of each C# type such as `CSharpType`, look here: https://github.com/ffMathy/FluffySpoon.JavaScript.CSharpParser/blob/master/dist/src/Models.ts
 - To see the definitions of each option type such as `FileEmitOptions`, look here: https://github.com/ffMathy/FluffySpoon.JavaScript.CSharpToTypeScriptGenerator/blob/master/dist/src/Index.d.ts
-
-## Recipes for frameworks & libraries
-To see pre-made examples designed for frameworks like Angular and ASP .NET Core (for instance for auto-generating HTTP clients for each controller action), go [see the framework recipes here](doc/recipes/FRAMEWORKS.md).
-
-## Other recipes
-To see all other examples for common use cases, go [see the other recipes here](doc/recipes/OTHER.md).
 
 ## Default settings
 ```typescript
