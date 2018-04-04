@@ -10,8 +10,6 @@ Recipes are pre-made options that work with a framework of your choise.
 - For each action, a proper GET/POST/PUT/PATCH method is made with a proper return type (a `Promise` variant of your controller action's original return type).
 
 ```typescript
-import typescript = require("typescript");
-
 var controllerClassFilter = (classObject: CSharpClass) => {
   var inheritsFromController = classObject.name.endsWith("Controller") || (classObject.inheritsFrom && classObject.inheritsFrom.name.endsWith("Controller"));
   var hasControllerAttribute = !!classObject.attributes.filter(a => a.name === "Controller")[0];
