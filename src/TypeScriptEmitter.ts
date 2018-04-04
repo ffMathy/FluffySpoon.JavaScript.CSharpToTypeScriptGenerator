@@ -23,6 +23,16 @@ export class TypeScriptEmitter {
 		this._output = '';
 	}
 
+	enterScope(scopeText: string) {
+		this.writeLine(scopeText);
+		this.increaseIndentation();
+	}
+
+	leaveScope() {
+		this.decreaseIndentation();
+		this.writeLine("}");
+	}
+
 	writeLine(line?: string) {
 		if (line) {
 			if(this._output.endsWith(this.NEWLINE_CHARACTER))
