@@ -11,7 +11,7 @@ namespace MyNamespace.Domain\n\
     {\n\
         Green,\n\
 		Red,\n\
-		Blue\n\
+		Blue,\n\
         //Purple\n\
         /* public string IgnoreMe3 {get; set; } */\n\
         /*\n\

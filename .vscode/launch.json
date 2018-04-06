@@ -24,7 +24,7 @@
             "name": "Run specific test",
             "program": "${workspaceFolder}\\node_modules\\jasmine\\bin\\jasmine.js",
             "args": [
-                "spec\\legacy\\dictionaries.js"
+                "spec\\legacy\\useStringUnionTypes.js"
             ],
             "env": {
                 "NODE_PATH": ".",

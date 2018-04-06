@@ -9,7 +9,7 @@ namespace MyNamespace.Domain\n\
 {\n\
     public enum MyEnum\n\
     {\n\
-        Unknown = -1\n\
+        Unknown = -1,\n\
         Green = 0,\n\
 		Red = 1,\n\
 		Blue = 2\n\

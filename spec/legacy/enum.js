@@ -11,14 +11,14 @@ namespace MyNamespace.Domain\n\
     {\n\
         Green,\n\
 		Red,\n\
-		Blue\n\
+		Blue,\n\
         //Purple\n\
         /* public string IgnoreMe3 {get; set; } */\n\
         /*\n\
         public string IgnoreMe4 {get; set; }\n\
         */\n\
         [SomeAttribute(64)]\n\
-        Pink = 10, Ultraviolet\n\
+        Pink = 10, Ultraviolet,\n\
         Foo=1337\n\
     }\n\
 }\n";
