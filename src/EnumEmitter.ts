@@ -53,8 +53,6 @@ export class EnumEmitter {
 
 		var node: ts.Statement;
 
-		debugger;
-
 		if (options.strategy === "string-union") {
 			node = ts.createTypeAliasDeclaration(
 				[],
