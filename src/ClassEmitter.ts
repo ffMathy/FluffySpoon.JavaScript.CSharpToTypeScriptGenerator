@@ -141,7 +141,7 @@ export class ClassEmitter {
 				.filter(x => !!x);
 
 			var genericParameters = new Array<ts.TypeParameterDeclaration>();
-			if (classObject.genericParameters)
+			if (classObject.isGeneric)
 				genericParameters = genericParameters.concat(classObject
 					.genericParameters
 					.map(x => this

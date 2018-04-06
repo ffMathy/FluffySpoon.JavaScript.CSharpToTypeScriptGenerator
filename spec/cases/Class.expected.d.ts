@@ -3,6 +3,7 @@
 	myProperty: string;
 	myMethod(foo: string, ...bar: Array<string>): void;
 	myNullParameterMethod(foo?: string): void;
+	taskArrayMethod(): Promise<Array<string>>;
 }
 
 declare interface MainClass<Foo> {

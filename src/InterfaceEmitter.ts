@@ -115,7 +115,7 @@ export class InterfaceEmitter {
 			.filter(x => !!x);
 
 		var genericParameters = new Array<ts.TypeParameterDeclaration>();
-		if (interfaceObject.genericParameters)
+		if (interfaceObject.isGeneric)
 			genericParameters = genericParameters.concat(interfaceObject
 				.genericParameters
 				.map(x => this

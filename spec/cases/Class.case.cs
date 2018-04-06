@@ -6,6 +6,8 @@
 
 	public void MyNullParameterMethod(string foo = null) { }
 
+	public Task<IEnumerable<string>> TaskArrayMethod() { }
+
 	public string foo;
 }
 

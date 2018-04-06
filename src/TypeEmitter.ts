@@ -66,15 +66,11 @@ export class TypeEmitter {
 		this.typeScriptEmitter.emitTypeScriptNode(node);
 	}
 
-	emitGenericParameters(genericParameters: CSharpType[], options: TypeEmitOptions) {
-		this.typeScriptEmitter.write(this.generateGenericParametersString(genericParameters, options));
-	}
-
 	createTypeScriptExpressionWithTypeArguments(type: CSharpType, options: TypeEmitOptions) {
 		var typeName = this.getNonGenericMatchingTypeMappingAsString(type, options);
 		return ts.createExpressionWithTypeArguments(
 			this.createTypeScriptTypeReferenceNodes(
-				type.genericParameters || [],
+				type.genericParameters,
 				options),
 			ts.createIdentifier(typeName));
 	}
@@ -118,7 +114,7 @@ export class TypeEmitter {
 	createTypeScriptTypeReferenceNodes(types: CSharpType[], options: TypeEmitOptions) {
 		var nodes = new Array<ts.TypeReferenceNode>();
 		if(!types)
-			return nodes;
+			return [];
 
 		for(var type of types) {
 			var node = ts.createTypeReferenceNode(
@@ -151,7 +147,7 @@ export class TypeEmitter {
 				continue;
 
 			let mapping = this.defaultTypeMap[mappingKey];
-			if (mappingKeyType.genericParameters) {
+			if (mappingKeyType.isGeneric) {
 				mapping = this.substituteMultipleGenericReferencesIntoMapping(
 					mappingKeyType,
 					type,
@@ -163,7 +159,7 @@ export class TypeEmitter {
 		}
 
 		let mappedValue = this.getNonGenericTypeName(type);
-		if(type.genericParameters) {
+		if(type.isGeneric) {
 			mappedValue += this.generateGenericParametersString(type.genericParameters, options);
 		}
 
@@ -175,7 +171,7 @@ export class TypeEmitter {
 			return null;
 
 		var typeName = type.name;
-		if (type.genericParameters) {
+		if (type.isGeneric) {
 			var lastArrowIndex = typeName.lastIndexOf("<");
 			typeName = typeName.substr(0, lastArrowIndex);
 		}
@@ -205,13 +201,16 @@ export class TypeEmitter {
 	}
 
 	private generateGenericParametersString(genericParameters: CSharpType[], options: TypeEmitOptions) {
-		var mapping = "<";
+		var mapping = "";
+		
+		mapping += "<";
 		for(var genericParameter of genericParameters) {
 			mapping += this.convertTypeToTypeScript(genericParameter, options);
 			if(genericParameter !== genericParameters[genericParameters.length-1])
 				mapping += ", ";
 		}
 		mapping += ">";
+
 		return mapping;
 	}
 
@@ -225,7 +224,7 @@ export class TypeEmitter {
 			var mappingGenericParameter = mappingKeyType.genericParameters[i];
 			var mappingRealParameter = concreteType.genericParameters[i];
 
-			if (mappingGenericParameter.genericParameters) {
+			if (mappingGenericParameter.isGeneric) {
 				mapping = this.substituteMultipleGenericReferencesIntoMapping(
 					mappingGenericParameter,
 					mappingRealParameter,

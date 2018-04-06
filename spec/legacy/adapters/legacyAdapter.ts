@@ -239,7 +239,9 @@ function LegacyAdapter(contents: any, options: any) {
 
 		if (options.customTypeTranslations) {
 			emitOptions.defaults.typeEmitOptions = <TypeEmitOptions>{
-				mapper: (type, suggested) => options.customTypeTranslations[type.name] || suggested
+				mapper: (type, suggested) => {
+					return options.customTypeTranslations[type.name] || suggested
+				}
 			};
 		}
 
