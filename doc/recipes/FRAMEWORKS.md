@@ -11,11 +11,13 @@ These recipes are pre-made options that work with a framework of your choise.
 
 ```typescript
 var controllerClassFilter = (classObject: CSharpClass) => {
-  var inheritsFromController = classObject.name.endsWith("Controller") || (classObject.inheritsFrom && classObject.inheritsFrom.name.endsWith("Controller"));
-  var hasControllerAttribute = !!classObject.attributes.filter(a => a.name === "Controller")[0];
-  var hasNonControllerAttribute = !!classObject.attributes.filter(a => a.name === "NonController")[0];
-  
-  return (inheritsFromController || hasControllerAttribute) && !hasNonControllerAttribute;
+    var isTypeController = (type: {name: string}) => type.name.endsWith("Controller");
+
+    var inheritsFromController = isTypeController(classObject) || !!classObject.inheritsFrom.filter(isTypeController)[0];
+    var hasControllerAttribute = !!classObject.attributes.filter(a => a.name === "Controller")[0];
+    var hasNonControllerAttribute = !!classObject.attributes.filter(a => a.name === "NonController")[0];
+    
+    return (inheritsFromController || hasControllerAttribute) && !hasNonControllerAttribute;
 };
   
 var actionMethodFilter = (methodObject: CSharpMethod) => {
