@@ -12,7 +12,7 @@
     "url": "git+https://github.com/ffMathy/FluffySpoon.JavaScript.CSharpToTypeScriptGenerator.git"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/ffMathy/FluffySpoon.JavaScript.CSharpToTypeScriptGenerator/issues"
   },
