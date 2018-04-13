@@ -19,7 +19,7 @@ export {
     CSharpPropertyComponent, 
     CSharpField, 
     CSharpStruct 
-} from '@fluffy-spoon/javascript.csharp-parser';
+} from '@fluffy-spoon/csharp-parser';
 
 export { Logger } from './Logger';
 
