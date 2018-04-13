@@ -1,4 +1,4 @@
-﻿import { CSharpMethod, CSharpMethodParameter, CSharpNamedToken } from '@fluffy-spoon/javascript.csharp-parser';
+﻿import { CSharpMethod, CSharpMethodParameter, CSharpNamedToken } from '@fluffy-spoon/csharp-parser';
 
 import { TypeScriptEmitter } from './TypeScriptEmitter';
 import { TypeEmitter, TypeEmitOptions } from './TypeEmitter';

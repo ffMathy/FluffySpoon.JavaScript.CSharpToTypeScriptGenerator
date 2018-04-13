@@ -1,4 +1,4 @@
-﻿import { CSharpField, FieldParser } from '@fluffy-spoon/javascript.csharp-parser';
+﻿import { CSharpField, FieldParser } from '@fluffy-spoon/csharp-parser';
 
 import { TypeScriptEmitter } from './TypeScriptEmitter';
 import { TypeEmitter, TypeEmitOptions } from './TypeEmitter';

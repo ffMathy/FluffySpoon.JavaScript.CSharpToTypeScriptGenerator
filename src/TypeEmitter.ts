@@ -1,4 +1,4 @@
-﻿import { CSharpType, TypeParser } from '@fluffy-spoon/javascript.csharp-parser';
+﻿import { CSharpType, TypeParser } from '@fluffy-spoon/csharp-parser';
 import { RegExHelper } from './RegExHelper';
 import { TypeScriptEmitter } from './TypeScriptEmitter';
 import { Logger } from './Logger';

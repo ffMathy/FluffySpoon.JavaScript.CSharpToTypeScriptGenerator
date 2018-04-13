@@ -15,7 +15,7 @@ import {
 	CSharpProperty,
 	CSharpStruct,
 	CSharpMethod
-} from '@fluffy-spoon/javascript.csharp-parser';
+} from '@fluffy-spoon/csharp-parser';
 
 Error.stackTraceLimit = 100;
 

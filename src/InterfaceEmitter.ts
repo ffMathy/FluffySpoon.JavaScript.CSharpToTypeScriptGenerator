@@ -1,4 +1,4 @@
-﻿import { FileParser, CSharpClass, CSharpInterface } from '@fluffy-spoon/javascript.csharp-parser';
+﻿import { FileParser, CSharpClass, CSharpInterface } from '@fluffy-spoon/csharp-parser';
 
 import { TypeScriptEmitter } from './TypeScriptEmitter';
 import { EnumEmitter, EnumEmitOptions } from './EnumEmitter';
