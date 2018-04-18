@@ -11,7 +11,7 @@
     "type": "git",
     "url": "git+https://github.com/ffMathy/FluffySpoon.JavaScript.CSharpToTypeScriptGenerator.git"
   },
-  "author": "",
+  "author": "Mathias Lykkegaard Lorenzen",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/ffMathy/FluffySpoon.JavaScript.CSharpToTypeScriptGenerator/issues"
