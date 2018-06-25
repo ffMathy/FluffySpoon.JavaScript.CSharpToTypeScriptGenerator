@@ -119,12 +119,12 @@ export class ClassEmitter {
 			var heritageClauses = new Array<ts.HeritageClause>();
 			var inheritancesToEmit = (classObject.inheritsFrom || [])
 				.filter(x => this.typeEmitter.canEmitType(x, options.inheritedTypeEmitOptions))
-			for(var inheritsFrom of inheritancesToEmit)
-				heritageClauses.push(ts.createHeritageClause(
-					ts.SyntaxKind.ExtendsKeyword,
-					[this.typeEmitter.createTypeScriptExpressionWithTypeArguments(
-						inheritsFrom,
-						options.inheritedTypeEmitOptions)]));
+
+			var inheritedTypes = new Array<ts.ExpressionWithTypeArguments>();
+            for (var inheritsFrom of inheritancesToEmit) 
+                inheritedTypes.push(this.typeEmitter.createTypeScriptExpressionWithTypeArguments(inheritsFrom, options.inheritedTypeEmitOptions));
+            if (inheritancesToEmit.length > 0) 
+                heritageClauses.push(ts.createHeritageClause(ts.SyntaxKind.ExtendsKeyword, inheritedTypes));
 
 			var properties = classObject
 				.properties
