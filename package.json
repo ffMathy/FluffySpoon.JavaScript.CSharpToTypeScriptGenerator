@@ -5,7 +5,8 @@
   "main": "./dist/src/Index.js",
   "typings": "./dist/src/Index.d.ts",
   "scripts": {
-    "test": "jasmine"
+    "test": "jasmine",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
