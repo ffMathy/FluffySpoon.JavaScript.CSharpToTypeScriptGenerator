@@ -20,8 +20,8 @@ namespace MyNamespace.Domain\n\
 }\n";
 
 var expectedOutput = "declare interface MyPoco {\n\
-    PrivateSetter: string;\n\
-    InterestingWhitespace: string;\n\
+    readonly PrivateSetter: string;\n\
+    readonly InterestingWhitespace: string;\n\
 }";
 
 var LegacyAdapter = require('../../dist/spec/legacy/adapters/legacyAdapter.js');

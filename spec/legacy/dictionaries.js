@@ -14,7 +14,7 @@ namespace MyNamespace.Domain\n\
 
 var expectedOutput = "declare interface MyPoco {\n\
     Stuff: {\n\
-        [: number]: string;\n\
+        [key: number]: string;\n\
     };\n\
 }";
 
@@ -24,7 +24,7 @@ describe('typescript-cs-poco', function() {
 	it('should transform a POCO with a dictionary property correctly', function() {
 
 		var result = LegacyAdapter(sampleFile);
-        
+
         expect(result).toEqual(expectedOutput);
 	});
 });
