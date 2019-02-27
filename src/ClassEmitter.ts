@@ -99,7 +99,8 @@ export class ClassEmitter {
 		var hasDirectChildren = 
 			classObject.properties.length > 0 || 
 			classObject.methods.length > 0 || 
-			classObject.fields.length > 0;
+			classObject.fields.length > 0 ||
+			classObject.inheritsFrom.length > 0;
 
 		if (!hasDirectChildren && !hasNestedChildren) {
 			this.logger.log("Skipping emitting body of class " + classObject.name + " because it contains no children");

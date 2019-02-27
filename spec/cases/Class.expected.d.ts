@@ -21,3 +21,10 @@ declare namespace MainClass {
 declare interface OtherClass {
 	myProperty: string;
 }
+
+declare interface BaseGenericClass<T> {
+	myProperty: T;
+}
+
+declare interface ConcreteTypeClass extends BaseGenericClass<number> {
+}
