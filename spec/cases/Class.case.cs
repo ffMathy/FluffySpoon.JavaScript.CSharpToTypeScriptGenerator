@@ -29,3 +29,12 @@ class OtherClass
 {
 	public string MyProperty { get; set; }
 }
+
+class BaseGenericClass<T>
+{
+    public T MyProperty { get; set; }
+}
+
+class ConcreteTypeClass : BaseGenericClass<long>
+{
+}
