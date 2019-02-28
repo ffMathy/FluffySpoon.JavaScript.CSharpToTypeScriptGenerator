@@ -63,7 +63,8 @@ describe("UseCases", function () {
 	runCase("Enum");
 	runCase("Property");
 	runCase("Class");
-	
+	runCase("Interface");
+
 	runCase("AspNetCoreControllerToAngularClient", () => {
 		var controllerClassFilter = (classObject: CSharpClass) => {
 			var isTypeController = (type: {name: string}) => type.name.endsWith("Controller");

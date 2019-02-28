@@ -77,7 +77,7 @@ export class InterfaceEmitter {
 		if (!options.filter(interfaceObject))
 			return [];
 
-		if (interfaceObject.properties.length === 0 && interfaceObject.methods.length === 0) {
+		if (interfaceObject.properties.length === 0 && interfaceObject.methods.length === 0 && interfaceObject.implements.length === 0) {
 			this.logger.log("Skipping emitting body of interface " + interfaceObject.name + " because it contains no properties or methods");
 			return [];
 		}
