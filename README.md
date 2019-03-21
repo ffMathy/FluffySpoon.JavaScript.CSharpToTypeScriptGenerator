@@ -1,4 +1,4 @@
-A flexible CSharp to TypeScript generator that is `Gulp` and `Grunt` friendly, written in TypeScript.
+A flexible CSharp to TypeScript generator that is `Gulp`, `Webpack` and `Grunt` friendly, written in TypeScript.
 
 Uses the following library for parsing C# code from TypeScript: https://github.com/ffMathy/FluffySpoon.JavaScript.CSharpParser
 
