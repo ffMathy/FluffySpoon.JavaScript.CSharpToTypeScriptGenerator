@@ -282,3 +282,32 @@ declare type MyEnum =
   'FirstOption' |
   'SecondOption'
 ```
+
+# Declare enums as const
+```typescript
+var typescriptCode = emitter.emit(<EmitOptions>{
+  defaults: <DefaultEmitOptions>{
+    enumEmitOptions: <EnumEmitOptions>{
+      useConst: true
+    }
+  }
+});
+```
+
+Given the following CSharp model code:
+
+```csharp
+public enum MyEnum {
+  FirstOption,
+  SecondOption
+}
+```
+
+The following TypeScript code would be generated:
+
+```typescript
+const enum MyEnum {
+    FirstOption,
+    SecondOption = 1
+}
+```

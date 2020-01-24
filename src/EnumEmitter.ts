@@ -9,6 +9,7 @@ export interface EnumEmitOptionsBase {
 	declare?: boolean;
 	strategy?: "default" | "string-union";
 	filter?: (enumObject: CSharpEnum) => boolean;
+	useConst?: boolean;
 }
 
 export interface EnumEmitOptions extends EnumEmitOptionsBase {
@@ -50,6 +51,9 @@ export class EnumEmitter {
 		var modifiers = new Array<ts.Modifier>();
 		if (options.declare)
 			modifiers.push(ts.createToken(ts.SyntaxKind.DeclareKeyword));
+
+		if (options.useConst)
+			modifiers.push(ts.createToken(ts.SyntaxKind.ConstKeyword));
 
 		var node: ts.Statement;
 
