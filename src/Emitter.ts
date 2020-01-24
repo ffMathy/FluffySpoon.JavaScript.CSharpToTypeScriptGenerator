@@ -215,6 +215,10 @@ export class Emitter {
 			options.strategy = "default";
 		}
 
+		if (!options.useConst) {
+			options.useConst = false;
+		}
+
 		return options;
 	}
 

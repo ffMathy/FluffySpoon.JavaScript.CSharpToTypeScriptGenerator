@@ -35,6 +35,8 @@ The `EmitOptions` are the root options. They include two properties:
 
     - `filter` **(enumObject: CSharpEnum) => boolean**  
 
+    - `useConst` **boolean**  
+
   - `structEmitOptions` **StructEmitOptions**  
     configures default struct settings. This settings hierachy is flat.  
 
