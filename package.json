@@ -21,7 +21,7 @@
   "devDependencies": {
     "@types/jasmine": "^2.5.47",
     "@types/node": "^14.14.13",
-    "jasmine": "^2.6.0"
+    "jasmine": "^3.6.3"
   },
   "dependencies": {
     "@fluffy-spoon/csharp-parser": "1.0.126",
