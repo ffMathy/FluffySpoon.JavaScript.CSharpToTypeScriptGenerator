@@ -25,6 +25,6 @@
   },
   "dependencies": {
     "@fluffy-spoon/csharp-parser": "1.143.0",
-    "typescript": "^4.1.3"
+    "typescript": "^5.0.2"
   }
 }
